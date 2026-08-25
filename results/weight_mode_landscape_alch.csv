@@ -1,0 +1,3 @@
+dataset,graph_limit,max_size,support_fraction,min_support,weight_mode,pool_size,frequent_templates,pool_at_bound,max_edges_in_pool,optimum_fitness,optimum_multiplicity,optimum_nodes,optimum_edges,optimum_support,size_bound,optimum_is_interior,spearman_f_edges,local_optima,fitness_levels,local_optima_true,fitness_levels_true,fitness_quantum,best_f_by_edges
+alchemy_full_bond,200,5,0.01,2,sum,428,15,41,5,0.059346,1,5,4,138,5,1,-0.2727,24,1.0000,24,1.0000,0,1:0.0160|2:0.0401|3:0.0526|4:0.0593|5:0.0142
+alchemy_full_bond,200,5,0.01,2,discounted,428,15,41,5,0.107801,1,4,3,162,5,1,-0.2323,14,1.0000,14,1.0000,0,1:0.0516|2:0.0940|3:0.1078|4:0.1075|5:0.0410

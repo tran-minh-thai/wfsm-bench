@@ -1,0 +1,44 @@
+alchemy_full_bond n=200  R=7  W_max=4.05
+
+size 4  supp 2 (1%)  pool 162
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0160    0.0160   0.0460                       
+   2   3    0.0401    0.0401   0.0901  +0.0440   1  0.0200  yes
+   3   4    0.0526    0.0526   0.1226  +0.0326   1  0.0200  yes
+   4   4    0.0110    0.0110   0.0910  -0.0317   0  0.0100  no
+  -> peak from the model k=3, measured k=3   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 5  supp 2 (1%)  pool 428
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0160    0.0160   0.0460                       
+   2   3    0.0401    0.0401   0.0901  +0.0440   1  0.0200  yes
+   3   4    0.0526    0.0526   0.1226  +0.0326   1  0.0200  yes
+   4   5    0.0593    0.0593   0.1493  +0.0267   1  0.0200  yes
+   5   5    0.0142    0.0142   0.1142  -0.0351   0  0.0100  no
+  -> peak from the model k=4, measured k=4   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+turn-over condition agrees with the measured peak in 2/2 configurations
+
+=== calibrating rho on alchemy_full_bond (n=200) ===
+Usable only if the optimum is interior at EVERY bound and lands on the same
+pattern each time: a peak that moves with the bound belongs to where the search
+was cut off, not to the objective.
+  size 4: 162 patterns matched once [87s]
+  size 5: 428 patterns matched once [567s]
+  rho  size 4             size 5             
+     1  k=3 interior      k=4 interior      
+   0.9  k=3 interior      k=4 interior      
+   0.8  k=3 interior      k=3 interior        <- STABLE
+   0.7  k=3 interior      k=3 interior        <- STABLE
+   0.6  k=3 interior      k=3 interior        <- STABLE
+   0.5  k=2 interior      k=2 interior        <- STABLE
+   0.4  k=2 interior      k=2 interior        <- STABLE
+   0.3  k=2 interior      k=2 interior        <- STABLE
+  0.25  k=2 interior      k=2 interior        <- STABLE
+   0.2  k=2 interior      k=2 interior        <- STABLE
+  0.15  k=2 interior      k=2 interior        <- STABLE
+   0.1  k=2 interior      k=2 interior        <- STABLE
+  0.05  k=1 at-the-floor  k=1 at-the-floor  
+[done] results\degeneracy_frontier_alchemy_full_bond.csv
+[done] results\degeneracy_gamma_alchemy_full_bond.csv
+[done] results\degeneracy_rho_alchemy_full_bond.csv

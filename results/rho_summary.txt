@@ -1,0 +1,11 @@
+collection                calibrated rho
+BZR_MD                              none
+BZR_bond                            0.15
+COX2_bond                            0.3
+Cuneiform                            0.5
+DHFR_bond                           none
+QM9_bond                             0.6
+alchemy_full_bond                    0.8
+
+5/7 collections calibrated
+2 without a stable rho: any run of theirs under discounting is refused by the runners rather than defaulted.

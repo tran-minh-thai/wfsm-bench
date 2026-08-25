@@ -1,0 +1,43 @@
+DHFR_bond n=200  R=7  W_max=4.96
+
+size 4  supp 2 (1%)  pool 136
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0693    0.0693   0.0993                       
+   2   3    0.1465    0.1465   0.1965  +0.0971   1  0.0200  yes
+   3   4    0.2216    0.2216   0.2916  +0.0952   1  0.0200  yes
+  -> peak from the model k=3, measured k=3   AGREE; step directions 2/2; largest |model - measured| = 0.00e+00
+
+size 5  supp 2 (1%)  pool 359
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0693    0.0693   0.0993                       
+   2   3    0.1465    0.1465   0.1965  +0.0971   1  0.0200  yes
+   3   4    0.2216    0.2216   0.2916  +0.0952   1  0.0200  yes
+   4   5    0.2980    0.2980   0.3880  +0.0964   1  0.0200  yes
+   5   5    0.0737    0.0737   0.1737  -0.2143   0  0.0100  no
+  -> peak from the model k=4, measured k=4   AGREE; step directions 4/4; largest |model - measured| = 5.55e-17
+
+turn-over condition agrees with the measured peak in 2/2 configurations
+
+=== calibrating rho on DHFR_bond (n=200) ===
+Usable only if the optimum is interior at EVERY bound and lands on the same
+pattern each time: a peak that moves with the bound belongs to where the search
+was cut off, not to the objective.
+  size 4: 136 patterns matched once [90s]
+  size 5: 359 patterns matched once [482s]
+  rho  size 4             size 5             
+     1  k=3 interior      k=4 interior      
+   0.9  k=3 interior      k=4 interior      
+   0.8  k=3 interior      k=4 interior      
+   0.7  k=3 interior      k=4 interior      
+   0.6  k=3 interior      k=4 interior      
+   0.5  k=3 interior      k=4 interior      
+   0.4  k=3 interior      k=4 interior      
+   0.3  k=3 interior      k=4 interior      
+  0.25  k=3 interior      k=4 interior      
+   0.2  k=3 interior      k=4 interior      
+  0.15  k=3 interior      k=4 interior      
+   0.1  k=3 interior      k=4 interior      
+  0.05  k=3 interior      k=4 interior      
+[done] results\degeneracy_frontier_DHFR_bond.csv
+[done] results\degeneracy_gamma_DHFR_bond.csv
+[done] results\degeneracy_rho_DHFR_bond.csv

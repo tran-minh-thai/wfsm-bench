@@ -1,0 +1,15 @@
+dataset,graph_limit,max_size,support_fraction,min_support,weight_mode,budget,method,seeds,fitness_mean,fitness_std,gap_pct,hits,hits_fitness_tie,optimum_multiplicity,prune_infrequent,rho
+DHFR_bond,200,5,0.01,2,sum,60,pso,40,0.207865,0.035737,30.2455,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,60,clpso,40,0.154728,0.034476,48.0772,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,60,multiswarm,40,0.196933,0.031141,33.9142,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,60,aco,40,0.273197,0.021613,8.3219,4,4,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,60,genetic,40,0.182510,0.054926,38.7540,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,60,local_search,40,0.151039,0.065271,49.3152,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,60,random,40,0.121543,0.043565,59.2130,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,pso,40,0.282009,0.004986,5.3648,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,clpso,40,0.265696,0.020371,10.8390,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,multiswarm,40,0.280633,0.006499,5.8266,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,aco,40,0.297996,0.000000,0.0000,40,40,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,genetic,40,0.278805,0.031223,6.4398,13,13,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,local_search,40,0.232673,0.033044,21.9206,0,0,1,0,0.5
+DHFR_bond,200,5,0.01,2,sum,240,random,40,0.182251,0.037845,38.8410,0,0,1,0,0.5

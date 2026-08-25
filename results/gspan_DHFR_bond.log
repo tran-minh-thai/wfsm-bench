@@ -1,0 +1,6 @@
+  DHFR_bond bound=4 support=2 ...
+    gSpan    136 patterns in      3.1s | enumerator    136 in     71.5s = 23.17x | sets agree 1, supports disagreeing 0 | optimum 3 edges
+  DHFR_bond bound=5 support=2 ...
+    gSpan    359 patterns in      6.3s | enumerator    359 in    417.5s = 66.43x | sets agree 1, supports disagreeing 0 | optimum 4 edges
+
+[ok] results\gspan_baseline_DHFR_bond.csv  (2 rows)

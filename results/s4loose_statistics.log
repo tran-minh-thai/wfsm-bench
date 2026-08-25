@@ -1,0 +1,114 @@
+weight_mode_runs_s4loose.csv: dataset Cuneiform, 2 modes, 4 budgets, 7 methods, 20 seeds
+
+=== sum ===
+Friedman over 80 blocks (budget x seed): chi2 = 189.2, p = 3.69e-38
+mean ranks (1 = best), Nemenyi CD = 1.007:
+    genetic      3.138
+    aco          3.206
+    local_search 3.244
+    pso          3.319
+    multiswarm   3.781
+    clpso        5.031
+    random       6.281
+  budget   60: 12/21 pairs differ after Holm
+      multiswarm>clpso (n=20, p=0.0002)
+      local_search>clpso (n=20, p=0.0018)
+      aco>clpso (n=20, p=0.0018)
+      genetic>clpso (n=20, p=0.0018)
+      pso>clpso (n=20, p=0.0028)
+      local_search>multiswarm (n=19, p=0.0029)
+      aco>multiswarm (n=19, p=0.0029)
+      local_search>random (n=20, p=0.0035)
+      genetic>random (n=20, p=0.0037)
+      genetic>multiswarm (n=20, p=0.0054)
+      aco>random (n=18, p=0.011)
+      random>clpso (n=19, p=0.022)
+  budget  120: 10/21 pairs differ after Holm
+      multiswarm>random (n=20, p=0.002)
+      genetic>random (n=19, p=0.0025)
+      genetic>clpso (n=19, p=0.0025)
+      local_search>random (n=19, p=0.0025)
+      aco>random (n=19, p=0.0029)
+      aco>clpso (n=19, p=0.0039)
+      multiswarm>clpso (n=19, p=0.0046)
+      local_search>clpso (n=18, p=0.0061)
+      pso>random (n=19, p=0.016)
+      pso>clpso (n=20, p=0.018)
+  budget  180: 6/21 pairs differ after Holm
+      multiswarm>random (n=19, p=0.0027)
+      aco>random (n=19, p=0.0029)
+      genetic>random (n=19, p=0.0029)
+      local_search>random (n=18, p=0.0033)
+      pso>random (n=17, p=0.0039)
+      clpso>random (n=18, p=0.0039)
+  budget  240: 6/21 pairs differ after Holm
+      aco>random (n=19, p=0.0027)
+      multiswarm>random (n=19, p=0.0027)
+      clpso>random (n=18, p=0.0028)
+      genetic>random (n=19, p=0.0028)
+      local_search>random (n=18, p=0.0029)
+      pso>random (n=17, p=0.0033)
+
+=== discounted ===
+Friedman over 80 blocks (budget x seed): chi2 = 222.1, p = 3.73e-45
+mean ranks (1 = best), Nemenyi CD = 1.007:
+    local_search 2.731
+    genetic      3.031
+    aco          3.237
+    pso          3.844
+    multiswarm   4.169
+    clpso        4.775
+    random       6.213
+  budget   60: 14/21 pairs differ after Holm
+      local_search>clpso (n=20, p=0.0018)
+      aco>clpso (n=20, p=0.0018)
+      local_search>random (n=20, p=0.0018)
+      local_search>multiswarm (n=19, p=0.0024)
+      pso>clpso (n=19, p=0.0031)
+      aco>multiswarm (n=19, p=0.0054)
+      genetic>clpso (n=20, p=0.0067)
+      local_search>pso (n=17, p=0.0067)
+      local_search>aco (n=12, p=0.0067)
+      genetic>multiswarm (n=20, p=0.0099)
+      aco>random (n=17, p=0.0099)
+      genetic>random (n=20, p=0.013)
+      pso>multiswarm (n=18, p=0.017)
+      random>clpso (n=20, p=0.041)
+  budget  120: 8/21 pairs differ after Holm
+      genetic>random (n=19, p=0.0019)
+      local_search>random (n=19, p=0.0019)
+      pso>random (n=19, p=0.0022)
+      aco>random (n=18, p=0.003)
+      genetic>clpso (n=13, p=0.0042)
+      local_search>clpso (n=13, p=0.0042)
+      multiswarm>random (n=19, p=0.016)
+      pso>clpso (n=14, p=0.039)
+  budget  180: 6/21 pairs differ after Holm
+      aco>random (n=19, p=0.0015)
+      local_search>random (n=19, p=0.0015)
+      genetic>random (n=19, p=0.0016)
+      clpso>random (n=20, p=0.0017)
+      multiswarm>random (n=19, p=0.0017)
+      pso>random (n=19, p=0.0017)
+  budget  240: 6/21 pairs differ after Holm
+      clpso>random (n=19, p=0.0018)
+      aco>random (n=18, p=0.002)
+      local_search>random (n=18, p=0.002)
+      genetic>random (n=18, p=0.0021)
+      multiswarm>random (n=18, p=0.0022)
+      pso>random (n=18, p=0.0023)
+
+=== ranking change: sum vs discounted ===
+method               sum    discounted   shift
+pso                3.319         3.844   0
+clpso              5.031         4.775   0
+multiswarm         3.781         4.169   0
+aco                3.206         3.237   -1
+genetic            3.138         3.031   -1
+local_search       3.244         2.731   +2
+random             6.281         6.213   0
+
+Spearman between the two orderings: rho = 0.893, p = 0.00681
+rho near 1 would mean the objective's defect did not change the ranking; the further below 1, the more of the reported ordering belonged to the objective rather than to the methods.
+
+[done] results\statistics_pairwise_s4loose.csv

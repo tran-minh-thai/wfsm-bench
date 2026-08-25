@@ -1,0 +1,23 @@
+  COX2_bond: rho = 0.3 (calibrated)
+
+=== COX2_bond  n=200  seeds=40  workers=8 ===
+  thresholds: 1%->2
+  size 5  supp   2 (1%) [sum]: enumerated 360 patterns [378s]
+      [     sum] optimum 0.4593 at 4e (INTERIOR), threshold slack, rho=+0.19, 78 local optima (bound 6, templates 13), 1.00 levels
+          best F by edge count: 1:0.1583|2:0.2839|3:0.3675|4:0.4593|5:0.3275
+  size 5  supp   2 (1%) [discounted]: enumerated 360 patterns [377s]
+      [discounted] optimum 1.0920 at 3e (INTERIOR), threshold slack, rho=-0.07, 15 local optima (bound 6, templates 13), 1.00 levels
+          best F by edge count: 1:0.8927|2:1.0573|3:1.0920|4:1.0882|5:0.5204
+  1120 search runs to do
+  finished in 3957s
+
+  size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    14.12%/13/13    39.36%/00/00    18.07%/08/08    10.08%/04/04    30.71%/01/01    22.21%/12/12    50.17%/00/00
+      240     0.00%/40/40     0.06%/39/39     0.00%/40/40     0.43%/24/24     5.44%/18/18     1.76%/32/32    30.31%/00/00
+
+  size 5 supp 2 [discounted]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60     0.73%/23/23     4.04%/06/06     1.17%/18/18     1.34%/15/15     3.73%/11/11     4.35%/32/32    14.25%/02/02
+      240     0.00%/40/40     0.00%/40/40     0.00%/40/40     0.00%/40/40     0.45%/28/28     0.00%/40/40     3.16%/07/07
+
+[done] results\weight_mode_landscape_selCOX2_bond.csv
+[done] results\weight_mode_methods_selCOX2_bond.csv

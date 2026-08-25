@@ -1,0 +1,115 @@
+weight_mode_runs_BZRbond.csv: dataset BZR_bond, 2 modes, 4 budgets, 7 methods, 20 seeds
+
+=== sum ===
+Friedman over 80 blocks (budget x seed): chi2 = 235.0, p = 6.71e-48
+mean ranks (1 = best), Nemenyi CD = 1.007:
+    aco          2.319
+    pso          2.600
+    multiswarm   3.038
+    genetic      4.213
+    local_search 4.425
+    clpso        4.931
+    random       6.475
+  budget   60: 9/21 pairs differ after Holm
+      aco>random (n=20, p=4e-05)
+      aco>genetic (n=20, p=0.00027)
+      aco>local_search (n=20, p=0.00036)
+      aco>clpso (n=20, p=0.0022)
+      pso>clpso (n=19, p=0.0042)
+      multiswarm>clpso (n=17, p=0.0045)
+      pso>random (n=20, p=0.0089)
+      multiswarm>random (n=20, p=0.011)
+      aco>multiswarm (n=19, p=0.013)
+  budget  120: 12/21 pairs differ after Holm
+      aco>local_search (n=19, p=8e-05)
+      aco>genetic (n=18, p=0.00031)
+      aco>random (n=20, p=0.0017)
+      pso>random (n=20, p=0.0017)
+      aco>clpso (n=20, p=0.0017)
+      multiswarm>random (n=20, p=0.0019)
+      local_search>random (n=20, p=0.0025)
+      pso>local_search (n=18, p=0.0046)
+      clpso>random (n=20, p=0.0046)
+      aco>multiswarm (n=19, p=0.0055)
+      pso>clpso (n=19, p=0.0057)
+      pso>genetic (n=19, p=0.025)
+  budget  180: 12/21 pairs differ after Holm
+      aco>clpso (n=20, p=0.0017)
+      pso>random (n=20, p=0.0017)
+      aco>random (n=20, p=0.0017)
+      multiswarm>random (n=20, p=0.0017)
+      clpso>random (n=20, p=0.0017)
+      local_search>random (n=20, p=0.003)
+      genetic>random (n=20, p=0.013)
+      aco>genetic (n=17, p=0.019)
+      aco>local_search (n=17, p=0.019)
+      pso>clpso (n=18, p=0.028)
+      multiswarm>local_search (n=16, p=0.03)
+      multiswarm>clpso (n=19, p=0.041)
+  budget  240: 8/21 pairs differ after Holm
+      pso>random (n=20, p=0.0018)
+      clpso>random (n=20, p=0.0018)
+      multiswarm>random (n=20, p=0.0019)
+      aco>random (n=19, p=0.0024)
+      genetic>random (n=20, p=0.0037)
+      local_search>random (n=20, p=0.0047)
+      multiswarm>local_search (n=12, p=0.015)
+      aco>clpso (n=20, p=0.021)
+
+=== discounted ===
+Friedman over 80 blocks (budget x seed): chi2 = 220.1, p = 9.83e-45
+mean ranks (1 = best), Nemenyi CD = 1.007:
+    pso          3.100
+    multiswarm   3.163
+    aco          3.194
+    clpso        3.350
+    local_search 4.269
+    random       5.431
+    genetic      5.494
+  budget   60: 12/21 pairs differ after Holm
+      pso>random (n=19, p=0.0021)
+      multiswarm>random (n=19, p=0.0028)
+      aco>random (n=18, p=0.0033)
+      pso>local_search (n=13, p=0.0044)
+      clpso>random (n=17, p=0.0044)
+      pso>genetic (n=15, p=0.0099)
+      aco>local_search (n=15, p=0.016)
+      genetic>random (n=15, p=0.017)
+      multiswarm>genetic (n=15, p=0.027)
+      local_search>random (n=18, p=0.029)
+      aco>genetic (n=14, p=0.031)
+      multiswarm>local_search (n=14, p=0.032)
+  budget  120: 8/21 pairs differ after Holm
+      pso>random (n=12, p=0.01)
+      clpso>random (n=12, p=0.01)
+      multiswarm>random (n=12, p=0.01)
+      aco>random (n=12, p=0.01)
+      pso>genetic (n=15, p=0.01)
+      clpso>genetic (n=15, p=0.01)
+      multiswarm>genetic (n=15, p=0.01)
+      aco>genetic (n=15, p=0.01)
+  budget  180: 4/21 pairs differ after Holm
+      pso>genetic (n=14, p=0.0079)
+      clpso>genetic (n=14, p=0.0079)
+      multiswarm>genetic (n=14, p=0.0079)
+      aco>genetic (n=14, p=0.0079)
+  budget  240: 4/21 pairs differ after Holm
+      pso>genetic (n=14, p=0.0079)
+      clpso>genetic (n=14, p=0.0079)
+      multiswarm>genetic (n=14, p=0.0079)
+      aco>genetic (n=14, p=0.0079)
+
+=== ranking change: sum vs discounted ===
+method               sum    discounted   shift
+pso                2.600         3.100   +1
+clpso              4.931         3.350   +2
+multiswarm         3.038         3.163   +1
+aco                2.319         3.194   -2
+genetic            4.213         5.494   -3
+local_search       4.425         4.269   0
+random             6.475         5.431   +1
+
+Spearman between the two orderings: rho = 0.643, p = 0.119
+rho near 1 would mean the objective's defect did not change the ranking; the further below 1, the more of the reported ordering belonged to the objective rather than to the methods.
+
+[done] results\statistics_pairwise_BZRbond.csv

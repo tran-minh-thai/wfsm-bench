@@ -1,0 +1,8 @@
+comparing _s4loose against _macdet
+
+  weight_mode_methods       56 rows compared, 0 disagree   (byte-identical)
+  weight_mode_landscape      2 rows compared, 0 disagree   (byte-identical)
+  weight_mode_runs        1120 rows compared, 0 disagree   (byte-identical)
+
+1178 rows across 3 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.

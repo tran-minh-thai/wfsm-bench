@@ -1,0 +1,26 @@
+{
+  "dataset": "illustrative_ppso",
+  "_comment": "Hand-computed ground truth under the PPSO-WFSM weight definition: W(e)=sum of matched edge weights of an embedding; ATW(g)=mean of W(e) over ALL embeddings across the database; WSUP(g)=supp(g)*ATW(g). Used to lock the measure phase (P3).",
+  "patterns": [
+    {
+      "id": "P1",
+      "name": "single edge A-B",
+      "signature": "V[0,1]E[0-1:0]",
+      "occurs_in": [0, 1, 2],
+      "support": 3,
+      "embedding_weights": [0.8, 0.6, 1.0],
+      "atw": 0.8,
+      "wsup": 2.4
+    },
+    {
+      "id": "P2",
+      "name": "path A-B-C",
+      "signature": "V[0,1,2]E[0-1:0;1-2:0]",
+      "occurs_in": [0, 1],
+      "support": 2,
+      "embedding_weights": [1.2, 1.2],
+      "atw": 1.2,
+      "wsup": 2.4
+    }
+  ]
+}

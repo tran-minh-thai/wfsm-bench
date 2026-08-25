@@ -1,0 +1,21 @@
+[mine] one enumeration covers every cell: bound=5 min_support=2 over 200 graphs
+[mine] 360 patterns in 392.6s; the 16 cells are filters over it
+
+  bound=4 support=0.010  pool=   134 front=  7  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.033  pool=    97 front=  7  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.100  pool=    80 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.200  pool=    77 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.300  pool=    51 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.500  pool=    51 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.600  pool=    50 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=4 support=0.700  pool=    42 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=5 support=0.010  pool=   360 front= 12  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->4e
+  bound=5 support=0.033  pool=   227 front= 10  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->4e
+  bound=5 support=0.100  pool=   180 front=  9  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->4e
+  bound=5 support=0.200  pool=   160 front=  8  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=5 support=0.300  pool=   112 front=  8  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=5 support=0.500  pool=   111 front=  8  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=5 support=0.600  pool=   108 front=  8  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=5 support=0.700  pool=    85 front=  8  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+
+[ok] results\pareto_size_COX2_bond_s45.csv  (48 rows)

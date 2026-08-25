@@ -1,0 +1,161 @@
+wfsm-bench - step by step on Windows
+====================================
+
+The quickest route is run_all_windows.bat in the project root: it does everything
+below and writes one log per step to results\logs. Use these steps when a step
+fails and you want to repeat it on its own, or when you would rather watch each
+one.
+
+Every command is meant for Command Prompt (cmd), one line at a time.
+
+
+0. PYTHON
+---------
+    python --version
+
+Needs 3.11 or newer. If the command is not found, install from python.org and
+tick "Add python.exe to PATH" during setup, then open a NEW Command Prompt.
+
+
+1. GET THE CODE
+---------------
+Pick a folder to work in, then clone:
+
+    cd /d "%USERPROFILE%\Documents"
+    git clone -b per-edge-objective https://github.com/tran-minh-thai/wfsm-bench.git
+    cd wfsm-bench
+
+Name the branch. The work is not on the default one, and a clone without -b lands
+on main, which is many commits behind -- it runs and produces artefacts that look
+ordinary and came from superseded code.
+
+The repository is private, so the GitHub account you are signed in as must have
+access. If the clone asks for a password, use a personal access token, not the
+account password.
+
+Already have a checkout? Update it instead -- naming the branch here too, since a
+bare pull updates whichever branch the machine is standing on:
+
+    cd /d "%USERPROFILE%\Documents\wfsm-bench"
+    git checkout per-edge-objective
+    git pull --ff-only
+
+
+2. VIRTUAL ENVIRONMENT
+----------------------
+    python -m venv .venv
+
+A virtual environment made on macOS or Linux does NOT work here; create a fresh
+one on this machine.
+
+
+3. DEPENDENCIES
+---------------
+    .venv\Scripts\python -m pip install --upgrade pip
+    .venv\Scripts\pip install -r requirements.txt
+
+Check they all import:
+
+    .venv\Scripts\python -c "import networkx, numpy, yaml, matplotlib, pytest; print('ok')"
+
+Installed: networkx (subgraph matching), numpy (randomness and statistics),
+pyyaml (configuration), matplotlib (figures), pytest (tests).
+
+
+4. DATASETS
+-----------
+The datasets are not in the repository; the script downloads and converts them
+(about 10 MB, from https://www.chrsmrrs.com/graphkerneldatasets):
+
+    .venv\Scripts\python scripts\prepare_datasets.py
+
+Check:
+
+    dir data\*.json
+
+You should see BZR_MD.json and Cuneiform.json. Re-running the script is
+harmless: it skips whatever is already there.
+
+If this machine has no internet, copy those two files from any other checkout
+into data\ and carry on.
+
+
+5. TESTS
+--------
+    .venv\Scripts\python -m pytest -q
+
+Expect "155 passed". Run this after the datasets, not before: three tests
+exercise the real datasets and skip without them, which reports "152 passed,
+3 skipped" and looks like a fault when it is not.
+
+Anything failing means the checkout or the install is wrong - stop here rather
+than running experiments on it.
+
+
+6. SMOKE TEST  (a few minutes)
+------------------------------
+    .venv\Scripts\python scripts\run_budget_regimes.py --preset quick --workers 10
+
+If this finishes, everything is set up. If it takes much longer than ten minutes,
+the full run will be proportionally slower - consider running it overnight.
+
+
+7. THE MAIN EXPERIMENT  (hours)
+-------------------------------
+    .venv\Scripts\python scripts\run_budget_regimes.py --preset balanced --workers 10
+
+Writes results\budget_regimes_Cuneiform.csv and results\budget_regimes_BZR_MD.csv.
+
+This is the experiment that matters most. Comparing search methods at a single
+budget can reverse which one looks best, and several of them stop being able to
+use a larger budget at all, so the budget is swept rather than fixed.
+
+To capture the console output as well:
+
+    .venv\Scripts\python scripts\run_budget_regimes.py --preset balanced --workers 10 > budget_regimes.log 2>&1
+
+
+8. THE REST
+-----------
+    .venv\Scripts\python scripts\run_pareto.py --preset balanced --workers 10
+    .venv\Scripts\python scripts\run_diversity_sweep.py --preset balanced --workers 10
+    .venv\Scripts\python scripts\run_full_scale.py --preset balanced --workers 10
+    .venv\Scripts\python scripts\run_timing.py --preset balanced
+    .venv\Scripts\python scripts\make_figures.py
+
+Roughly: Pareto 30-60 min, diversity 15-30 min, pattern-size sweep 30-45 min,
+timing 1-2 hours, figures seconds.
+
+run_timing.py takes no --workers on purpose. Everything else runs many searches
+at once, which is why they finish at all, but that also means each search is
+timed while competing for the machine while the greedy reference is timed with
+the machine to itself - so the searches look slower than they are. This script
+runs one thing at a time to get wall-clock numbers that can be compared. Take
+gaps and hit counts from the budget sweep and times from here.
+
+
+9. WHAT TO SEND BACK
+--------------------
+    dir results\*.csv
+    dir results\figures\*.png
+
+Send the CSV files, and the logs if anything failed.
+
+
+NOTES
+-----
+- Run the scripts from files, never by pasting into an interactive Python
+  prompt. Windows starts worker processes with spawn, which re-imports the
+  script; pasted code cannot be re-imported and the run fails with
+  BrokenProcessPool.
+
+- --workers 10 suits six cores and twelve threads and leaves thermal headroom.
+  Results do not depend on the worker count: every run is seeded independently.
+
+- Keep the machine plugged in. Sustained all-core matching heats a laptop, and a
+  throttled machine is slower than one running fewer workers.
+
+- Memory is not a concern here; a few GB is plenty.
+
+- Presets: quick (minutes, for checking the setup), balanced (hours, the numbers
+  to report), full (overnight, wider datasets and larger patterns).

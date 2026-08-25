@@ -1,0 +1,2 @@
+dataset,graph_limit,size_bound,min_support,gspan_patterns,gspan_seconds,exhaustive_patterns,exhaustive_seconds,speedup,sets_agree,supports_disagreeing,gspan_optimum_edges,gspan_optimum_fitness
+Cuneiform,60,6,2,42523,517.954,,,,,,6,0.172203

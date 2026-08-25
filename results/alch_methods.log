@@ -1,0 +1,27 @@
+  alchemy_full_bond: rho = 0.8 (calibrated)
+
+=== alchemy_full_bond  n=200  seeds=20  workers=8 ===
+  thresholds: 1%->2
+  size 5  supp   2 (1%) [sum]: enumerated 428 patterns [530s]
+      [     sum] optimum 0.0593 at 4e (INTERIOR), threshold slack, rho=-0.27, 24 local optima (bound 41, templates 15), 1.00 levels
+          best F by edge count: 1:0.0160|2:0.0401|3:0.0526|4:0.0593|5:0.0142
+  size 5  supp   2 (1%) [discounted]: enumerated 428 patterns [531s]
+      [discounted] optimum 0.1078 at 3e (INTERIOR), threshold slack, rho=-0.23, 14 local optima (bound 41, templates 15), 1.00 levels
+          best F by edge count: 1:0.0516|2:0.0940|3:0.1078|4:0.1075|5:0.0410
+  1120 search runs to do
+  finished in 2194s
+
+  size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    28.13%/00/00    58.78%/00/00    34.39%/00/00     4.04%/11/11    55.51%/00/00    85.84%/00/00    80.25%/00/00
+      120    16.58%/00/00    34.67%/00/00    21.88%/00/00     0.00%/20/20    31.60%/01/01    51.91%/00/00    77.57%/00/00
+      180    12.35%/00/00    21.88%/00/00    12.35%/00/00     0.00%/20/20    18.62%/09/09    33.33%/00/00    68.27%/00/00
+      240    11.29%/00/00    11.29%/00/00    11.29%/00/00     0.00%/20/20    12.70%/14/14    28.85%/00/00    60.80%/00/00
+
+  size 5 supp 2 [discounted]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    10.08%/07/07    33.82%/00/00    12.17%/01/01    -0.00%/20/20    41.34%/03/03    36.95%/00/00    58.64%/00/00
+      120     2.56%/16/16    13.29%/02/02     4.48%/13/13    -0.00%/20/20    19.71%/13/13    23.37%/02/02    54.29%/00/00
+      180    -0.00%/20/20     4.48%/13/13    -0.00%/20/20    -0.00%/20/20    14.86%/14/14    13.29%/02/02    45.37%/00/00
+      240    -0.00%/20/20     0.64%/19/19    -0.00%/20/20    -0.00%/20/20     8.25%/17/17    10.89%/03/03    38.51%/00/00
+
+[done] results\weight_mode_landscape_alch.csv
+[done] results\weight_mode_methods_alch.csv

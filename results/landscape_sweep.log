@@ -1,0 +1,110 @@
+
+=== Cuneiform  n=60  seeds=5  workers=11 ===
+  thresholds: 3%->2, 10%->6, 20%->12, 30%->18, 50%->30, 60%->36, 70%->42
+  size 4  supp   2 (3%) [sum/per_edge]: enumerated 712 patterns [28s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.32, 118 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.10, 11 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp   6 (10%) [sum/per_edge]: enumerated 712 patterns [28s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.32, 118 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.10, 11 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp  12 (20%) [sum/per_edge]: enumerated 649 patterns [27s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.33, 95 local optima (bound 172, templates 24), 0.25 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.08, 11 local optima (bound 172, templates 24), 0.26 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp  18 (30%) [sum/per_edge]: enumerated 542 patterns [25s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.27, 71 local optima (bound 127, templates 24), 0.18 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.13, 11 local optima (bound 127, templates 24), 0.18 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp  30 (50%) [sum/per_edge]: enumerated 365 patterns [17s]
+      [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.20, 56 local optima (bound 81, templates 22), 0.11 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.23, 11 local optima (bound 81, templates 22), 0.12 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2332
+  size 4  supp  36 (60%) [sum/per_edge]: enumerated 239 patterns [10s]
+      [     sum] optimum 0.0463 at 4e (at the bound), threshold slack, rho=+0.22, 47 local optima (bound 57, templates 20), 0.08 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.45, 11 local optima (bound 57, templates 20), 0.08 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410
+  size 4  supp  42 (70%) [sum/per_edge]: enumerated 199 patterns [8s]
+      [     sum] optimum 0.0463 at 4e (at the bound), threshold slack, rho=+0.28, 46 local optima (bound 51, templates 19), 0.08 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.57, 13 local optima (bound 51, templates 19), 0.08 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410
+  size 5  supp   2 (3%) [sum/per_edge]: enumerated 4991 patterns [519s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.33, 560 local optima (bound 2032, templates 24), 0.16 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.14, 11 local optima (bound 2032, templates 24), 0.16 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp   6 (10%) [sum/per_edge]: enumerated 4551 patterns [485s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.35, 413 local optima (bound 1750, templates 24), 0.14 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.12, 11 local optima (bound 1750, templates 24), 0.14 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp  12 (20%) [sum/per_edge]: enumerated 3549 patterns [392s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.38, 216 local optima (bound 1224, templates 24), 0.10 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.11, 11 local optima (bound 1224, templates 24), 0.10 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp  18 (30%) [sum/per_edge]: enumerated 2420 patterns [294s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.33, 161 local optima (bound 720, templates 24), 0.07 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.15, 11 local optima (bound 720, templates 24), 0.07 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp  30 (50%) [sum/per_edge]: enumerated 1230 patterns [146s]
+      [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.34, 116 local optima (bound 315, templates 22), 0.05 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990|5:0.0932
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.18, 11 local optima (bound 315, templates 22), 0.05 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2332|5:0.1705
+  size 5  supp  36 (60%) [sum/per_edge]: enumerated 525 patterns [62s]
+      [     sum] optimum 0.0463 at 4e (INTERIOR), threshold slack, rho=+0.47, 68 local optima (bound 114, templates 20), 0.05 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.23, 11 local optima (bound 114, templates 20), 0.05 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021
+  size 5  supp  42 (70%) [sum/per_edge]: enumerated 351 patterns [41s]
+      [     sum] optimum 0.0463 at 4e (INTERIOR), threshold slack, rho=+0.60, 55 local optima (bound 66, templates 19), 0.06 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.04, 13 local optima (bound 66, templates 19), 0.06 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021
+  size 6  supp   2 (3%) [sum/per_edge]: enumerated 42523 patterns [21983s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.27, 3233 local optima (bound 22165, templates 24), 0.06 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.19, 11 local optima (bound 22165, templates 24), 0.06 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  size 6  supp   6 (10%) [sum/per_edge]: enumerated 31894 patterns [15966s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.30, 1375 local optima (bound 15150, templates 24), 0.05 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.16, 11 local optima (bound 15150, templates 24), 0.05 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  size 6  supp  12 (20%) [sum/per_edge]: enumerated 20064 patterns [9901s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.31, 502 local optima (bound 8393, templates 24), 0.03 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.20, 11 local optima (bound 8393, templates 24), 0.03 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  size 6  supp  18 (30%) [sum/per_edge]: enumerated 10954 patterns [5565s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.28, 376 local optima (bound 4019, templates 24), 0.03 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.24, 11 local optima (bound 4019, templates 24), 0.03 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  size 6  supp  30 (50%) [sum/per_edge]: enumerated 4318 patterns [1833s]
+      [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.29, 155 local optima (bound 1385, templates 22), 0.02 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990|5:0.0932|6:0.0975
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.35, 11 local optima (bound 1385, templates 22), 0.02 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2332|5:0.1705|6:0.1321
+  size 6  supp  36 (60%) [sum/per_edge]: enumerated 1194 patterns [392s]
+      [     sum] optimum 0.0525 at 6e (at the bound), threshold slack, rho=+0.40, 53 local optima (bound 315, templates 20), 0.03 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444|6:0.0525
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.53, 11 local optima (bound 315, templates 20), 0.03 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021|6:0.0795
+  size 6  supp  42 (70%) [sum/per_edge]: enumerated 687 patterns [203s]
+      [     sum] optimum 0.0525 at 6e (at the bound), threshold slack, rho=+0.65, 40 local optima (bound 159, templates 19), 0.04 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444|6:0.0525
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.29, 13 local optima (bound 159, templates 19), 0.04 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021|6:0.0795
+
+[done] results\weight_mode_landscape.csv

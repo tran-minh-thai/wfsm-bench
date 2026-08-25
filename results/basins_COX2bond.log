@@ -1,0 +1,6 @@
+COX2_bond n=200, rho = 0.3
+  size 5 supp 2 [sum] strict  : pool 360, 78 attractors, optimum basin 16.4%, largest 16.4% (is the optimum)
+  size 5 supp 2 [sum] plateau : pool 360, 78 attractors, optimum basin 16.4%, largest 16.4% (is the optimum)
+  size 5 supp 2 [discounted] strict  : pool 360, 15 attractors, optimum basin 70.0%, largest 70.0% (is the optimum)
+  size 5 supp 2 [discounted] plateau : pool 360, 15 attractors, optimum basin 70.0%, largest 70.0% (is the optimum)
+[done] results\basins_COX2bond.csv

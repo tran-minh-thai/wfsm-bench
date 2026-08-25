@@ -1,0 +1,17 @@
+
+=== QM9_bond  n=200  seeds=20  workers=8 ===
+  thresholds: 1%->2
+  size 5  supp   2 (1%) [sum]: enumerated 613 patterns [375s]
+      [     sum] optimum 0.2564 at 5e (at the bound), threshold slack, rho=+0.58, 212 local optima (bound 46, templates 17), 0.09 levels
+          best F by edge count: 1:0.1350|2:0.2100|3:0.2300|4:0.2500|5:0.2550
+  560 search runs to do
+  finished in 715s
+
+  size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    13.55%/00/00    23.07%/00/00    17.24%/00/00     1.96%/15/15    41.32%/00/00    45.06%/00/00    45.23%/00/00
+      120    10.17%/00/00    20.47%/00/00    10.97%/00/00     0.00%/20/20    33.02%/00/00    27.90%/00/00    35.57%/00/00
+      180     9.80%/00/00    14.67%/00/00     9.53%/00/00     0.00%/20/20    26.17%/02/02    18.63%/00/00    33.89%/00/00
+      240     9.43%/00/00    10.26%/00/00     9.48%/00/00     0.00%/20/20    14.88%/05/05    15.00%/00/00    31.72%/00/00
+
+[done] results\weight_mode_landscape_q050.csv
+[done] results\weight_mode_methods_q050.csv

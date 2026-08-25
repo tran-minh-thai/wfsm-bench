@@ -1,0 +1,6 @@
+alchemy_full_bond n=200, rho = 0.8
+  size 5 supp 2 [sum] strict  : pool 428, 24 attractors, optimum basin 0.5%, largest 51.2% (is NOT the optimum)
+  size 5 supp 2 [sum] plateau : pool 428, 24 attractors, optimum basin 0.5%, largest 51.2% (is NOT the optimum)
+  size 5 supp 2 [discounted] strict  : pool 428, 14 attractors, optimum basin 10.3%, largest 54.2% (is NOT the optimum)
+  size 5 supp 2 [discounted] plateau : pool 428, 14 attractors, optimum basin 10.3%, largest 54.2% (is NOT the optimum)
+[done] results\basins_alch.csv

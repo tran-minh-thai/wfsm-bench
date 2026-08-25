@@ -1,0 +1,12 @@
+[mine] one enumeration covers every cell: bound=4 min_support=9 over 267 graphs
+[mine] 2959 patterns in 765.3s; the 7 cells are filters over it
+
+  bound=4 support=0.033  pool=  2959 front= 14  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.100  pool=  2678 front= 12  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.200  pool=  2252 front= 11  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.300  pool=  1469 front=  8  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.500  pool=   587 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->3e
+  bound=4 support=0.600  pool=   411 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=4 support=0.700  pool=   232 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+
+[ok] results\pareto_size_Cuneiform_s4.csv  (21 rows)

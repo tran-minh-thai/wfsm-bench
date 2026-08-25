@@ -1,0 +1,6 @@
+  alchemy_full_bond bound=4 support=2 ...
+    gSpan    162 patterns in      0.3s | enumerator    162 in     80.7s = 261.31x | sets agree 1, supports disagreeing 0 | optimum 3 edges
+  alchemy_full_bond bound=5 support=2 ...
+    gSpan    428 patterns in      0.6s | enumerator    428 in    540.5s = 846.79x | sets agree 1, supports disagreeing 0 | optimum 4 edges
+
+[ok] results\gspan_baseline_alchemy_full_bond.csv  (2 rows)

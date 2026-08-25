@@ -1,0 +1,170 @@
+@echo off
+REM ============================================================================
+REM  wfsm-bench - full run on Windows
+REM
+REM  Sets the project up and runs every experiment, writing one log per step to
+REM  results\logs. Safe to re-run: it updates an existing checkout instead of
+REM  cloning again, and reuses the virtual environment.
+REM
+REM  Run it either from inside a checkout, or from an empty folder to have it
+REM  clone one. Double-click, or from a Command Prompt:  run_all_windows.bat
+REM ============================================================================
+setlocal enabledelayedexpansion
+
+set REPO_URL=https://github.com/tran-minh-thai/wfsm-bench.git
+REM The work is not on the default branch, and cloning without naming one lands on
+REM main, which is many commits behind. A run started there produces artefacts that
+REM look ordinary and came from superseded code.
+set BRANCH=per-edge-objective
+set WORKERS=10
+set PRESET=balanced
+
+echo.
+echo ============================================================
+echo  wfsm-bench   preset=%PRESET%   workers=%WORKERS%
+echo ============================================================
+
+REM --- Step 0: Python -------------------------------------------------------
+echo.
+echo [0/6] Checking Python...
+python --version 2>NUL
+if errorlevel 1 (
+    echo   ERROR: python was not found on PATH.
+    echo   Install Python 3.11 or newer from python.org, tick "Add to PATH",
+    echo   then open a new Command Prompt and run this again.
+    goto :fail
+)
+for /f "tokens=2" %%v in ('python --version 2^>^&1') do set PYVER=%%v
+echo   Found Python !PYVER!  ^(3.11 or newer is required^)
+
+REM --- Step 1: get the code -------------------------------------------------
+echo.
+echo [1/6] Getting the code...
+if exist "src\wfsmbench" (
+    echo   Already inside a checkout; switching to %BRANCH% and pulling.
+    git checkout %BRANCH%
+    git pull --ff-only
+    if errorlevel 1 echo   WARNING: pull failed, continuing with the local copy.
+) else (
+    if exist "wfsm-bench\src\wfsmbench" (
+        echo   Found wfsm-bench\ next to this file; entering and pulling.
+        cd wfsm-bench
+        git checkout %BRANCH%
+        git pull --ff-only
+    ) else (
+        echo   Cloning %REPO_URL% ^(branch %BRANCH%^)
+        git clone -b %BRANCH% %REPO_URL%
+        if errorlevel 1 (
+            echo   ERROR: clone failed. Check the network, and that this account
+            echo   has access to the repository ^(it is private^).
+            goto :fail
+        )
+        cd wfsm-bench
+    )
+)
+echo   Working in: %CD%
+
+REM --- Step 2: virtual environment ------------------------------------------
+echo.
+echo [2/6] Preparing the virtual environment...
+if exist ".venv\Scripts\python.exe" (
+    echo   Reusing the existing .venv
+) else (
+    python -m venv .venv
+    if errorlevel 1 goto :fail
+    echo   Created .venv
+)
+set PY=.venv\Scripts\python.exe
+
+REM --- Step 3: dependencies -------------------------------------------------
+echo.
+echo [3/6] Installing dependencies...
+if not exist "results\logs" mkdir "results\logs"
+%PY% -m pip install --upgrade pip > results\logs\00_pip_upgrade.log 2>&1
+%PY% -m pip install -r requirements.txt > results\logs\01_pip_install.log 2>&1
+if errorlevel 1 (
+    echo   ERROR: install failed. See results\logs\01_pip_install.log
+    goto :fail
+)
+%PY% -c "import networkx, numpy, yaml, matplotlib, pytest; print('networkx', networkx.__version__, '| numpy', numpy.__version__, '| matplotlib', matplotlib.__version__)"
+if errorlevel 1 (
+    echo   ERROR: a dependency is still missing. See results\logs\01_pip_install.log
+    goto :fail
+)
+
+REM --- Step 4: datasets -----------------------------------------------------
+echo.
+echo [4/6] Preparing the datasets...
+if exist "data\BZR_MD.json" if exist "data\Cuneiform.json" (
+    echo   Both datasets are already present; skipping the download.
+    goto :datasets_ready
+)
+echo   Downloading and converting from TUDataset ^(about 10 MB, needs internet^)...
+%PY% scripts\prepare_datasets.py > results\logs\02_datasets.log 2>&1
+if errorlevel 1 (
+    echo   ERROR: dataset preparation failed. See results\logs\02_datasets.log
+    echo   Check the internet connection: the files come from
+    echo   https://www.chrsmrrs.com/graphkerneldatasets
+    goto :fail
+)
+:datasets_ready
+dir /b data\*.json
+
+REM --- Step 5: tests --------------------------------------------------------
+REM  After the datasets, not before: three tests exercise the real datasets and
+REM  skip without them, which would report 152 passed and look like a fault.
+echo.
+echo [5/6] Running the test suite ^(expect 155 passed^)...
+%PY% -m pytest -q > results\logs\03_tests.log 2>&1
+if errorlevel 1 (
+    echo   ERROR: tests failed. See results\logs\03_tests.log
+    goto :fail
+)
+findstr /C:"passed" results\logs\03_tests.log
+
+REM --- Step 6: the experiments ----------------------------------------------
+REM  This used to run run_budget_regimes, run_pareto, run_diversity_sweep,
+REM  run_full_scale and run_timing. Those predate two measurement fixes -- the
+REM  fitness was anchored on the search bound instead of a study constant, and the
+REM  reported best ignored the support threshold -- so everything they wrote came
+REM  from code now known to be wrong, and their output files were deleted for that
+REM  reason. Leaving them wired into the one script a new machine is pointed at
+REM  would quietly recreate the whole set.
+REM
+REM  The current suite is run_experiments_windows.bat: it gates every stage on a
+REM  checkout matching its commit, and writes an environment file per stage.
+echo.
+echo [6/6] Running the experiment suite...
+echo       Stages and their timings are listed at the top of run_experiments_windows.bat.
+call run_experiments_windows.bat
+if errorlevel 1 goto :fail
+
+REM --- Done -----------------------------------------------------------------
+echo.
+echo ============================================================
+echo  FINISHED
+echo ============================================================
+echo.
+echo  Result tables in results\ :
+dir /b results\*.csv 2>NUL
+echo.
+echo  Figures in results\figures\ :
+dir /b results\figures\*.png 2>NUL
+echo.
+echo  Step logs in results\logs\ :
+dir /b results\logs\*.log 2>NUL
+echo.
+echo  Send back the CSV files and the logs folder.
+echo.
+pause
+exit /b 0
+
+:fail
+echo.
+echo ============================================================
+echo  STOPPED - the step above did not finish.
+echo  Check the matching log in results\logs, and send it back.
+echo ============================================================
+echo.
+pause
+exit /b 1

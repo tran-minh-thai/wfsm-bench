@@ -1,0 +1,5 @@
+dataset,graph_limit,max_size,min_support,weight_mode,fitness_quantum,pool_size,optimum_multiplicity,policy,attractors,basin_optimum_pct,largest_basin_pct,optimum_is_largest,mean_path,max_path,unreached_from_pct
+BZR_bond,200,5,2,sum,0,359,1,strict,72,0.557,16.992,0,1.607,5,79.944
+BZR_bond,200,5,2,sum,0,359,1,plateau,72,0.557,16.992,0,1.607,5,79.944
+BZR_bond,200,5,2,discounted,0,359,1,strict,13,26.741,28.969,0,2.295,6,96.379
+BZR_bond,200,5,2,discounted,0,359,1,plateau,13,26.741,28.969,0,2.295,6,96.379

@@ -1,0 +1,74 @@
+weight_mode_runs_q010.csv: dataset QM9_bond, 1 modes, 4 budgets, 7 methods, 20 seeds
+
+=== sum ===
+Friedman over 80 blocks (budget x seed): chi2 = 306.3, p = 3.64e-63
+mean ranks (1 = best), Nemenyi CD = 1.007:
+    aco          1.031
+    pso          3.269
+    multiswarm   3.350
+    genetic      4.287
+    clpso        4.775
+    local_search 5.025
+    random       6.263
+  budget   60: 16/21 pairs differ after Holm
+      aco>multiswarm (n=20, p=0.0011)
+      aco>clpso (n=20, p=0.0014)
+      aco>random (n=20, p=0.0016)
+      aco>genetic (n=20, p=0.0016)
+      aco>pso (n=19, p=0.0018)
+      aco>local_search (n=19, p=0.0021)
+      pso>random (n=19, p=0.0023)
+      pso>local_search (n=18, p=0.0033)
+      multiswarm>random (n=17, p=0.0044)
+      pso>clpso (n=14, p=0.011)
+      multiswarm>local_search (n=18, p=0.035)
+      pso>genetic (n=17, p=0.036)
+      multiswarm>clpso (n=9, p=0.036)
+      clpso>random (n=18, p=0.044)
+      multiswarm>pso (n=10, p=0.044)
+      multiswarm>genetic (n=18, p=0.044)
+  budget  120: 14/21 pairs differ after Holm
+      aco>clpso (n=20, p=0.00049)
+      aco>pso (n=20, p=0.00072)
+      aco>multiswarm (n=20, p=0.0012)
+      pso>clpso (n=19, p=0.0013)
+      aco>random (n=20, p=0.0014)
+      aco>local_search (n=20, p=0.0014)
+      pso>random (n=20, p=0.0014)
+      multiswarm>random (n=19, p=0.0018)
+      aco>genetic (n=19, p=0.0018)
+      multiswarm>local_search (n=17, p=0.0042)
+      multiswarm>clpso (n=16, p=0.0045)
+      pso>local_search (n=14, p=0.0098)
+      clpso>random (n=15, p=0.011)
+      pso>genetic (n=14, p=0.014)
+  budget  180: 13/21 pairs differ after Holm
+      aco>pso (n=20, p=0.00075)
+      aco>multiswarm (n=20, p=0.001)
+      aco>clpso (n=20, p=0.0013)
+      aco>local_search (n=20, p=0.0013)
+      aco>random (n=20, p=0.0014)
+      multiswarm>random (n=20, p=0.0014)
+      pso>random (n=20, p=0.0014)
+      aco>genetic (n=19, p=0.0017)
+      clpso>random (n=18, p=0.0025)
+      multiswarm>clpso (n=17, p=0.0031)
+      multiswarm>local_search (n=15, p=0.0068)
+      pso>clpso (n=14, p=0.0082)
+      pso>local_search (n=11, p=0.0088)
+  budget  240: 13/21 pairs differ after Holm
+      aco>pso (n=20, p=0.00075)
+      aco>local_search (n=20, p=0.00087)
+      aco>multiswarm (n=20, p=0.00096)
+      aco>clpso (n=20, p=0.0013)
+      aco>random (n=20, p=0.0014)
+      pso>random (n=20, p=0.0014)
+      multiswarm>random (n=20, p=0.0014)
+      clpso>random (n=20, p=0.0014)
+      local_search>random (n=20, p=0.0015)
+      aco>genetic (n=19, p=0.0015)
+      multiswarm>local_search (n=11, p=0.011)
+      local_search>pso (n=9, p=0.039)
+      multiswarm>clpso (n=14, p=0.041)
+
+[done] results\statistics_pairwise_q010.csv

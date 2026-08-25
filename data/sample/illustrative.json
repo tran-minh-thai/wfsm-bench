@@ -1,0 +1,30 @@
+{
+  "name": "illustrative_ppso",
+  "description": "Tiny hand-verifiable weighted multi-graph database for PPSO-WFSM. Labels A=0, B=1, C=2; edge label 0. Designed so ATW and WSUP (PPSO definition) can be computed by hand.",
+  "label_strings": ["A", "B", "C"],
+  "graphs": [
+    {
+      "id": 0,
+      "vertices": [{"id": 0, "label": 0}, {"id": 1, "label": 1}, {"id": 2, "label": 2}],
+      "edges": [
+        {"src": 0, "dst": 1, "label": 0, "weight": 0.8},
+        {"src": 1, "dst": 2, "label": 0, "weight": 0.4}
+      ]
+    },
+    {
+      "id": 1,
+      "vertices": [{"id": 0, "label": 0}, {"id": 1, "label": 1}, {"id": 2, "label": 2}],
+      "edges": [
+        {"src": 0, "dst": 1, "label": 0, "weight": 0.6},
+        {"src": 1, "dst": 2, "label": 0, "weight": 0.6}
+      ]
+    },
+    {
+      "id": 2,
+      "vertices": [{"id": 0, "label": 0}, {"id": 1, "label": 1}],
+      "edges": [
+        {"src": 0, "dst": 1, "label": 0, "weight": 1.0}
+      ]
+    }
+  ]
+}

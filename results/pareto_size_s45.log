@@ -1,0 +1,19 @@
+[mine] one enumeration covers every cell: bound=5 min_support=2 over 60 graphs
+[mine] 4991 patterns in 524.6s; the 14 cells are filters over it
+
+  bound=4 support=0.033  pool=   712 front= 10  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.100  pool=   712 front= 10  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.200  pool=   649 front= 10  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.300  pool=   542 front= 10  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=4 support=0.500  pool=   365 front=  6  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->3e
+  bound=4 support=0.600  pool=   239 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=4 support=0.700  pool=   199 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->2e  weighted->4e
+  bound=5 support=0.033  pool=  4991 front= 14  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->5e
+  bound=5 support=0.100  pool=  4551 front= 14  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->5e
+  bound=5 support=0.200  pool=  3549 front= 12  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->5e
+  bound=5 support=0.300  pool=  2420 front= 12  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->5e
+  bound=5 support=0.500  pool=  1230 front=  8  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->3e
+  bound=5 support=0.600  pool=   525 front=  5  front edges=1|2|3|4|5    ideal->4e  maxmin->3e  weighted->4e
+  bound=5 support=0.700  pool=   351 front=  5  front edges=1|2|3|4|5    ideal->4e  maxmin->3e  weighted->4e
+
+[ok] results\pareto_size_Cuneiform_s45.csv  (42 rows)

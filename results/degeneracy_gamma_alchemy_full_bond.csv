@@ -1,0 +1,15 @@
+dataset,graph_limit,max_size,min_support,gamma,peak_edges,peak_nodes,peak_shape,peak_fitness
+alchemy_full_bond,200,4,2,0.1,3,4,interior,0.052644
+alchemy_full_bond,200,4,2,0.2,2,3,interior,-0.009918
+alchemy_full_bond,200,4,2,0.3,1,2,at-the-floor,-0.043950
+alchemy_full_bond,200,4,2,0.4,1,2,at-the-floor,-0.073950
+alchemy_full_bond,200,4,2,0.5,1,2,at-the-floor,-0.103950
+alchemy_full_bond,200,4,2,0.8,1,2,at-the-floor,-0.193950
+alchemy_full_bond,200,4,2,1.0,1,2,at-the-floor,-0.253950
+alchemy_full_bond,200,5,2,0.1,4,5,interior,0.059346
+alchemy_full_bond,200,5,2,0.2,2,3,interior,-0.009918
+alchemy_full_bond,200,5,2,0.3,1,2,at-the-floor,-0.043950
+alchemy_full_bond,200,5,2,0.4,1,2,at-the-floor,-0.073950
+alchemy_full_bond,200,5,2,0.5,1,2,at-the-floor,-0.103950
+alchemy_full_bond,200,5,2,0.8,1,2,at-the-floor,-0.193950
+alchemy_full_bond,200,5,2,1.0,1,2,at-the-floor,-0.253950

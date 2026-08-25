@@ -1,0 +1,6 @@
+  QM9_bond bound=4 support=2 ...
+    gSpan    242 patterns in      0.3s | enumerator    242 in     59.4s = 234.12x | sets agree 1, supports disagreeing 0 | optimum 3 edges
+  QM9_bond bound=5 support=2 ...
+    gSpan    613 patterns in      0.6s | enumerator    613 in    382.1s = 643.79x | sets agree 1, supports disagreeing 0 | optimum 5 edges
+
+[ok] results\gspan_baseline_QM9_bond.csv  (2 rows)

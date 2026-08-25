@@ -1,0 +1,6 @@
+  COX2_bond bound=4 support=2 ...
+    gSpan    134 patterns in      2.5s | enumerator    134 in     63.8s = 25.90x | sets agree 1, supports disagreeing 0 | optimum 3 edges
+  COX2_bond bound=5 support=2 ...
+    gSpan    360 patterns in      5.8s | enumerator    360 in    378.9s = 65.79x | sets agree 1, supports disagreeing 0 | optimum 4 edges
+
+[ok] results\gspan_baseline_COX2_bond.csv  (2 rows)

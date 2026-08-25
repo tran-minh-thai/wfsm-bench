@@ -1,0 +1,44 @@
+BZR_bond n=200  R=7  W_max=5.00
+
+size 4  supp 2 (1%)  pool 129
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0941    0.0941   0.1241                       
+   2   3    0.1698    0.1698   0.2198  +0.0957   1  0.0200  yes
+   3   4    0.2629    0.2629   0.3329  +0.1130   1  0.0200  yes
+   4   4    0.0853    0.0853   0.1653  -0.1675   0  0.0100  no
+  -> peak from the model k=3, measured k=3   AGREE; step directions 3/3; largest |model - measured| = 5.55e-17
+
+size 5  supp 2 (1%)  pool 359
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0941    0.0941   0.1241                       
+   2   3    0.1698    0.1698   0.2198  +0.0957   1  0.0200  yes
+   3   4    0.2629    0.2629   0.3329  +0.1130   1  0.0200  yes
+   4   5    0.3560    0.3560   0.4460  +0.1131   1  0.0200  yes
+   5   5    0.1676    0.1676   0.2676  -0.1783   0  0.0100  no
+  -> peak from the model k=4, measured k=4   AGREE; step directions 4/4; largest |model - measured| = 5.55e-17
+
+turn-over condition agrees with the measured peak in 2/2 configurations
+
+=== calibrating rho on BZR_bond (n=200) ===
+Usable only if the optimum is interior at EVERY bound and lands on the same
+pattern each time: a peak that moves with the bound belongs to where the search
+was cut off, not to the objective.
+  size 4: 129 patterns matched once [79s]
+  size 5: 359 patterns matched once [429s]
+  rho  size 4             size 5             
+     1  k=3 interior      k=4 interior      
+   0.9  k=3 interior      k=4 interior      
+   0.8  k=3 interior      k=4 interior      
+   0.7  k=3 interior      k=4 interior      
+   0.6  k=3 interior      k=4 interior      
+   0.5  k=3 interior      k=4 interior      
+   0.4  k=3 interior      k=4 interior      
+   0.3  k=3 interior      k=4 interior      
+  0.25  k=3 interior      k=4 interior      
+   0.2  k=3 interior      k=4 interior      
+  0.15  k=2 interior      k=2 interior        <- STABLE
+   0.1  k=2 interior      k=2 interior        <- STABLE
+  0.05  k=2 interior      k=2 interior        <- STABLE
+[done] results\degeneracy_frontier_BZR_bond.csv
+[done] results\degeneracy_gamma_BZR_bond.csv
+[done] results\degeneracy_rho_BZR_bond.csv

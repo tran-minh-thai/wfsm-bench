@@ -1,0 +1,3 @@
+dataset,graph_limit,size_bound,min_support,gspan_patterns,gspan_seconds,exhaustive_patterns,exhaustive_seconds,speedup,sets_agree,supports_disagreeing,gspan_optimum_edges,gspan_optimum_fitness
+BZR_bond,200,4,2,129,2.254,129,62.067,27.54,1,0,3,0.262857
+BZR_bond,200,5,2,359,5.141,359,380.538,74.02,1,0,4,0.355969

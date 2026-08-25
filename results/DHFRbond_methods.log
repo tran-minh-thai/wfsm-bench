@@ -1,0 +1,17 @@
+
+=== DHFR_bond  n=200  seeds=20  workers=8 ===
+  thresholds: 1%->2
+  size 5  supp   2 (1%) [sum]: enumerated 359 patterns [414s]
+      [     sum] optimum 0.2980 at 4e (INTERIOR), threshold slack, rho=+0.30, 74 local optima (bound 3, templates 15), 1.00 levels
+          best F by edge count: 1:0.0693|2:0.1465|3:0.2216|4:0.2980|5:0.0737
+  560 search runs to do
+  finished in 2904s
+
+  size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    33.21%/00/00    45.03%/00/00    34.44%/00/00     8.49%/01/01    43.78%/00/00    50.45%/00/00    61.57%/00/00
+      120    14.16%/00/00    31.29%/00/00    20.32%/00/00     1.87%/09/09    25.36%/02/02    29.19%/00/00    46.88%/00/00
+      180     8.17%/00/00    21.05%/00/00     7.55%/00/00     0.69%/15/15    17.43%/03/03    23.70%/00/00    43.52%/00/00
+      240     5.55%/00/00    11.35%/00/00     6.29%/00/00    -0.00%/20/20     7.67%/06/06    21.10%/00/00    37.10%/00/00
+
+[done] results\weight_mode_landscape_DHFRbond.csv
+[done] results\weight_mode_methods_DHFRbond.csv

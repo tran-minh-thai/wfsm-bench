@@ -1,0 +1,4 @@
+DHFR_bond n=200
+  size 5 supp 2 [sum] strict  : pool 359, 74 attractors, optimum basin 0.3%, largest 22.8% (is NOT the optimum)
+  size 5 supp 2 [sum] plateau : pool 359, 74 attractors, optimum basin 0.3%, largest 22.8% (is NOT the optimum)
+[done] results\basins_DHFRbond.csv

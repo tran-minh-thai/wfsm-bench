@@ -1,0 +1,146 @@
+Cuneiform n=60  R=7  W_max=5.00
+
+size 4  supp 2 (3%)  pool 712
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+  -> peak from the model k=4, measured k=4   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 4  supp 6 (10%)  pool 712
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+  -> peak from the model k=4, measured k=4   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 4  supp 12 (20%)  pool 649
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+  -> peak from the model k=4, measured k=4   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 4  supp 18 (30%)  pool 542
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+  -> peak from the model k=4, measured k=4   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 4  supp 30 (50%)  pool 365
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.0990    0.0990   0.1790  +0.0143   1  0.0200  no
+  -> peak from the model k=3, measured k=3   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 4  supp 36 (60%)  pool 239
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0401    0.0401   0.0901  +0.0181   1  0.0200  no
+   3   4    0.0382    0.0382   0.1082  +0.0181   1  0.0200  no
+   4   4    0.0463    0.0463   0.1263  +0.0181   0  0.0100  yes
+  -> peak from the model k=4, measured k=4   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 4  supp 42 (70%)  pool 199
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0401    0.0401   0.0901  +0.0181   1  0.0200  no
+   3   4    0.0382    0.0382   0.1082  +0.0181   1  0.0200  no
+   4   4    0.0463    0.0463   0.1263  +0.0181   0  0.0100  yes
+  -> peak from the model k=4, measured k=4   AGREE; step directions 3/3; largest |model - measured| = 1.39e-17
+
+size 5  supp 2 (3%)  pool 4991
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+   5   4    0.1540    0.1540   0.2440  +0.0427   0  0.0100  yes
+  -> peak from the model k=5, measured k=5   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+size 5  supp 6 (10%)  pool 4551
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+   5   4    0.1540    0.1540   0.2440  +0.0427   0  0.0100  yes
+  -> peak from the model k=5, measured k=5   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+size 5  supp 12 (20%)  pool 3549
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+   5   4    0.1540    0.1540   0.2440  +0.0427   0  0.0100  yes
+  -> peak from the model k=5, measured k=5   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+size 5  supp 18 (30%)  pool 2420
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.1213    0.1213   0.2013  +0.0367   1  0.0200  yes
+   5   4    0.1540    0.1540   0.2440  +0.0427   0  0.0100  yes
+  -> peak from the model k=5, measured k=5   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+size 5  supp 30 (50%)  pool 1230
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0737    0.0737   0.1237  +0.0517   1  0.0200  yes
+   3   3    0.1047    0.1047   0.1647  +0.0410   0  0.0100  yes
+   4   4    0.0990    0.0990   0.1790  +0.0143   1  0.0200  no
+   5   5    0.0932    0.0932   0.1932  +0.0143   1  0.0200  no
+  -> peak from the model k=3, measured k=3   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+size 5  supp 36 (60%)  pool 525
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0401    0.0401   0.0901  +0.0181   1  0.0200  no
+   3   4    0.0382    0.0382   0.1082  +0.0181   1  0.0200  no
+   4   4    0.0463    0.0463   0.1263  +0.0181   0  0.0100  yes
+   5   5    0.0444    0.0444   0.1444  +0.0181   1  0.0200  no
+  -> peak from the model k=4, measured k=4   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+size 5  supp 42 (70%)  pool 351
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.0420    0.0420   0.0720                       
+   2   3    0.0401    0.0401   0.0901  +0.0181   1  0.0200  no
+   3   4    0.0382    0.0382   0.1082  +0.0181   1  0.0200  no
+   4   4    0.0463    0.0463   0.1263  +0.0181   0  0.0100  yes
+   5   5    0.0444    0.0444   0.1444  +0.0181   1  0.0200  no
+  -> peak from the model k=4, measured k=4   AGREE; step directions 4/4; largest |model - measured| = 1.39e-17
+
+turn-over condition agrees with the measured peak in 14/14 configurations
+
+=== calibrating rho on Cuneiform (n=60) ===
+Usable only if the optimum is interior at EVERY bound and lands on the same
+pattern each time: a peak that moves with the bound belongs to where the search
+was cut off, not to the objective.
+  size 4: 712 patterns matched once [42s]
+  size 5: 4991 patterns matched once [673s]
+  rho  size 4             size 5             
+     1  k=4 at-the-bound  k=5 at-the-bound  
+   0.9  k=4 at-the-bound  k=5 at-the-bound  
+   0.8  k=4 at-the-bound  k=5 at-the-bound  
+   0.7  k=4 at-the-bound  k=5 at-the-bound  
+   0.6  k=3 interior      k=5 at-the-bound  
+   0.5  k=3 interior      k=3 interior        <- STABLE
+   0.4  k=3 interior      k=3 interior        <- STABLE
+   0.3  k=3 interior      k=3 interior        <- STABLE
+  0.25  k=3 interior      k=3 interior        <- STABLE
+   0.2  k=3 interior      k=3 interior        <- STABLE
+  0.15  k=3 interior      k=3 interior        <- STABLE
+   0.1  k=1 at-the-floor  k=1 at-the-floor  
+  0.05  k=1 at-the-floor  k=1 at-the-floor  
+[done] results\degeneracy_frontier_cuneiform.csv
+[done] results\degeneracy_gamma_cuneiform.csv
+[done] results\degeneracy_rho_cuneiform.csv

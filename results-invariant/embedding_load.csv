@@ -1,0 +1,5 @@
+dataset,graphs,size_bound,min_support,pool,edges_mean,embeddings_mean,embeddings_max,embeddings_total,peak_over_mean
+Cuneiform,60,3,2,127,44.817,134.1,428,17031,3.19
+Cuneiform,60,4,2,712,44.817,182.14,822,129685,4.51
+BZR_bond,60,4,2,62,35.4,190.82,1234,11831,6.47
+BZR_MD,30,3,2,256,213.367,665.41,38704,170345,58.17

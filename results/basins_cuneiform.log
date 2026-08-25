@@ -1,0 +1,6 @@
+Cuneiform n=60, rho = 0.5
+  size 5 supp 2 [sum] strict  : pool 4991, 560 attractors, optimum basin 14.3%, largest 14.3% (is the optimum)
+  size 5 supp 2 [sum] plateau : pool 4991, 556 attractors, optimum basin 14.3%, largest 14.3% (is the optimum)
+  size 5 supp 2 [discounted] strict  : pool 4991, 104 attractors, optimum basin 28.9%, largest 30.4% (is NOT the optimum)
+  size 5 supp 2 [discounted] plateau : pool 4991, 104 attractors, optimum basin 28.9%, largest 30.4% (is NOT the optimum)
+[done] results\basins_cuneiform.csv

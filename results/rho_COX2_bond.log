@@ -1,0 +1,43 @@
+COX2_bond n=200  R=7  W_max=5.00
+
+size 4  supp 2 (1%)  pool 134
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.1583    0.1583   0.1883                       
+   2   3    0.2839    0.2839   0.3339  +0.1457   1  0.0200  yes
+   3   4    0.3675    0.3675   0.4375  +0.1035   1  0.0200  yes
+  -> peak from the model k=3, measured k=3   AGREE; step directions 2/2; largest |model - measured| = 0.00e+00
+
+size 5  supp 2 (1%)  pool 360
+   k |V|         F   F model        G       dG  dv    cost  grows
+   1   2    0.1583    0.1583   0.1883                       
+   2   3    0.2839    0.2839   0.3339  +0.1457   1  0.0200  yes
+   3   4    0.3675    0.3675   0.4375  +0.1035   1  0.0200  yes
+   4   5    0.4593    0.4593   0.5493  +0.1118   1  0.0200  yes
+   5   5    0.3275    0.3275   0.4275  -0.1218   0  0.0100  no
+  -> peak from the model k=4, measured k=4   AGREE; step directions 4/4; largest |model - measured| = 1.11e-16
+
+turn-over condition agrees with the measured peak in 2/2 configurations
+
+=== calibrating rho on COX2_bond (n=200) ===
+Usable only if the optimum is interior at EVERY bound and lands on the same
+pattern each time: a peak that moves with the bound belongs to where the search
+was cut off, not to the objective.
+  size 4: 134 patterns matched once [80s]
+  size 5: 360 patterns matched once [433s]
+  rho  size 4             size 5             
+     1  k=3 interior      k=4 interior      
+   0.9  k=3 interior      k=4 interior      
+   0.8  k=3 interior      k=4 interior      
+   0.7  k=3 interior      k=4 interior      
+   0.6  k=3 interior      k=4 interior      
+   0.5  k=3 interior      k=4 interior      
+   0.4  k=3 interior      k=4 interior      
+   0.3  k=3 interior      k=3 interior        <- STABLE
+  0.25  k=3 interior      k=3 interior        <- STABLE
+   0.2  k=3 interior      k=3 interior        <- STABLE
+  0.15  k=2 interior      k=2 interior        <- STABLE
+   0.1  k=2 interior      k=2 interior        <- STABLE
+  0.05  k=2 interior      k=2 interior        <- STABLE
+[done] results\degeneracy_frontier_COX2_bond.csv
+[done] results\degeneracy_gamma_COX2_bond.csv
+[done] results\degeneracy_rho_COX2_bond.csv

@@ -1,0 +1,9 @@
+[project]
+name = "wfsmbench"
+version = "0.0.1"
+description = "Pivot-guided particle swarm optimization for weighted frequent subgraph mining."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

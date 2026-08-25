@@ -1,0 +1,5 @@
+dataset,graph_limit,max_size,min_support,weight_mode,fitness_quantum,pool_size,optimum_multiplicity,policy,attractors,basin_optimum_pct,largest_basin_pct,optimum_is_largest,mean_path,max_path,unreached_from_pct
+QM9_bond,200,5,2,sum,0,613,1,strict,182,0.163,25.285,0,1.781,7,70.310
+QM9_bond,200,5,2,sum,0,613,1,plateau,182,0.163,25.285,0,1.781,7,70.310
+QM9_bond,200,5,2,discounted,0,613,1,strict,73,5.873,41.762,0,2.189,6,88.091
+QM9_bond,200,5,2,discounted,0,613,1,plateau,73,5.873,41.762,0,2.189,6,88.091

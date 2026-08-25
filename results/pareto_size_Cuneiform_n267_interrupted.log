@@ -1,0 +1,39 @@
+[mine] one enumeration covers every cell: bound=6 min_support=9 over 267 graphs
+Traceback (most recent call last):
+  File "D:\VoTanDung\wfsm-bench\scripts\run_pareto_size.py", line 221, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "D:\VoTanDung\wfsm-bench\scripts\run_pareto_size.py", line 174, in main
+    loose_pool = mine_exhaustive(subset, stats, loose_params).pool
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VoTanDung\wfsm-bench\src\wfsmbench\baselines\exhaustive.py", line 53, in mine_exhaustive
+    consider(child)
+  File "D:\VoTanDung\wfsm-bench\src\wfsmbench\baselines\exhaustive.py", line 40, in consider
+    candidate = evaluate(particle, hosts, stats, params)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VoTanDung\wfsm-bench\src\wfsmbench\pso\optimizer.py", line 322, in evaluate
+    embeddings = match_database(particle.pattern, hosts)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VoTanDung\wfsm-bench\src\wfsmbench\match\matcher.py", line 69, in match_database
+    embeddings = embedding_weights(pattern, host)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VoTanDung\wfsm-bench\src\wfsmbench\match\matcher.py", line 44, in embedding_weights
+    for mapping in matcher.subgraph_monomorphisms_iter():   # {host_node: pattern_node}
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VoTanDung\wfsm-bench\.venv\Lib\site-packages\networkx\algorithms\isomorphism\isomorphvf2.py", line 496, in subgraph_monomorphisms_iter
+    yield from self.match()
+  File "D:\VoTanDung\wfsm-bench\.venv\Lib\site-packages\networkx\algorithms\isomorphism\isomorphvf2.py", line 342, in match
+    yield from self.match()
+  File "D:\VoTanDung\wfsm-bench\.venv\Lib\site-packages\networkx\algorithms\isomorphism\isomorphvf2.py", line 342, in match
+    yield from self.match()
+  File "D:\VoTanDung\wfsm-bench\.venv\Lib\site-packages\networkx\algorithms\isomorphism\isomorphvf2.py", line 342, in match
+    yield from self.match()
+  [Previous line repeated 2 more times]
+  File "D:\VoTanDung\wfsm-bench\.venv\Lib\site-packages\networkx\algorithms\isomorphism\isomorphvf2.py", line 339, in match
+    if self.semantic_feasibility(G1_node, G2_node):
+       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\VoTanDung\wfsm-bench\.venv\Lib\site-packages\networkx\algorithms\isomorphism\vf2userfunc.py", line 64, in _semantic_feasibility
+    if G2_nbr in G2nbrs and not edge_match(
+       ^^^^^^^^^^^^^^^^
+KeyboardInterrupt
+^C

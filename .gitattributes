@@ -1,0 +1,8 @@
+# Experiment artefacts are evidence, so store the bytes the machine wrote --
+# line endings included. Normalising them would erase the only marker that says
+# which machine produced a file, and that marker is what revealed a development
+# box had overwritten an experiment-machine sweep while leaving its name behind.
+# Matched by property -- every results directory, present and future -- because the first
+# version named just one and a new results-invariant/ added later slipped straight past it,
+# and its bytes were normalised on the very commit that created it.
+results*/** -text

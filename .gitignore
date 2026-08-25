@@ -1,0 +1,56 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Generated data (reproducible via scripts/prepare_datasets.py)
+data/raw/
+data/BZR_MD.json
+data/Cuneiform.json
+data/*_bond.json
+data/pdb_contact.json
+
+# Experiment outputs. The summary artefacts are tracked: every number the
+# contributions log cites lives in one of them, and a claim whose evidence is
+# not in the repository cannot be checked by anyone who clones it.
+#
+# CORRECTED 2026-08-24. This rule used to exclude every per-seed run, on the
+# stated grounds that they are "twenty times the size of everything else
+# combined". Measured, the seven excluded files come to 384K against a 10M
+# repository -- about four percent, not twenty times. The reason was wrong, and
+# by the time it was checked the rule was blocking exactly what the paragraph
+# above demands: a table in the manuscript was generated from those files and
+# could not be reproduced from a clone. Restricting to the tracked half gave 11
+# cells instead of 61 and a different worst case. They are tracked now.
+# Pre-audit outputs. Every number in these came from code with two defects since
+# fixed -- the fitness anchored on the search bound, and the reported best ignoring
+# the support threshold -- so they were deleted. They are ignored rather than merely
+# deleted because a machine that still holds untracked copies re-adds all twelve the
+# moment someone runs `git add results`, which is exactly how they came back once.
+results/budget_regimes_*.csv
+# results/pareto_*.csv used to exclude per-seed output from run_pareto.py, which was
+# deleted with the rest of the retired runner generation. The glob outlived it and
+# silently swallowed pareto_size_*.csv -- a 63-row summary from a 6.2 hour run --
+# so the artefact never reached the repository and nothing said so. Excluding by
+# name goes stale at exactly the moment something new is added.
+results/pareto_comparison_*.csv
+results/diversity_*.csv
+results/timing_*.csv
+results/size_BZR_MD.csv
+results/size_Cuneiform.csv
+# Unsuffixed degeneracy names: no run can write these any more (--suffix is required),
+# so anything appearing under them is a stale copy from before that change.
+results/degeneracy_frontier.csv
+results/degeneracy_gamma.csv
+results/figures/
+results/logs/
+
+# The manuscript, its sources and the papers read for it now live in ../paper/, a sibling
+# of this checkout rather than a filtered subdirectory of it. Nothing here needs excluding
+# from a push any more, which is the point: the cheapest gate is the one that does not
+# have to exist.
+

@@ -1,0 +1,2 @@
+dataset,graph_limit,max_size,support_fraction,min_support,weight_mode,pool_size,frequent_templates,pool_at_bound,max_edges_in_pool,optimum_fitness,optimum_multiplicity,optimum_nodes,optimum_edges,optimum_support,size_bound,optimum_is_interior,spearman_f_edges,local_optima,fitness_levels,local_optima_true,fitness_levels_true,fitness_quantum,best_f_by_edges
+QM9_bond,200,5,0.01,2,sum,613,17,46,5,0.256359,1,5,5,3,5,0,0.5805,185,0.4747,182,0.9967,0.0005,1:0.1330|2:0.2115|3:0.2310|4:0.2500|5:0.2565

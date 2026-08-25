@@ -1,0 +1,2 @@
+dataset,graph_limit,size_bound,min_support,exhaustive_patterns,gspan_patterns,sets_agree,supports_disagreeing_over_shared,missing_from_gspan,extra_in_gspan
+Cuneiform,60,4,12,649,649,1,0/649,0,0

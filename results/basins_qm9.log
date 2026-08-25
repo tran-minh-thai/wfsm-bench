@@ -1,0 +1,6 @@
+QM9_bond n=200, rho = 0.6
+  size 5 supp 2 [sum] strict  : pool 613, 182 attractors, optimum basin 0.2%, largest 25.3% (is NOT the optimum)
+  size 5 supp 2 [sum] plateau : pool 613, 182 attractors, optimum basin 0.2%, largest 25.3% (is NOT the optimum)
+  size 5 supp 2 [discounted] strict  : pool 613, 73 attractors, optimum basin 5.9%, largest 41.8% (is NOT the optimum)
+  size 5 supp 2 [discounted] plateau : pool 613, 73 attractors, optimum basin 5.9%, largest 41.8% (is NOT the optimum)
+[done] results\basins_qm9.csv

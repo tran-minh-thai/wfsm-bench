@@ -1,0 +1,2 @@
+dataset,graph_limit,max_size,support_fraction,min_support,weight_mode,pool_size,frequent_templates,pool_at_bound,max_edges_in_pool,optimum_fitness,optimum_multiplicity,optimum_nodes,optimum_edges,optimum_support,size_bound,optimum_is_interior,spearman_f_edges,local_optima,fitness_levels,best_f_by_edges
+Cuneiform,60,6,0.5,30,sum,4318,22,1385,6,0.104673,1,3,3,30,6,1,0.2861,155,0.0204,1:0.0420|2:0.0737|3:0.1047|4:0.0990|5:0.0932|6:0.0975
