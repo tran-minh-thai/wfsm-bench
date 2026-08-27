@@ -26,7 +26,7 @@ DRAFT = ROOT.parent / "paper" / "ban_thao.md"
 # listed here rather than required of the draft -- and listing them is what makes adding a
 # third unreferenced figure a visible decision instead of an accident.
 CITED_BY_THE_DRAFT = {"front_position_vs_bound.png", "regret_vs_race_size.png",
-                      "quantum_sweep.png"}
+                      "quantum_sweep.png", "basin_vs_aco.png"}
 
 
 def _declared() -> list[str]:
