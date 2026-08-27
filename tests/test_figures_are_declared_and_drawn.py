@@ -20,7 +20,11 @@ from conftest import needs_manuscript
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "make_figures.py"
 FIGS = ROOT / "results" / "figures"
-DRAFT = ROOT.parent / "paper" / "ban_thao.md"
+DRAFT = ROOT.parent / "paper" / "ban_thao.tex"
+# The manuscript pulls each figure in by its own name and states the source artefact through a
+# generated command, so the PNG filenames live in the generated file rather than in the prose.
+# Checking only the prose would look clean while naming nothing.
+SO_LIEU = ROOT.parent / "paper" / "bang" / "so_lieu.tex"
 
 # Figures the draft must cite. The other builders serve sections not yet written, so they are
 # listed here rather than required of the draft -- and listing them is what makes adding a
@@ -61,9 +65,14 @@ def test_no_image_in_the_figures_directory_is_orphaned() -> None:
         f"  delete them, or add the builder back -- a stale picture is read as a fresh one")
 
 
-@pytest.mark.skipif(not DRAFT.exists(), reason="the draft is outside this repository")
+@pytest.mark.skipif(not (DRAFT.exists() and SO_LIEU.exists()),
+                    reason="the draft is outside this repository")
 def test_the_draft_refers_to_each_figure_it_should() -> None:
-    text = DRAFT.read_text(encoding="utf-8")
+    # LaTeX escapes the underscore in a filename, so compare with the escapes removed rather
+    # than with the raw text: matching the raw text reported all four figures as unnamed while
+    # every one of them was in the file.
+    text = (DRAFT.read_text(encoding="utf-8")
+            + SO_LIEU.read_text(encoding="utf-8")).replace("\\_", "_")
     unreferenced = sorted(name for name in CITED_BY_THE_DRAFT if name not in text)
     assert not unreferenced, (
         f"the draft never names {unreferenced}; a figure no sentence points at gives the "
