@@ -103,6 +103,9 @@ def test_distinct_patterns_get_distinct_codes() -> None:
     params = Params(min_support=30, max_nodes=4, max_edges=4,
                     size_reference=STUDY_SIZE_REFERENCE)
     pool = mine_exhaustive(subset, build_statistics(subset), params).pool
+    # An empty pool makes 0 == 0 == 0 below, which is a pass over nothing.
+    assert len(pool) >= 20, (
+        f"only {len(pool)} pattern(s) mined; the collision check needs a pool to collide in")
     codes = {min_dfs_code(c.particle.pattern) for c in pool}
     signatures = {canonical_signature(c.particle.pattern) for c in pool}
     assert len(codes) == len(signatures) == len(pool), (

@@ -51,9 +51,13 @@ def test_every_method_the_code_compares_is_declared_as_a_baseline() -> None:
 
 
 def test_every_baseline_declares_a_role() -> None:
-    empty = [e["key"] for e in labels()["moi-truong"]["baselines"]
-             if not e.get("role")]
-    assert not empty, f"baselines with no stated role: {empty}"
+    baselines = labels()["moi-truong"]["baselines"]
+    # Without this, an empty list of baselines reports every baseline as declared.
+    assert len(baselines) >= 5, (
+        f"only {len(baselines)} baseline(s) declared; the comparison table names more, so "
+        f"this check is reading the wrong key")
+    empty = [e["key"] for e in baselines if not e.get("role")]
+    assert not empty, f"{len(empty)} of {len(baselines)} baselines state no role: {empty}"
 
 
 @pytest.mark.skipif(not PROFILE.exists(), reason="run scripts/measure_datasets.py first")

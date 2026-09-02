@@ -48,7 +48,12 @@ def test_the_builder_declares_the_figures_the_draft_cites() -> None:
 
 @needs_manuscript("figure_labels.vi.json")
 def test_every_declared_figure_is_on_disk_and_not_empty() -> None:
-    absent = [name for name in _declared()
+    # A builder that declares nothing would report every declared figure as present.
+    declared = _declared()
+    assert len(declared) >= 4, (
+        f"the builder declares {len(declared)} figure(s); the manuscript carries four, so "
+        f"this check would pass over almost nothing")
+    absent = [name for name in declared
               if not (FIGS / name).exists() or (FIGS / name).stat().st_size < 5000]
     assert not absent, (
         f"{len(absent)} declared figure(s) missing or truncated: {sorted(absent)}\n"
@@ -57,9 +62,20 @@ def test_every_declared_figure_is_on_disk_and_not_empty() -> None:
 
 @needs_manuscript("figure_labels.vi.json")
 def test_no_image_in_the_figures_directory_is_orphaned() -> None:
-    """A picture nothing builds any more predates the current results and will still be read."""
+    r"""A picture nothing builds any more predates the current results and will still be read.
+
+    SUA 2026-08-27: glob every file, not *.png. Restricting by extension makes the check blind
+    to exactly the file someone adds next -- a leftover .pdf or .svg sits in the directory,
+    gets picked up by \includegraphics, which resolves by extension order rather than by which
+    file is current, and is read as a fresh figure. The check also asserts the directory is not
+    empty, since an empty directory has no orphans and reports a pass.
+    """
     declared = set(_declared())
-    orphans = sorted(p.name for p in FIGS.glob("*.png") if p.name not in declared)
+    tep = sorted(p for p in FIGS.iterdir() if p.is_file() and not p.name.startswith("."))
+    assert len(tep) >= 4, (
+        f"only {len(tep)} file(s) in {FIGS}; with none there this check finds no orphans and "
+        f"says so as if it had looked")
+    orphans = sorted(p.name for p in tep if p.name not in declared)
     assert not orphans, (
         f"{len(orphans)} image(s) no builder produces: {orphans}\n"
         f"  delete them, or add the builder back -- a stale picture is read as a fresh one")
