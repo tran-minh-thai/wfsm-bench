@@ -1,0 +1,250 @@
+{
+  "_comment": "Verdicts on flags raised by scripts/audit_check_scope.py. The audit is a heuristic and says so; without this file its next run reports the same flags and the work is done again. The audit refuses when an entry here names a check that no longer exists, so this file cannot rot into a list of names nobody can act on.",
+  "examined": [
+    {
+      "file": "test_artefact_provenance_is_resolvable.py",
+      "check": "test_the_audit_reaches_a_useful_number_of_files",
+      "verdict": "false-positive",
+      "why": "This IS the denominator guard for the checks above it.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_artefacts_are_not_silently_ignored.py",
+      "check": "test_the_check_can_actually_fail",
+      "verdict": "false-positive",
+      "why": "This IS the canary: it asserts something is still ignored, so the check beside it can distinguish a working ignore file from an empty one.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_core.py",
+      "check": "test_signature_distinguishes_structure_and_labels",
+      "verdict": "false-positive",
+      "why": "Asserts inequalities; a signature function returning a constant fails here.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_core.py",
+      "check": "test_signature_is_isomorphism_invariant",
+      "verdict": "false-positive",
+      "why": "One-sided alone, but paired with the inequality check below it and with test_signature_matches_ground_truth, which compares against data/sample/ground_truth.json. That file states in its own _comment that it is hand-computed, so the trio is not circular.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_data_model_is_what_the_paper_says.py",
+      "check": "test_no_collection_carries_a_parallel_edge",
+      "verdict": "fixed",
+      "why": "2026-08-27: read graphs[:200] of collections holding 306 to 5000 -- twelve per cent of the data behind a claim about all of it. Injection: a parallel edge at graph 300.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_data_model_is_what_the_paper_says.py",
+      "check": "test_the_representation_cannot_hold_a_parallel_edge",
+      "verdict": "false-positive",
+      "why": "A unit test on a two-edge fixture; the module-level glob is what the heuristic saw.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_data_model_is_what_the_paper_says.py",
+      "check": "test_the_scan_here_agrees_with_the_artefact_the_paper_quotes",
+      "verdict": "false-positive",
+      "why": "Added 2026-08-27 to tie this scan to the artefact the paper quotes. It asserts the profile is non-empty before comparing three totals; the module-level glob is what the heuristic saw.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_diversity.py",
+      "check": "test_diverse_archive_raises_top_k_diversity",
+      "verdict": "fixed",
+      "why": "2026-08-27: asserted >=, which equality satisfies, on a collection where the term provably cannot act -- both sides scored 0.666667 there. Now strict, on a collection where it can.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_figures_are_declared_and_drawn.py",
+      "check": "test_every_declared_figure_is_on_disk_and_not_empty",
+      "verdict": "fixed",
+      "why": "2026-08-27: passed over an empty builder.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_figures_are_declared_and_drawn.py",
+      "check": "test_no_image_in_the_figures_directory_is_orphaned",
+      "verdict": "fixed",
+      "why": "2026-08-27: globbed *.png only, so a leftover .pdf or .svg was invisible, and passed over an empty directory. Injection: a stray .svg, caught.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_figures_are_declared_and_drawn.py",
+      "check": "test_the_builder_declares_the_figures_the_draft_cites",
+      "verdict": "false-positive",
+      "why": "The cited set is a non-empty literal, so the difference cannot be empty for want of input.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_figures_are_declared_and_drawn.py",
+      "check": "test_the_draft_refers_to_each_figure_it_should",
+      "verdict": "false-positive",
+      "why": "As above.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_generated_tables_declare_everything.py",
+      "check": "test_every_baseline_declares_a_role",
+      "verdict": "fixed",
+      "why": "2026-08-27: an empty baseline list reported every baseline as declared.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_gspan_agrees_with_exhaustive.py",
+      "check": "test_distinct_patterns_get_distinct_codes",
+      "verdict": "fixed",
+      "why": "2026-08-27: 0 == 0 == 0 on an empty pool. Denominator asserted.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_measure.py",
+      "check": "test_discounted_at_rho_one_is_the_plain_sum",
+      "verdict": "false-positive",
+      "why": "A differential test: two distinct code paths must agree at rho = 1.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_molecular.py",
+      "check": "test_both_raw_directions_make_one_edge",
+      "verdict": "false-positive",
+      "why": "Indexes graphs[1]; an empty result raises rather than passing.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_molecular.py",
+      "check": "test_limit_selects_a_prefix_of_the_molecules",
+      "verdict": "fixed",
+      "why": "2026-08-27: compared only the count, which any selection rule satisfies. Now checks which molecule came back. That turned up a real property, pinned in the test beside it: the weight scale depends on the subset loaded.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_optimizer.py",
+      "check": "test_compose_cancels_and_caps",
+      "verdict": "false-positive",
+      "why": "Literal expected values written by hand.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_optimizer.py",
+      "check": "test_the_initial_swarm_depends_on_the_seed",
+      "verdict": "false-positive",
+      "why": "Asserts more than one distinct start across eight seeds; an empty result collapses to one element and fails.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_pareto.py",
+      "check": "test_hypervolume_ratio_rewards_spread_not_just_one_good_point",
+      "verdict": "false-positive",
+      "why": "Strict inequality between two different inputs; a constant function fails it.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_pareto.py",
+      "check": "test_pareto_front_keeps_only_non_dominated",
+      "verdict": "false-positive",
+      "why": "Hand-computed expected set; an empty front fails it.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_publish_results.py",
+      "check": "test_a_long_standing_exclusion_is_counted_not_shouted_about",
+      "verdict": "false-positive",
+      "why": "As above.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_publish_results.py",
+      "check": "test_it_actually_commits_and_pushes",
+      "verdict": "false-positive",
+      "why": "Runs against a real bare remote and asserts the push landed.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_publish_results.py",
+      "check": "test_names_the_files_git_is_ignoring",
+      "verdict": "false-positive",
+      "why": "As above.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_publish_results.py",
+      "check": "test_refuses_when_code_is_modified",
+      "verdict": "false-positive",
+      "why": "Builds a scratch repository, runs the real script, and matches its output contract. A tool that printed nothing would fail it.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_publish_results.py",
+      "check": "test_stages_only_results",
+      "verdict": "false-positive",
+      "why": "As above.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_rank_parsing_stays_inside_its_section.py",
+      "check": "test_the_first_mode_does_not_absorb_the_second",
+      "verdict": "false-positive",
+      "why": "Asserts a hand-derived ordering between the two sections; the defect it was written for violated exactly that ordering.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_search_invariants.py",
+      "check": "test_a_search_depends_on_its_seed",
+      "verdict": "false-positive",
+      "why": "Asserts more than one distinct route across twelve seeds.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_source_is_publishable.py",
+      "check": "test_no_paper_numbering",
+      "verdict": "fixed",
+      "why": "As above.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_source_is_publishable.py",
+      "check": "test_no_vietnamese",
+      "verdict": "fixed",
+      "why": "2026-08-27: scanned *.py under three named directories, 112 of 351 tracked files. Now identified by what git tracks, and it refuses rather than falling back to a narrower scan.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_source_is_publishable.py",
+      "check": "test_output_survives_a_windows_console",
+      "verdict": "fixed",
+      "why": "As above, and rescoped to what actually prints to a console: applying the encoding rule to Markdown would fail on one prose minus sign no console will ever see.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_structural.py",
+      "check": "test_context_counter_separates_the_two_shapes",
+      "verdict": "false-positive",
+      "why": "Asserts hand-counted cardinalities -- one for the star, three for the chain -- independent of the function under test.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_structural.py",
+      "check": "test_the_template_difference_is_blind_to_topology",
+      "verdict": "false-positive",
+      "why": "Compares two different functions, and asserts an inequality first.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_theory_predictions.py",
+      "check": "test_v3_proposition_4_predicts_the_measured_optimum",
+      "verdict": "false-positive",
+      "why": "Computes the argmax from the objective's definition and compares it with a measurement read from the artefact; the literals it matches are the model's parameters, not the answer. Discriminating: sum mode yields three distinct predictions and matches 14 of 14. Refutable: raising gamma from 0.1 to 2.0 makes it wrong on 14 of 14.",
+      "on": "2026-08-27"
+    },
+    {
+      "file": "test_theory_predictions.py",
+      "check": "test_v5c_the_loss_lives_entirely_in_the_sharp_cells",
+      "verdict": "false-positive",
+      "why": "Same shape as the check above: both sides come from artefacts, and the constants are the model's own parameters.",
+      "on": "2026-08-27"
+    }
+  ]
+}

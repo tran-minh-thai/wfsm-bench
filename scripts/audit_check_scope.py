@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import ast
 import csv
+import json
 import hashlib
 import subprocess
 import sys
@@ -190,6 +191,22 @@ def provenance() -> dict[str, str]:
     }
 
 
+VERDICTS = Path(__file__).resolve().parent / "check_scope_verdicts.json"
+
+
+def verdicts() -> dict[tuple[str, str], dict]:
+    """Flags already examined, so a second run does not ask for the same work twice.
+
+    The audit is a heuristic, and most of what it raises turns out to be sound on inspection.
+    Without a record of that inspection the next run prints the same list, and the cheapest
+    response to a list nobody can act on is to stop reading it.
+    """
+    if not VERDICTS.exists():
+        return {}
+    data = json.loads(VERDICTS.read_text(encoding="utf-8"))
+    return {(e["file"], e["check"]): e for e in data["examined"]}
+
+
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--signal", choices=sorted(SIGNALS))
@@ -216,8 +233,39 @@ def main(argv: list[str]) -> int:
                 flagged += 1
                 rows.append((path.name, name, found))
 
-    for filename, name, found in rows:
-        print(f"{filename}::{name}\n    {', '.join(found)}")
+    da_xet = verdicts()
+
+    # A verdict naming a check that no longer exists is a record nobody can act on, and it
+    # would quietly stop covering whatever replaced that check.
+    ton_tai = {(f, n) for f, n, _found in
+               [(path.name, name, None)
+                for path in sorted(TESTS.glob("test_*.py"))
+                for name, _node, _body in functions(path)]}
+    chet = sorted(k for k in da_xet if k not in ton_tai)
+    if chet:
+        for filename, name in chet:
+            print(f"[refused] verdict names a check that no longer exists: "
+                  f"{filename}::{name}", file=sys.stderr)
+        return 2
+
+    moi = [r for r in rows if (r[0], r[1]) not in da_xet]
+    cu = [r for r in rows if (r[0], r[1]) in da_xet]
+
+    if moi:
+        print("NOT YET EXAMINED -- this is the work list:")
+        for filename, name, found in moi:
+            print(f"{filename}::{name}\n    {', '.join(found)}")
+    else:
+        print("NOT YET EXAMINED: none -- every flag below already carries a verdict.")
+
+    if cu:
+        by_verdict: dict[str, int] = {}
+        for filename, name, _found in cu:
+            key = da_xet[(filename, name)]["verdict"]
+            by_verdict[key] = by_verdict.get(key, 0) + 1
+        print(f"\nalready examined ({len(cu)}): "
+              + ", ".join(f"{k} {v}" for k, v in sorted(by_verdict.items()))
+              + f" -- see {VERDICTS.name}")
     signals = sum(len(found) for _f, _n, found in rows)
     print(f"\n[scope] {checked} check(s) inspected, {flagged} check(s) flagged, "
           f"{signals} flag(s) in total -- a check may carry more than one")
@@ -229,7 +277,8 @@ def main(argv: list[str]) -> int:
         count = sum(1 for _f, _n, found in rows if signal in found)
         print(f"    {signal:<17} {count:>3}  -- {SIGNALS[signal]}")
     print("\nThis is a work list, not a verdict. Verify each by asking: could this check have "
-          "come out\nother than it did, if the thing it guards were broken?")
+          "come out\nother than it did, if the thing it guards were broken? Then record the "
+          f"answer in\n{VERDICTS.name}, so the next run asks only about what is new.")
 
     if args.signal or args.no_write:
         print("[note] nothing written: a list filtered to one signal would understate the "
