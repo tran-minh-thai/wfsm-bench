@@ -20,24 +20,65 @@ DATA = Path(__file__).resolve().parents[1] / "data"
 FILES = sorted(DATA.glob("*.json"))
 
 
-@pytest.mark.skipif(not FILES, reason="no collections on this machine")
-@pytest.mark.parametrize("path", FILES, ids=lambda p: p.stem)
-def test_no_collection_carries_a_parallel_edge(path: Path) -> None:
+PROFILE = (Path(__file__).resolve().parents[1] / "results-invariant" / "dataset_profile.csv")
+
+
+def _scan(path: Path) -> tuple[int, int, int]:
+    """(graphs, edges, parallel edges) over the WHOLE file."""
     payload = json.loads(path.read_text())
     graphs = payload["graphs"] if isinstance(payload, dict) else payload
     parallel = total = 0
-    for graph in graphs[:200]:
+    for graph in graphs:
         seen: collections.Counter = collections.Counter()
         for edge in graph["edges"]:
             u, v = edge["src"], edge["dst"]
             seen[(min(u, v), max(u, v))] += 1
         total += len(graph["edges"])
         parallel += sum(count - 1 for count in seen.values() if count > 1)
+    return len(graphs), total, parallel
+
+
+@pytest.mark.skipif(not FILES, reason="no collections on this machine")
+@pytest.mark.parametrize("path", FILES, ids=lambda p: p.stem)
+def test_no_collection_carries_a_parallel_edge(path: Path) -> None:
+    """SUA 2026-08-27: scan the whole file, not its first two hundred graphs.
+
+    The previous version stopped at graphs[:200] while the manuscript states the property of
+    the whole data. Every collection here is larger than that -- 306 to 5000 graphs -- so the
+    scan covered 1600 of 12674 graphs, twelve per cent, and claimed all of it. Removing the
+    cap costs 0.3 seconds for the entire suite of eight files, so the cap bought nothing.
+    """
+    graphs, total, parallel = _scan(path)
     assert total > 0, f"{path.name} has no edges to check; the test would be vacuous"
     assert parallel == 0, (
-        f"{path.name} carries {parallel} parallel edges out of {total}. The manuscript may "
-        f"now say multigraph -- but Graph.of would drop them, so check the loader too."
+        f"{path.name} carries {parallel} parallel edges out of {total} across {graphs} "
+        f"graphs. The manuscript may now say multigraph -- but Graph.of would drop them, so "
+        f"check the loader too."
     )
+
+
+@pytest.mark.skipif(not (FILES and PROFILE.exists()),
+                    reason="no collections or no profile on this machine")
+def test_the_scan_here_agrees_with_the_artefact_the_paper_quotes() -> None:
+    """Tie the check to the number in the manuscript, so the two cannot drift apart.
+
+    The paper quotes a total raw edge count and a parallel-edge count from
+    results-invariant/dataset_profile.csv. If this test and that artefact disagree, one of
+    them is measuring something else, and reading either alone would not say which.
+    """
+    import csv
+    rows = list(csv.DictReader(PROFILE.open(encoding="utf-8")))
+    assert rows, "the dataset profile is empty; this check would compare nothing"
+    hien_vat = (sum(int(r["graphs"]) for r in rows),
+                sum(int(r["edges_total_raw"]) for r in rows),
+                sum(int(r["parallel_edges"]) for r in rows))
+    quet = [0, 0, 0]
+    for path in FILES:
+        for i, v in enumerate(_scan(path)):
+            quet[i] += v
+    assert tuple(quet) == hien_vat, (
+        f"this scan reads {tuple(quet)} (graphs, edges, parallel) while the artefact the "
+        f"paper quotes says {hien_vat}. One of the two is measuring something else.")
 
 
 def test_the_representation_cannot_hold_a_parallel_edge() -> None:
