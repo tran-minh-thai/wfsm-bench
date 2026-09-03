@@ -1,0 +1,5 @@
+dataset,graphs,depth,w_max,slack_global,slack_host_max,gain,ball_coverage_pooled,ball_coverage_per_graph,ball_coverage_min,host_nodes_mean,host_nodes_max
+Cuneiform,200,1,5.0,5.0,5.0,1.0,0.240057,0.263503,0.111111,21.12,36
+QM9_bond,200,1,4.510134,4.510134,4.510134,1.0,0.279002,0.303891,0.117647,10.33,17
+BZR_bond,200,1,4.998578,4.998578,4.998578,1.0,0.084317,0.086578,0.035088,37.15,57
+alchemy_full_bond,200,1,4.048777,4.048777,4.048777,1.0,0.3081,0.3081,0.2,10.0,10
