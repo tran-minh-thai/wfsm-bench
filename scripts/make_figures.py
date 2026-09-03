@@ -140,8 +140,9 @@ def figure_basins(path: Path) -> None:
         raise SystemExit("[fail] no basin rows could be paired with a ranking.")
 
     fig, ax = plt.subplots(figsize=(7.2, 4.6))
-    for dominates, colour, label in ((True, "#D55E00", "optimum dominates the ascent graph"),
-                                     (False, "#0072B2", "it does not")):
+    text = labels("luu-vuc-va-dan-kien")
+    for dominates, colour, label in ((True, "#D55E00", text["legend_dominates"]),
+                                     (False, "#0072B2", text["legend_not"])):
         group = [p for p in points if p[2] is dominates]
         ax.scatter([p[0] for p in group], [p[1] for p in group], s=70,
                    color=colour, label=label, zorder=3,
@@ -157,12 +158,12 @@ def figure_basins(path: Path) -> None:
     ax.annotate("ACO first", xy=(ax.get_xlim()[1], 1.0), fontsize=8, color="#555555",
                 va="bottom", ha="right")
     ax.set_xscale("log")
-    ax.set_xlabel("share of the pool whose steepest ascent reaches an optimum  (%)")
-    ax.set_ylabel("ACO mean rank  (1 = best)")
+    ax.set_xlabel(text["xlabel"])
+    ax.set_ylabel(text["ylabel"])
     # The title states the half that holds without exception. The converse -- a
     # non-dominant optimum meaning ACO wins -- holds in six of eight, so claiming the
     # figure shows basin structure "tracking" the ranking would overstate it.
-    ax.set_title("Where the optimum dominates the ascent graph, ACO does not win",
+    ax.set_title(text["title"],
                  loc="left")
     ax.legend(frameon=False, fontsize=8, loc="upper left")
     style(ax)

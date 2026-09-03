@@ -103,3 +103,61 @@ def test_the_builder_runs_and_reproduces_every_figure(tmp_path: Path) -> None:
     assert done.returncode == 0, f"the figure builder failed\n{done.stdout}{done.stderr}"
     for name in _declared():
         assert (FIGS / name).exists(), f"{name} was declared but not written"
+
+
+# --------------------------------------------------------- Vietnamese labels on every figure
+
+LABELS = ROOT.parent / "paper" / "figure_labels.vi.json"
+
+
+def _builders() -> dict[str, str]:
+    """{figure filename: source of the function that draws it}, read with ast.
+
+    By name would be guesswork: the builders are not named after their outputs.
+    """
+    import ast
+    text = SCRIPT.read_text(encoding="utf-8")
+    tree = ast.parse(text)
+    than = {node.name: ast.get_source_segment(text, node)
+            for node in tree.body if isinstance(node, ast.FunctionDef)}
+    spec = importlib.util.spec_from_file_location("make_figures", SCRIPT)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return {name: than[build.__name__] for name, build in module.FIGURES}
+
+
+@needs_manuscript("figure_labels.vi.json")
+def test_every_figure_draws_its_labels_from_the_label_file() -> None:
+    """A builder that never asks for labels renders in English, and nothing says so.
+
+    The builder refuses when a KEY is missing, which looks like enough. It is not: the basin
+    figure carried English title and axes for as long as it existed because its function never
+    called labels() at all, so the refusal never ran. Measured 2026-09-03: three of four
+    figures asked for labels, the fourth did not, and the label file simply had no key for it.
+    Comparing keys against keys would not have found that -- the absent key was consistent
+    with the absent call. So this asks the other question: does every DECLARED figure ask?
+    """
+    builders = _builders()
+    assert len(builders) >= 4, f"only {len(builders)} builder(s) found; the parse is wrong"
+    cam = sorted(name for name, than in builders.items() if "labels(" not in than)
+    assert not cam, (
+        f"{len(cam)} of {len(builders)} figure(s) never ask the label file for anything, so "
+        f"they render in whatever language their source was written in: {cam}")
+
+
+@needs_manuscript("figure_labels.vi.json")
+def test_no_label_key_is_orphaned_and_none_is_missing() -> None:
+    """Both directions. An unused key is a figure someone deleted; a missing one is English."""
+    import json
+    import re
+    keys = {k for k in json.loads(LABELS.read_text(encoding="utf-8")) if not k.startswith("_")}
+    asked = set()
+    for than in _builders().values():
+        asked |= set(re.findall(r'labels\(\s*["\']([^"\']+)["\']\s*\)', than))
+    assert asked, "no builder asks for a label key; the parse is wrong"
+    thieu = sorted(asked - keys)
+    thua = sorted(keys - asked)
+    assert not thieu, f"builders ask for keys the label file does not have: {thieu}"
+    assert not thua, (
+        f"the label file carries keys no builder asks for: {thua}. Either a figure was "
+        f"deleted and its labels stayed, or a builder stopped asking.")
