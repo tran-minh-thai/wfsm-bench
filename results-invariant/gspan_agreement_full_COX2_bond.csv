@@ -1,0 +1,4 @@
+dataset,graph_limit,size_bound,min_support,exhaustive_patterns,gspan_patterns,sets_agree,supports_disagreeing_over_shared,missing_from_gspan,extra_in_gspan
+COX2_bond,60,4,2,102,102,1,0/102,0,0
+COX2_bond,60,5,2,240,240,1,0/240,0,0
+COX2_bond,60,6,2,555,555,1,0/555,0,0

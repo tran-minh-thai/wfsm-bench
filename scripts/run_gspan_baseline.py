@@ -134,7 +134,14 @@ def counts_only(subset, stats, args) -> int:
     """The comparison a reader can reproduce on any machine: do the two agree, and over how
     many patterns. The enumerator is never skipped here -- with nothing to compare against,
     the file would record a count and call it an agreement."""
+    # Written after EVERY bound, not once at the end. Measured 2026-09-03: a run on the
+    # densest collection reached two hours six minutes on its largest bound and had to be
+    # stopped, and stopping there threw away the two smaller bounds it had already finished.
+    # Cost that has been paid should be on disk before the next expensive thing starts.
+    INVARIANT.mkdir(exist_ok=True)
+    path = INVARIANT / f"gspan_agreement{args.suffix}.csv"
     rows = [INVARIANT_HEADER]
+    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     for bound in args.sizes:
         print(f"  {args.dataset} bound={bound} support={args.support} ...", flush=True)
         found = agreement(subset, stats, bound, args.support, skip_exhaustive=False)
@@ -142,13 +149,10 @@ def counts_only(subset, stats, args) -> int:
                     f"{found['exhaustive_patterns']},{found['gspan_patterns']},"
                     f"{found['agree']},{found['disagreeing']},"
                     f"{found['missing']},{found['extra']}")
+        path.write_text("\n".join(rows) + "\n", encoding="utf-8")
         print(f"    enumerator {found['exhaustive_patterns']:>6} | gSpan "
               f"{found['gspan_patterns']:>6} | sets agree {found['agree']} | "
-              f"supports disagreeing {found['disagreeing']}", flush=True)
-
-    INVARIANT.mkdir(exist_ok=True)
-    path = INVARIANT / f"gspan_agreement{args.suffix}.csv"
-    path.write_text("\n".join(rows) + "\n", encoding="utf-8")
+              f"supports disagreeing {found['disagreeing']} | written", flush=True)
     print(f"[ok] {path.relative_to(ROOT)}")
     return 0
 
