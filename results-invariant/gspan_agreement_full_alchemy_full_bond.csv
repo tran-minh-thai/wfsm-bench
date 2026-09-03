@@ -1,0 +1,4 @@
+dataset,graph_limit,size_bound,min_support,exhaustive_patterns,gspan_patterns,sets_agree,supports_disagreeing_over_shared,missing_from_gspan,extra_in_gspan
+alchemy_full_bond,60,4,2,93,93,1,0/93,0,0
+alchemy_full_bond,60,5,2,222,222,1,0/222,0,0
+alchemy_full_bond,60,6,2,457,457,1,0/457,0,0

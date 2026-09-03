@@ -1,0 +1,4 @@
+dataset,graph_limit,size_bound,min_support,exhaustive_patterns,gspan_patterns,sets_agree,supports_disagreeing_over_shared,missing_from_gspan,extra_in_gspan
+DHFR_bond,60,4,2,82,82,1,0/82,0,0
+DHFR_bond,60,5,2,214,214,1,0/214,0,0
+DHFR_bond,60,6,2,561,561,1,0/561,0,0

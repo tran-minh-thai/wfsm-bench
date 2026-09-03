@@ -1,0 +1,4 @@
+dataset,graph_limit,size_bound,min_support,exhaustive_patterns,gspan_patterns,sets_agree,supports_disagreeing_over_shared,missing_from_gspan,extra_in_gspan
+QM9_bond,60,4,2,106,106,1,0/106,0,0
+QM9_bond,60,5,2,187,187,1,0/187,0,0
+QM9_bond,60,6,2,269,269,1,0/269,0,0
