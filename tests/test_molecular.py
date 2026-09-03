@@ -79,7 +79,7 @@ def test_edge_labels_are_read_from_the_one_hot_when_present():
 
 
 def test_limit_selects_a_prefix_of_the_molecules():
-    """SUA 2026-08-27: check WHICH molecules come back, not only how many.
+    """SUA 2026-09-02: check WHICH molecules come back, not only how many.
 
     The previous version asserted len(graphs) == 1 after asking for one molecule, which any
     selection rule satisfies -- the last molecule, a random one, an empty one rebuilt from

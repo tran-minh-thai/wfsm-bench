@@ -41,7 +41,7 @@ def _scan(path: Path) -> tuple[int, int, int]:
 @pytest.mark.skipif(not FILES, reason="no collections on this machine")
 @pytest.mark.parametrize("path", FILES, ids=lambda p: p.stem)
 def test_no_collection_carries_a_parallel_edge(path: Path) -> None:
-    """SUA 2026-08-27: scan the whole file, not its first two hundred graphs.
+    """SUA 2026-09-02: scan the whole file, not its first two hundred graphs.
 
     The previous version stopped at graphs[:200] while the manuscript states the property of
     the whole data. Every collection here is larger than that -- 306 to 5000 graphs -- so the

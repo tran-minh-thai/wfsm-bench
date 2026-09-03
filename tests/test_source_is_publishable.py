@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def _tracked() -> list[Path]:
     """Every file git publishes, identified by PROPERTY rather than by a list of names.
 
-    SUA 2026-08-27. The previous version scanned *.py under three named directories, which
+    SUA 2026-09-02. The previous version scanned *.py under three named directories, which
     was 112 of the 351 tracked files -- thirty-two per cent -- while the rule it states is
     about the repository. A list of directories goes stale at exactly the moment someone adds
     a fourth, and the earlier version of this same list had already gone stale once: it named

@@ -64,7 +64,7 @@ def test_every_declared_figure_is_on_disk_and_not_empty() -> None:
 def test_no_image_in_the_figures_directory_is_orphaned() -> None:
     r"""A picture nothing builds any more predates the current results and will still be read.
 
-    SUA 2026-08-27: glob every file, not *.png. Restricting by extension makes the check blind
+    SUA 2026-09-02: glob every file, not *.png. Restricting by extension makes the check blind
     to exactly the file someone adds next -- a leftover .pdf or .svg sits in the directory,
     gets picked up by \includegraphics, which resolves by extension order rather than by which
     file is current, and is read as a fresh figure. The check also asserts the directory is not

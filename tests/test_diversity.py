@@ -91,7 +91,7 @@ def test_the_sample_collection_cannot_exercise_the_diversity_rule():
                     reason=f"needs a real collection at {COLLECTION.name}; the sample has "
                            f"three patterns and cannot exercise this rule")
 def test_diverse_archive_raises_top_k_diversity():
-    """SUA 2026-08-27. Two faults in one line, and the second is why this moved collections.
+    """SUA 2026-09-02. Two faults in one line, and the second is why this moved collections.
 
     The assertion was `d_diverse >= d_plain`, which EQUALITY satisfies -- so a diversity term
     that did nothing at all would pass a test named for raising diversity. And it ran on the
