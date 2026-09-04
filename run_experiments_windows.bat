@@ -29,6 +29,10 @@ REM   12  alchemy method arm, flag test     C8         ~40 m
 REM   13  selector on disjoint seeds        C8        ~2.5 h
 REM   14  determinism: stage 13 vs earlier  -          ~10 s
 REM   15  calibrate rho, 4 collections      C4         ~15 m
+REM   16  Pareto selection on Cuneiform     -          ~6.5 h  not machine-dependent
+REM   17  Pareto selection, 5 collections   -          ~2 h    not machine-dependent
+REM   18  gSpan head to head, timed         -          ~3 h    MEASURES TIME
+REM   19  gSpan agreement, counts only      -          ~7 h    not machine-dependent
 REM
 REM  RHOS was extended below 0.3 on 08-18, so stages 1, 3 and 15 -- the three that
 REM  calibrate -- must all be re-run together. Running one leaves the artefacts on
@@ -246,6 +250,36 @@ echo     head-to-head done; the next run is gSpan alone at bound 6   %TIME%
 %PY% scripts\run_gspan_baseline.py --dataset Cuneiform --graph-limit 60 --sizes 6 ^
      --support 2 --skip-exhaustive --suffix _Cuneiform_s6 > results\gspan_Cuneiform_s6.log 2>&1 || goto :failed
 type results\gspan_Cuneiform_s6.log
+echo     done %TIME%
+exit /b 0
+
+:stage19
+echo.
+echo [19] gSpan agreement: do the two pattern SETS match, over how many patterns   %TIME%
+REM  Stage 18 measures time and so belongs on this machine. This one measures neither
+REM  side's seconds -- every column is a count or a set comparison, so the result is a
+REM  function of (commit, data) and not of the machine. It writes to results-invariant\,
+REM  which carries no timing column at all, and it runs here only so it runs the same way
+REM  as everything else when asked for.
+REM
+REM  The enumerator is NEVER skipped here. With nothing to compare against, the file
+REM  would record a count and call it an agreement.
+REM
+REM  Why only Cuneiform bound 6. Twenty of the twenty-one cells are already on disk and
+REM  under version control; the writer carries over every cell this run does not
+REM  recompute, so naming bound 6 alone extends the file instead of replacing it. That
+REM  was not true before 2026-09-04: the writer truncated first, and this command would
+REM  have destroyed the two finished bounds before starting. Widen --sizes to recompute
+REM  more; each named bound replaces its own row and never doubles it.
+REM
+REM  Cost, ANCHORED not extrapolated: this exact enumeration -- Cuneiform n=60, bound 6,
+REM  support 2, 42523 patterns -- was measured on this machine at 22396.7 s in stage 16,
+REM  logged in results\pareto_size_Cuneiform.log. gSpan's side of the same cell took
+REM  517.95 s. Allow about seven hours: the comparison of the two pattern sets is on top
+REM  of both, and has never been timed separately.
+%PY% scripts\run_gspan_baseline.py --dataset Cuneiform --graph-limit 60 --sizes 6 ^
+     --support 2 --counts-only --suffix _full_Cuneiform > results\gspan_agree_Cuneiform_s6.log 2>&1 || goto :failed
+type results\gspan_agree_Cuneiform_s6.log
 echo     done %TIME%
 exit /b 0
 

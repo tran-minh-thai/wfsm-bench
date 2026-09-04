@@ -28,63 +28,36 @@ machine into `data\`, or regenerate them (needs internet — downloads TUDataset
 
 ```bat
 .venv\Scripts\python -m pytest -q
-.venv\Scripts\python scripts\run_full_scale.py --preset quick
 ```
-
-The quick preset finishes in seconds and confirms parallelism works on Windows.
 
 ## 4. Run the experiments
 
-Two experiments, run in this order. Both overwrite their outputs, so a re-run always
-replaces the previous numbers rather than appending to them.
-
-### 4a. Methods vs pattern size
+Every experiment runs through one entry point, which writes an environment record beside each
+stage's artefacts and stops on the first failure:
 
 ```bat
-.venv\Scripts\python scripts\run_full_scale.py --preset balanced --workers 8
+git checkout per-edge-objective
+git pull --ff-only
+run_experiments_windows.bat            REM the default stages, in result-per-hour order
+run_experiments_windows.bat 3 4 5      REM only some
+run_experiments_windows.bat 19         REM one stage by number
 ```
 
-- `--preset balanced` (default): BZR n=50 sizes 3-5, Cuneiform n=100 sizes 3-6, 5 seeds —
-  roughly **30-45 minutes** on this machine, enough numbers for the paper.
-- `--preset full --workers 10`: BZR to size 6, Cuneiform to size 7, 10 seeds — an
-  **overnight** run for the most complete results.
-- `--workers 8` suits 6 cores (leaves thermal headroom on a laptop); use `10` for a
-  headless / overnight run.
+Name the branch before pulling. This repository has three, and a bare `git pull` updates
+whichever one the machine is standing on -- which is how a stage once ran three commits behind.
 
-Outputs: `results\size_<dataset>.csv` and `results\figures\size_<dataset>.png`.
+The stage table, what each stage supports, and its measured or estimated cost are in the
+header comment of `run_experiments_windows.bat`. That file is the source of truth for what
+runs; this guide covers only getting the machine ready.
 
-### 4b. Budget regimes (the main experiment)
+Stages 16, 17 and 19 produce counts and set comparisons rather than seconds, so they do not
+depend on the machine and are not in the default list. Stage 18 does measure time and belongs
+on this machine and nowhere else.
 
-```bat
-.venv\Scripts\python scripts\run_budget_regimes.py --preset balanced --workers 10
-```
-
-Sweeps four evaluation budgets (180, 540, 1800 and 5400 distinct patterns scored) across all
-six searches on both datasets. This is the experiment that decides how everything else is
-read: comparing methods at a single budget can invert the ranking, and several of them stop
-being able to use a larger budget at all, which is only visible when the budget is varied.
-
-Check the setup first with `--preset quick`, which is about seven minutes. `--preset
-balanced` is roughly **two to three hours** at ten workers; `--preset full` widens the
-datasets and pattern sizes and is an overnight run.
-
-Outputs: `results\budget_regimes_<dataset>.csv`, one row per (size, budget, method) giving
-the mean fitness, the gap to the exhaustive optimum, and how many seeds reached it.
-
-### 4c. Top-K admission weight (diversity)
-
-```bat
-.venv\Scripts\python scripts\run_diversity_sweep.py --preset balanced --workers 8
-```
-
-Roughly **10-20 minutes** on the balanced preset. Each (method, seed) is searched once and
-re-reported at every weight, so adding weights costs almost nothing.
-
-Outputs: `results\diversity_<dataset>.csv` and `results\figures\diversity_<dataset>.png`.
-
-**Sanity check on the output:** within one method, the `fitness_mean` column must be
-identical for every `diversity_weight`. The weight decides only which patterns are
-reported, never what the search finds — if that column moves, something is wrong.
+**Earlier versions of this guide listed three scripts by name that no longer exist**
+(`run_full_scale.py`, `run_budget_regimes.py`, `run_diversity_sweep.py`). They were replaced
+by the staged entry point above. `tests/test_windows_guide_names_live_scripts.py` now fails if
+this file names a script that is not in the repository, because nothing caught the last drift.
 
 ## Notes
 
