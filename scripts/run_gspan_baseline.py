@@ -138,9 +138,34 @@ def counts_only(subset, stats, args) -> int:
     # densest collection reached two hours six minutes on its largest bound and had to be
     # stopped, and stopping there threw away the two smaller bounds it had already finished.
     # Cost that has been paid should be on disk before the next expensive thing starts.
+    #
+    # And rows for cells this run does NOT recompute are carried over rather than truncated.
+    # Without that, finishing the one missing bound of a collection means asking for that
+    # bound alone, and asking for that bound alone silently destroyed the bounds already on
+    # disk -- the obvious command was the destructive one. Cells are keyed by everything that
+    # decides the number, so re-running a cell replaces it and never doubles it: the reader of
+    # these files sums rows without de-duplicating, and a doubled cell would inflate a coverage
+    # figure in the manuscript with nothing to show it had happened.
     INVARIANT.mkdir(exist_ok=True)
     path = INVARIANT / f"gspan_agreement{args.suffix}.csv"
-    rows = [INVARIANT_HEADER]
+    cell = lambda parts: (parts[0], parts[1], parts[2], parts[3])
+    keep: list[str] = []
+    if path.exists():
+        old = [line for line in path.read_text(encoding="utf-8").splitlines()[1:] if line.strip()]
+        subject = {(line.split(",")[0], line.split(",")[1]) for line in old}
+        mine = (args.dataset, str(len(subset)))
+        if subject - {mine}:
+            raise SystemExit(
+                f"[refused] {path.relative_to(ROOT)} holds "
+                f"{sorted(f'{d} n={n}' for d, n in subject)}; this run writes {mine[0]} "
+                f"n={mine[1]}. Two collections in one file is how one overwrites the other. "
+                f"Delete it if superseded, or pass a different --suffix if both are wanted.")
+        recomputed = {(args.dataset, str(len(subset)), str(b), str(args.support))
+                      for b in args.sizes}
+        keep = [line for line in old if cell(line.split(",")) not in recomputed]
+        if keep:
+            print(f"  carrying over {len(keep)} cell(s) this run does not recompute", flush=True)
+    rows = [INVARIANT_HEADER] + keep
     path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     for bound in args.sizes:
         print(f"  {args.dataset} bound={bound} support={args.support} ...", flush=True)
