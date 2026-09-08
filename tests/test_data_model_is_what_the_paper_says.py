@@ -69,16 +69,44 @@ def test_the_scan_here_agrees_with_the_artefact_the_paper_quotes() -> None:
     import csv
     rows = list(csv.DictReader(PROFILE.open(encoding="utf-8")))
     assert rows, "the dataset profile is empty; this check would compare nothing"
-    hien_vat = (sum(int(r["graphs"]) for r in rows),
-                sum(int(r["edges_total_raw"]) for r in rows),
-                sum(int(r["parallel_edges"]) for r in rows))
-    quet = [0, 0, 0]
+    hien_vat = {r["dataset"]: (int(r["graphs"]), int(r["edges_total_raw"]),
+                               int(r["parallel_edges"])) for r in rows}
+
+    # SUA 2026-09-08: compare COLLECTION BY COLLECTION, not by one grand total.
+    #
+    # The total was wrong in two ways at once. It could not say WHICH collection had drifted
+    # -- the message gave two triples and left the reader to subtract -- and it could be
+    # right while both sides were wrong, because a collection reading too high cancels one
+    # reading too low. Measured on the experiment machine: the totals differed by exactly
+    # (473, 76667, 0), which is one whole collection absent, and the message named neither
+    # the collection nor the fact that anything was missing.
+    lech = []
     for path in FILES:
-        for i, v in enumerate(_scan(path)):
-            quet[i] += v
-    assert tuple(quet) == hien_vat, (
-        f"this scan reads {tuple(quet)} (graphs, edges, parallel) while the artefact the "
-        f"paper quotes says {hien_vat}. One of the two is measuring something else.")
+        if path.stem not in hien_vat:
+            continue
+        quet = _scan(path)
+        if quet != hien_vat[path.stem]:
+            lech.append((path.stem, quet, hien_vat[path.stem]))
+    assert not lech, (
+        f"{len(lech)} of {len(FILES)} collection(s) on this machine disagree with the "
+        f"artefact the paper quotes. One of the two is measuring something else:\n"
+        + "\n".join(f"  {ten}: this scan reads {a} (graphs, edges, parallel), "
+                     f"the artefact says {b}" for ten, a, b in lech))
+
+    co_o_day = {path.stem for path in FILES}
+    thieu = sorted(set(hien_vat) - co_o_day)
+    assert not thieu, (
+        f"{len(thieu)} of {len(hien_vat)} collection(s) the paper quotes are NOT on this "
+        f"machine: {thieu}. Every collection present agrees, so nothing has drifted -- the "
+        f"data is simply absent, and any stage needing it cannot run here. "
+        f"scripts/prepare_datasets.py builds the TUDataset collections; anything it does "
+        f"not build is tracked in data/ and arrives with a pull.")
+
+    la_mat = sorted(co_o_day - set(hien_vat))
+    assert not la_mat, (
+        f"{len(la_mat)} collection(s) on this machine are absent from the profile the paper "
+        f"quotes: {la_mat}. Either the profile is stale or a collection was added without "
+        f"being profiled; a number quoted from a stale profile describes data nobody has.")
 
 
 def test_the_representation_cannot_hold_a_parallel_edge() -> None:

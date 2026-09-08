@@ -15,6 +15,19 @@ is usable as it stands:
 QM9 has 129433 graphs, far more than any experiment here needs, so its JSON is capped;
 raise QM9_LIMIT to take more.
 
+This script builds the SEVEN TUDataset collections and no others. The eighth collection the
+paper profiles, pdb_contact, is NOT built here, and 2026-09-08 established that it cannot be:
+data/raw/ holds only the TUDataset extractions, so the deposited protein structures that
+src/wfsmbench/io/protein.py turns into contact graphs are not on any machine any more. The
+built file is therefore the only surviving source, and it is tracked in data/ rather than
+ignored, so a pull brings it. Until the structures are fetched again and a builder is written
+beside this one, that collection is reproducible only in the sense that the bytes are kept.
+
+How it surfaced, which is the reason for the note: the experiment machine followed the
+documented setup exactly, ran this script, and got seven of eight collections. The gate
+comparing the data against the profile then failed on a grand total and reported two triples,
+naming neither the collection nor the fact that one was absent.
+
 Idempotent: skips a dataset whose raw files already exist. Run from the project root:
     python scripts/prepare_datasets.py
 """
