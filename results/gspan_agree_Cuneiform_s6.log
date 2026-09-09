@@ -1,0 +1,4 @@
+  carrying over 2 cell(s) this run does not recompute
+  Cuneiform bound=6 support=2 ...
+    enumerator  42523 | gSpan  42523 | sets agree 1 | supports disagreeing 0/42523 | written
+[ok] results-invariant\gspan_agreement_full_Cuneiform.csv
