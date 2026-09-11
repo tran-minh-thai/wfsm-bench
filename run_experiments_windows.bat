@@ -33,6 +33,7 @@ REM   16  Pareto selection on Cuneiform     -          ~6.5 h  not machine-depen
 REM   17  Pareto selection, 5 collections   -          ~2 h    not machine-dependent
 REM   18  gSpan head to head, timed         -          ~3 h    MEASURES TIME
 REM   19  gSpan agreement, counts only      -          ~7 h    not machine-dependent
+REM   20  enumeration cost, third bound   -        ~9-11 h  MEASURES TIME
 REM
 REM  RHOS was extended below 0.3 on 08-18, so stages 1, 3 and 15 -- the three that
 REM  calibrate -- must all be re-run together. Running one leaves the artefacts on
@@ -250,6 +251,43 @@ echo     head-to-head done; the next run is gSpan alone at bound 6   %TIME%
 %PY% scripts\run_gspan_baseline.py --dataset Cuneiform --graph-limit 60 --sizes 6 ^
      --support 2 --skip-exhaustive --suffix _Cuneiform_s6 > results\gspan_Cuneiform_s6.log 2>&1 || goto :failed
 type results\gspan_Cuneiform_s6.log
+echo     done %TIME%
+exit /b 0
+
+:stage20
+echo.
+echo [20] Enumeration cost: the third size bound, so each collection is a curve   %TIME%
+REM  The cost table reads the timed enumeration rows written by stage 18. Five collections
+REM  have two bounds there and Cuneiform has three, and two points do not make a curve --
+REM  the figure of enumeration cost has been unbuildable for that reason across two rounds
+REM  of briefs. One more bound on each collection is what closes it.
+REM
+REM  THIS MEASURES TIME, so it belongs on this machine and nowhere else. Both sides are timed
+REM  inside one process on one cell; a speed-up assembled from two runs would be arithmetic
+REM  across different caches and heaps.
+REM
+REM  The writer carries over the bounds already timed, so naming bound 6 alone extends each
+REM  file instead of replacing it. That was NOT true before 2026-09-11: the timed writer
+REM  truncated first, exactly as the counts-only writer used to, and this command would have
+REM  destroyed several hours of seconds before starting. Seconds are worse to lose than
+REM  counts, because they can be recomputed only here.
+REM
+REM  Cost. Cuneiform is ANCHORED: that exact enumeration was measured at 22396.7 s in stage
+REM  16 and gSpan's side of the cell at 517.95 s, so about six and a half hours. The five
+REM  _bond collections are EXTRAPOLATED from the table's own ratios -- pool x2.5-2.8 and
+REM  seconds per pattern x2.2-2.5 for each edge added -- giving roughly 40 to 60 minutes
+REM  each. Nine to eleven hours in total, and the extrapolated half could be wrong by a
+REM  factor; it has never been run at this bound.
+for %%D in (BZR_bond COX2_bond DHFR_bond QM9_bond alchemy_full_bond) do (
+  echo     %%D  bound 6, both sides timed   !TIME!
+  %PY% scripts\run_gspan_baseline.py --dataset %%D --graph-limit 200 --sizes 6 ^
+       --support 2 --suffix _%%D >> results\gspan_%%D.log 2>&1 || goto :failed
+  type results\gspan_%%D.log
+)
+echo     the five smaller collections are done; Cuneiform is the long one   %TIME%
+%PY% scripts\run_gspan_baseline.py --dataset Cuneiform --graph-limit 60 --sizes 6 ^
+     --support 2 --suffix _Cuneiform >> results\gspan_Cuneiform.log 2>&1 || goto :failed
+type results\gspan_Cuneiform.log
 echo     done %TIME%
 exit /b 0
 

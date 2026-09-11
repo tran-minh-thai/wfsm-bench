@@ -219,16 +219,32 @@ def main() -> int:
                  if parts[7] else " | enumerator skipped")
               + f" | optimum {parts[11]} edges", flush=True)
 
+    # Cells this run does not recompute are carried over, exactly as counts_only does. The
+    # counts-only writer was fixed on 2026-09-04 and this one was not, so asking for the one
+    # bound a collection still lacked would have replaced the file with a single row and
+    # thrown away the bounds already timed. Here that is worse than in the counts file: the
+    # rows hold SECONDS, and seconds cannot be recomputed anywhere but the measurement
+    # machine -- Cuneiform's bound-6 enumeration alone is six hours.
     path = RESULTS / f"gspan_baseline{args.suffix}.csv"
+    cell = lambda parts: (parts[0], parts[1], parts[2], parts[3])
+    keep: list[str] = []
     if path.exists():
-        existing = path.read_text(encoding="utf-8").splitlines()
-        if len(existing) > 1:
-            before, after = tuple(existing[1].split(",")[:2]), tuple(rows[1].split(",")[:2])
-            if before != after:
-                raise SystemExit(
-                    f"[refused] {path} holds {before[0]} n={before[1]}; this run writes "
-                    f"{after[0]} n={after[1]}. Delete it if superseded, or pass a different "
-                    f"--suffix if both are wanted.")
+        old = [line for line in path.read_text(encoding="utf-8").splitlines()[1:] if line.strip()]
+        subject = {(line.split(",")[0], line.split(",")[1]) for line in old}
+        mine = (args.dataset, str(len(subset)))
+        if subject - {mine}:
+            raise SystemExit(
+                f"[refused] {path.relative_to(ROOT)} holds "
+                f"{sorted(f'{d} n={n}' for d, n in subject)}; this run writes {mine[0]} "
+                f"n={mine[1]}. Delete it if superseded, or pass a different --suffix if both "
+                f"are wanted.")
+        recomputed = {(args.dataset, str(len(subset)), str(b), str(args.support))
+                      for b in args.sizes}
+        keep = [line for line in old if cell(line.split(",")) not in recomputed]
+        if keep:
+            print(f"  carrying over {len(keep)} timed cell(s) this run does not recompute",
+                  flush=True)
+    rows = [rows[0]] + keep + rows[1:]
     path.write_text("\n".join(rows) + "\n", encoding="utf-8")
     print(f"\n[ok] {path.relative_to(ROOT)}  ({len(rows) - 1} rows)")
     return 0

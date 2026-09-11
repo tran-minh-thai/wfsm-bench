@@ -9,6 +9,7 @@ no reason to look at.
 from __future__ import annotations
 
 import importlib.util
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -29,8 +30,6 @@ SO_LIEU = ROOT.parent / "paper" / "bang" / "so_lieu.tex"
 # Figures the draft must cite. The other builders serve sections not yet written, so they are
 # listed here rather than required of the draft -- and listing them is what makes adding a
 # third unreferenced figure a visible decision instead of an accident.
-CITED_BY_THE_DRAFT = {"front_position_vs_bound.png", "regret_vs_race_size.png",
-                      "quantum_sweep.png", "basin_vs_aco.png"}
 
 
 def _declared() -> list[str]:
@@ -40,10 +39,32 @@ def _declared() -> list[str]:
     return [name for name, _build in module.FIGURES]
 
 
-def test_the_builder_declares_the_figures_the_draft_cites() -> None:
+def _anh_xa_cua_bo_sinh() -> dict:
+    """Draft-side figure name -> artefact filename, read from the generator that copies them."""
+    spec = importlib.util.spec_from_file_location(
+        "sync_manuscript_numbers", DRAFT.parent / "tools" / "sync_manuscript_numbers.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return dict(module.IMAGES)
+
+
+@pytest.mark.skipif(not DRAFT.exists(), reason="the draft is outside this repository")
+def test_the_builder_declares_the_figures_the_draft_uses() -> None:
+    """SUA 2026-09-11: derived from the generator instead of a set of filenames kept here.
+
+    The list here went stale the way a list of names always does. It named four figures while
+    the draft used six, so two of them were outside every check in this file -- and the two it
+    missed were the two added most recently, which is exactly when a hand-kept list is least
+    likely to be updated.
+    """
     declared = set(_declared())
-    missing = CITED_BY_THE_DRAFT - declared
-    assert not missing, f"the draft cites figures nothing builds: {sorted(missing)}"
+    dung = set(_anh_xa_cua_bo_sinh().values())
+    assert dung, "the generator copies no figure; there is nothing to check"
+    missing = sorted(dung - declared)
+    assert not missing, (
+        f"the draft uses {missing}, which no builder in this repository produces. The file in "
+        f"the draft's directory is then whatever was left there, with nothing keeping it in "
+        f"step with any artefact.")
 
 
 @needs_manuscript("figure_labels.vi.json")
@@ -81,18 +102,44 @@ def test_no_image_in_the_figures_directory_is_orphaned() -> None:
         f"  delete them, or add the builder back -- a stale picture is read as a fresh one")
 
 
-@pytest.mark.skipif(not (DRAFT.exists() and SO_LIEU.exists()),
-                    reason="the draft is outside this repository")
-def test_the_draft_refers_to_each_figure_it_should() -> None:
-    # LaTeX escapes the underscore in a filename, so compare with the escapes removed rather
-    # than with the raw text: matching the raw text reported all four figures as unnamed while
-    # every one of them was in the file.
-    text = (DRAFT.read_text(encoding="utf-8")
-            + SO_LIEU.read_text(encoding="utf-8")).replace("\\_", "_")
-    unreferenced = sorted(name for name in CITED_BY_THE_DRAFT if name not in text)
-    assert not unreferenced, (
-        f"the draft never names {unreferenced}; a figure no sentence points at gives the "
-        f"reader no reason to look at it")
+@pytest.mark.skipif(not DRAFT.exists(), reason="the draft is outside this repository")
+def test_every_drawn_figure_is_included_by_the_draft() -> None:
+    """SUA 2026-09-11: ask whether the draft INCLUDES the figure, not whether it names the file.
+
+    The old version searched the draft for the source filename, e.g. basin_vs_aco.png. That
+    only ever matched because each caption carried a provenance line printing the artefact
+    path. The author then required the printed page to carry no trace of the process -- paths
+    and script names are how the work was done, not what the figure shows -- those lines went,
+    and this check reported four figures as unreferenced while every one of them was in the
+    paper, drawn, captioned and pointed at.
+
+    The filename was never the question. The question is whether the draft puts the picture on
+    a page, and that is what the include line says. The mapping from artefact to the name the
+    draft uses lives in the generator, so it is read from there rather than restated here.
+    """
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(
+        "sync_manuscript_numbers", DRAFT.parent / "tools" / "sync_manuscript_numbers.py")
+    sinh = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(sinh)
+
+    than = DRAFT.read_text(encoding="utf-8")
+    nhung = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{hinh/([A-Za-z0-9_-]+)\}", than))
+    assert nhung, "the draft includes no figure at all; the pattern stopped matching"
+
+    ten_bai = set(sinh.IMAGES)
+    assert ten_bai, "the generator copies no figure; there is nothing to check"
+
+    thieu = sorted(ten_bai - nhung)
+    assert not thieu, (
+        f"the generator copies {thieu} into the draft's figure directory and no include line "
+        f"puts {'them' if len(thieu) > 1 else 'it'} on a page; a figure nobody sees is a "
+        f"figure that still has to be kept in step with its artefact")
+
+    la = sorted(nhung - ten_bai)
+    assert not la, (
+        f"the draft includes {la}, which the generator does not copy. Those files are whatever "
+        f"was last left in the directory, and nothing keeps them current with any artefact.")
 
 
 @needs_manuscript("figure_labels.vi.json")
