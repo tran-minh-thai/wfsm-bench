@@ -4,3 +4,8 @@
     gSpan    360 patterns in      5.8s | enumerator    360 in    378.9s = 65.79x | sets agree 1, supports disagreeing 0 | optimum 4 edges
 
 [ok] results\gspan_baseline_COX2_bond.csv  (2 rows)
+  COX2_bond bound=6 support=2 ...
+    gSpan    928 patterns in     12.1s | enumerator    928 in   2088.5s = 173.18x | sets agree 1, supports disagreeing 0/928 | optimum 6 edges
+  carrying over 2 timed cell(s) this run does not recompute
+
+[ok] results\gspan_baseline_COX2_bond.csv  (3 rows)

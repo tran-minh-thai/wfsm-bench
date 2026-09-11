@@ -4,3 +4,8 @@
     gSpan    359 patterns in      5.1s | enumerator    359 in    380.5s = 74.02x | sets agree 1, supports disagreeing 0 | optimum 4 edges
 
 [ok] results\gspan_baseline_BZR_bond.csv  (2 rows)
+  BZR_bond bound=6 support=2 ...
+    gSpan   1023 patterns in     13.5s | enumerator   1023 in   2332.2s = 173.18x | sets agree 1, supports disagreeing 0/1023 | optimum 6 edges
+  carrying over 2 timed cell(s) this run does not recompute
+
+[ok] results\gspan_baseline_BZR_bond.csv  (3 rows)

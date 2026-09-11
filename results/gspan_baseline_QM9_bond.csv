@@ -1,3 +1,4 @@
 dataset,graph_limit,size_bound,min_support,gspan_patterns,gspan_seconds,exhaustive_patterns,exhaustive_seconds,speedup,sets_agree,supports_disagreeing,gspan_optimum_edges,gspan_optimum_fitness
 QM9_bond,200,4,2,242,0.254,242,59.424,234.12,1,0,3,0.230974
 QM9_bond,200,5,2,613,0.594,613,382.108,643.79,1,0,5,0.256359
+QM9_bond,200,6,2,1255,1.430,1255,1847.833,1292.23,1,0/1255,6,0.259252

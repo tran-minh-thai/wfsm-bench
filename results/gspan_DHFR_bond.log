@@ -4,3 +4,8 @@
     gSpan    359 patterns in      6.3s | enumerator    359 in    417.5s = 66.43x | sets agree 1, supports disagreeing 0 | optimum 4 edges
 
 [ok] results\gspan_baseline_DHFR_bond.csv  (2 rows)
+  DHFR_bond bound=6 support=2 ...
+    gSpan    991 patterns in     14.0s | enumerator    991 in   2347.6s = 168.27x | sets agree 1, supports disagreeing 0/991 | optimum 6 edges
+  carrying over 2 timed cell(s) this run does not recompute
+
+[ok] results\gspan_baseline_DHFR_bond.csv  (3 rows)

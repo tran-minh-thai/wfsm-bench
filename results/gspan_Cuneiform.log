@@ -6,3 +6,8 @@
     gSpan   4991 patterns in     51.7s | enumerator   4991 in    519.6s = 10.05x | sets agree 1, supports disagreeing 0 | optimum 5 edges
 
 [ok] results\gspan_baseline_Cuneiform.csv  (3 rows)
+  Cuneiform bound=6 support=2 ...
+    gSpan  42523 patterns in    501.2s | enumerator  42523 in  22424.2s = 44.74x | sets agree 1, supports disagreeing 0/42523 | optimum 6 edges
+  carrying over 3 timed cell(s) this run does not recompute
+
+[ok] results\gspan_baseline_Cuneiform.csv  (4 rows)
