@@ -50,6 +50,17 @@ import matplotlib                                              # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                # noqa: E402
 
+# A dark rim on every marker, for every figure in this file. Measured 2026-09-12 on a print
+# threshold: a marker filled with its series colour has the luminance of that colour and
+# nothing else, so the three palest members of the palette lost their markers along with
+# their lines and left a legend entry pointing at blank paper. The rim sits below the
+# threshold whatever the fill is, so the shape survives even where the colour does not.
+#
+# A default rather than an argument at each call: the palette is shared across figures, and a
+# per-figure fix is one a new figure does not inherit.
+matplotlib.rcParams["lines.markeredgecolor"] = "#1A1A1A"
+matplotlib.rcParams["lines.markeredgewidth"] = 0.7
+
 # Nemenyi critical difference for seven methods over eighty blocks. Drawn on the sweep
 # so a reader can see at a glance that nothing moves by a distinguishable amount.
 CD = 1.007
@@ -464,10 +475,16 @@ def figure_rank_transfer(path: Path) -> None:
                 continue
             best = min(ranks, key=ranks.get)
             for method, value in ranks.items():
+                # scatter does not inherit the marker-edge default above, so it is stated
+                # here; without it this figure keeps the defect the default exists to fix.
+                # The rim is on EVERY mark now, not only the winner's. It used to be the
+                # winner's badge, which left the other six with the luminance of their fill
+                # and nothing else; the winner is still marked, by a thicker rim and a
+                # larger mark.
                 ax.scatter(value, y, s=52 if method == best else 30,
                            color=colours[method], marker=marks[method], zorder=3,
-                           edgecolor="black" if method == best else "none",
-                           linewidth=0.8)
+                           edgecolor="#1A1A1A",
+                           linewidth=0.9 if method == best else 0.5)
             ax.annotate(best, xy=(ranks[best], y), xytext=(-6, 8),
                         textcoords="offset points", fontsize=9, ha="right",
                         color=colours[best])
