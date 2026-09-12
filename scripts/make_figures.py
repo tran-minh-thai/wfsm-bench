@@ -485,9 +485,10 @@ def figure_rank_transfer(path: Path) -> None:
                            color=colours[method], marker=marks[method], zorder=3,
                            edgecolor="#1A1A1A",
                            linewidth=0.9 if method == best else 0.5)
-            ax.annotate(best, xy=(ranks[best], y), xytext=(-6, 8),
-                        textcoords="offset points", fontsize=9, ha="right",
-                        color=colours[best])
+            # The winner's NAME is not written here. The legend maps every symbol to its
+            # method, so the word repeated what the mark already said, and it collided with
+            # the neighbouring marks while doing it. The larger mark and thicker rim above
+            # are what single the winner out.
         ax.set_yticks(range(len(cols)))
         ax.set_yticklabels(cols, fontsize=10)
         ax.set_ylim(len(cols) - 0.4, -1.1)
