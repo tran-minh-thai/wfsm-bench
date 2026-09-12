@@ -17,6 +17,7 @@ selector by nearly a factor of two. Any strategy column present in the artefact 
 
 from __future__ import annotations
 
+import statistics
 from dataclasses import dataclass
 
 # Cell groups, keyed rather than labelled: the label is the renderer's business and differs
@@ -42,6 +43,23 @@ class Group:
     cells: int
     # strategy key -> (mean regret, worst regret), in percent
     regret: dict[str, tuple[float, float]]
+    # strategy key -> sample standard deviation of the same values, in percent. None where a
+    # group holds fewer than two cells, since one cell has no dispersion to report and a
+    # printed 0.00 there would read as "no variation" rather than "nothing to vary".
+    spread: dict[str, float | None]
+
+
+def spread(values: list[float]) -> float | None:
+    """Sample standard deviation, or None when there is nothing to spread.
+
+    Deliberately NOT a confidence interval. These regrets are bounded below by zero, most
+    cells sit exactly at zero, and the tail is long -- the plateau group is 22 cells of
+    which every one is 0.00 for the race. A t interval over that shape asserts a symmetric
+    distribution the data does not have, and would print a negative lower bound for a
+    quantity that cannot be negative. The standard deviation makes no such claim: it says
+    how far the cells scatter, and the worst column already gives the tail.
+    """
+    return statistics.stdev(values) if len(values) > 1 else None
 
 
 def strategies(rows: list[dict]) -> list[str]:
@@ -62,13 +80,18 @@ def regret_groups(rows: list[dict]) -> list[Group]:
         kept = [r for r in disjoint if keep(r)]
         if not kept:
             continue
-        regret = {}
+        regret, doan = {}, {}
         for name in names:
             column = RACE_COLUMN if name == "race" else f"{FIXED_PREFIX}{name}"
             values = [float(r[column]) for r in kept if r.get(column)]
             if values:
                 regret[name] = (sum(values) / len(values), max(values))
-        out.append(Group(key=key, cells=len(kept), regret=regret))
+                # Over CELLS, not over seeds. A row of the artefact is one cell whose race
+                # has already been run over its seeds, so the seed-level variation is inside
+                # each value and cannot be recovered from here. What scatters across the
+                # rows is the cell, and that is what the column has to be read as.
+                doan[name] = spread(values)
+        out.append(Group(key=key, cells=len(kept), regret=regret, spread=doan))
     return out
 
 

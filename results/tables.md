@@ -87,20 +87,22 @@ held where they are. Results are scored on the true objective.
 
 Chosen at the cheaper budget on even seeds, paid at the dearer on odd seeds, so
 no run appears on both sides. Every budget pair is scored, not only the extremes.
-Each entry is mean / worst regret against the best method on the paying seeds.
+Each entry is mean +/- sd / worst regret against the best method on the
+paying seeds; the sd is the scatter across the cells of that group, not
+across seeds.
 
 | cells | n | race | always ACO | always ILS |
 |---|---|---|---|---|
-| all cells | 61 | 0.61% / 8.90% | 5.13% / 31.91% | 3.11% / 27.61% |
-| sharp top (one winner) | 39 | 0.95% / 8.90% | 7.97% / 31.91% | 4.29% / 27.61% |
-| plateau top (methods tie) | 22 | 0.00% / 0.00% | 0.09% / 1.15% | 1.01% / 9.61% |
+| all cells | 61 | 0.61% +/- 1.48% / 8.90% | 5.13% +/- 9.42% / 31.91% | 3.11% +/- 6.09% / 27.61% |
+| sharp top (one winner) | 39 | 0.95% +/- 1.77% / 8.90% | 7.97% +/- 10.82% / 31.91% | 4.29% +/- 7.21% / 27.61% |
+| plateau top (methods tie) | 22 | 0.00% +/- 0.00% / 0.00% | 0.09% +/- 0.26% / 1.15% | 1.01% +/- 2.20% / 9.61% |
 
 Where the plateau rows are exactly zero the choice costs nothing, so an
 average over both kinds understates what the selector is for. Splitting the
 regret by which term of the racing bound carries it, over 200 race draws per
 size with the paying half held fixed:
 
-| term | cells over 1% | mean | worst |
-|---|---|---|---|
-| estimation: finite race seeds, shrinks as they grow | 0 | 0.01% | 0.24% |
-| transfer: the cheap budget ranks methods differently | 6 | 0.51% | 8.90% |
+| term | cells over 1% | mean | sd | worst |
+|---|---|---|---|---|
+| estimation: finite race seeds, shrinks as they grow | 0 | 0.01% | 0.03% | 0.24% |
+| transfer: the cheap budget ranks methods differently | 6 | 0.51% | 1.38% | 8.90% |

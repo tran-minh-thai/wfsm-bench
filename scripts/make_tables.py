@@ -41,7 +41,7 @@ from wfsmbench.measure.ranks import mean_ranks as parse_ranks  # noqa: E402
 sys.path.insert(0, str(ROOT / "src"))
 
 from wfsmbench.measure.selector import (  # noqa: E402
-    regret_groups, regret_terms)
+    regret_groups, regret_terms, spread)
 
 # Reporting order. Cuneiform first because it is the collection the objective analysis
 # was developed on; the molecular collections follow in the order they were added.
@@ -199,6 +199,11 @@ def table_quantum() -> str:
             + grid(["fitness levels", "local optima"] + METHODS, rows))
 
 
+def _sd(value: float | None) -> str:
+    """A standard deviation, or the mark for a group too small to have one."""
+    return "--" if value is None else f"{value:.2f}%"
+
+
 def table_selector() -> str:
     """Racing, scored over every budget pair rather than only cheapest against dearest.
 
@@ -215,8 +220,14 @@ def table_selector() -> str:
     labels = {"all": "all cells", "sharp": "sharp top (one winner)",
               "plateau": "plateau top (methods tie)"}
     heading = {"race": "race", "aco": "always ACO", "ils": "always ILS"}
+    # mean +/- sd / worst. The spread is across the group's CELLS: a row of the artefact is
+    # one cell whose race is already run over its seeds, so seed-level variation sits inside
+    # each value and is not recoverable here. Printed because mean and worst alone leave the
+    # reader no way to tell a tight distribution from one carried by two outliers -- and here
+    # they differ: the race scatters by 1.48 where always-ACO scatters by 9.42.
     body = [[labels[g.key], str(g.cells)]
-            + [f"{m:.2f}% / {w:.2f}%" for m, w in g.regret.values()] for g in groups]
+            + [f"{m:.2f}% +/- {_sd(g.spread[n])} / {w:.2f}%"
+               for n, (m, w) in g.regret.items()] for g in groups]
 
     terms = regret_terms(read("selector_seed_sweep.csv"))
     by_cause = []
@@ -225,19 +236,22 @@ def table_selector() -> str:
         values = terms[key]
         if values:
             by_cause.append([label, str(sum(1 for v in values if v > 1.0)),
-                             f"{sum(values) / len(values):.2f}%", f"{max(values):.2f}%"])
+                             f"{sum(values) / len(values):.2f}%", _sd(spread(values)),
+                             f"{max(values):.2f}%"])
 
     return ("### Racing the methods beats every fixed rule, and where it does not is measurable"
             "\n\n"
             "Chosen at the cheaper budget on even seeds, paid at the dearer on odd seeds, so\n"
             "no run appears on both sides. Every budget pair is scored, not only the extremes.\n"
-            "Each entry is mean / worst regret against the best method on the paying seeds.\n\n"
+            "Each entry is mean +/- sd / worst regret against the best method on the\n"
+            "paying seeds; the sd is the scatter across the cells of that group, not\n"
+            "across seeds.\n\n"
             + grid(["cells", "n", *[heading.get(n, n) for n in names]], body)
             + "\n\nWhere the plateau rows are exactly zero the choice costs nothing, so an\n"
               "average over both kinds understates what the selector is for. Splitting the\n"
               "regret by which term of the racing bound carries it, over 200 race draws per\n"
               "size with the paying half held fixed:\n\n"
-            + grid(["term", "cells over 1%", "mean", "worst"], by_cause))
+            + grid(["term", "cells over 1%", "mean", "sd", "worst"], by_cause))
 
 
 TABLES = [table_collections, table_ranks, table_basins, table_quantum, table_selector]
