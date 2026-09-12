@@ -155,7 +155,10 @@ def figure_basins(path: Path) -> None:
                     xytext=(5, 5) if index % 2 == 0 else (5, -10),
                     textcoords="offset points")
     ax.axhline(1.0, color="#999999", linewidth=0.8, linestyle=":")
-    ax.annotate("ACO first", xy=(ax.get_xlim()[1], 1.0), fontsize=8, color="#555555",
+    # The one string on this canvas that was still English in the printed draft: every
+    # other word here came from the label file and this one was typed in place.
+    ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0), fontsize=8,
+                color="#555555",
                 va="bottom", ha="right")
     ax.set_xscale("log")
     ax.set_xlabel(text["xlabel"])
@@ -483,7 +486,102 @@ def figure_rank_transfer(path: Path) -> None:
     plt.close(figure)
 
 
+# ------------------------------------------------------------------ enumeration cost
+
+
+def enumeration_cost() -> dict[str, list[tuple[int, int, float]]]:
+    """collection -> [(size bound, pool size, seconds per pattern)], timed rows only.
+
+    Read from every gspan_baseline_*.csv rather than from one of them: the timed cells are
+    written per collection, and a file list kept here would go stale at the next collection.
+    Rows without exhaustive_seconds are the gSpan-only cells -- they carry a pool size but no
+    enumeration time, so a per-pattern cost computed from them would be a division by a
+    number that was never measured.
+    """
+    data: dict[str, dict[int, tuple[int, float]]] = {}
+    for source in sorted(RESULTS.glob("gspan_baseline_*.csv")):
+        with source.open(encoding="utf-8", newline="") as handle:
+            for row in csv.DictReader(handle):
+                if not row["exhaustive_seconds"]:
+                    continue
+                bound, pool = int(row["size_bound"]), int(row["exhaustive_patterns"])
+                cell = (pool, float(row["exhaustive_seconds"]) / pool)
+                cu = data.setdefault(row["dataset"], {}).get(bound)
+                # The same cell in two artefact files is not a duplicate to be deduplicated:
+                # it is two measurements of one thing, and this figure cannot choose between
+                # them. Cuneiform bound 6 sits in two files for exactly this reason -- one
+                # timed both sides, the other timed gSpan alone -- and only the timed one
+                # reaches here, because the other leaves exhaustive_seconds empty.
+                if cu is not None and cu != cell:
+                    raise SystemExit(
+                        f"[fail] {row['dataset']} bound {bound} is measured twice and the two "
+                        f"disagree: pool {cu[0]} vs {cell[0]}, {cu[1]:.4f} vs {cell[1]:.4f} "
+                        f"seconds per pattern. Two files claim the same cell; the figure "
+                        f"cannot pick one.")
+                data[row["dataset"]][bound] = cell
+    return {name: [(k, *cells[k]) for k in sorted(cells)] for name, cells in data.items()}
+
+
+def figure_enumeration_cost(path: Path) -> None:
+    """Both factors of the enumeration cost against the size bound, on a log axis.
+
+    The cost table prints both growth ratios already divided, which concedes that the reader
+    needs the SHAPE and then asks them to join the points themselves. Straight lines on a log
+    axis are what "geometric in K" looks like, and parallel lines across collections are what
+    "the ratio is stable" looks like -- neither is readable from a column of ratios.
+
+    Refuses under three bounds on any collection. Two points join into a line whatever the
+    truth is, so a two-point panel would draw a growth rate nothing measured; that refusal is
+    why this figure did not exist before the third bound was run on 2026-09-11.
+    """
+    text = labels("chi-phi-liet-ke")
+    data = enumeration_cost()
+    if not data:
+        raise SystemExit("[fail] no timed enumeration rows in results/gspan_baseline_*.csv; "
+                         "run stage 18 and stage 20 on the measurement machine")
+    thieu = sorted(f"{name} ({len(cells)})" for name, cells in data.items() if len(cells) < 3)
+    if thieu:
+        raise SystemExit(
+            f"[fail] {len(thieu)} collection(s) have fewer than three size bounds measured: "
+            f"{', '.join(thieu)}. Two points make a straight line on any axis, so the curve "
+            f"would assert a growth rate nothing measured. Run stage 20.")
+
+    import matplotlib.pyplot as plt
+    figure, axes = plt.subplots(1, 2, figsize=(10.0, 4.0), sharex=True)
+    colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
+    bounds = sorted({k for cells in data.values() for k, _pool, _per in cells})
+
+    for (name, cells), colour in zip(sorted(data.items()), colours):
+        xs = [k for k, _pool, _per in cells]
+        axes[0].plot(xs, [pool for _k, pool, _per in cells], marker="o", ms=4.5, lw=1.7,
+                     color=colour, label=name, zorder=3)
+        axes[1].plot(xs, [per for _k, _pool, per in cells], marker="o", ms=4.5, lw=1.7,
+                     color=colour, label=name, zorder=3)
+
+    for ax, ylabel, panel in ((axes[0], text["ylabel_pool"], text["panel_pool"]),
+                              (axes[1], text["ylabel_per"], text["panel_per"])):
+        ax.set_yscale("log")
+        ax.set_xticks(bounds)
+        ax.set_xlabel(text["xlabel"], fontsize=9)
+        ax.set_ylabel(ylabel, fontsize=9)
+        ax.set_title(panel, loc="left", fontsize=9)
+        style(ax)
+        # The y grid is what makes a slope comparable between two lines that sit in different
+        # decades, and on a log axis the minor lines are the ones that carry the reading.
+        ax.grid(axis="y", which="minor", alpha=0.12, linewidth=0.5)
+
+    handles = [plt.Line2D([], [], marker="o", ms=4.5, lw=1.7, color=colour, label=name)
+               for (name, _cells), colour in zip(sorted(data.items()), colours)]
+    figure.legend(handles=handles, frameon=False, fontsize=8, ncol=3,
+                  loc="lower center", bbox_to_anchor=(0.5, -0.04))
+    figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
+    figure.tight_layout(rect=(0, 0.07, 1, 0.94))
+    figure.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(figure)
+
+
 FIGURES = [("rank_transfer_by_collection.png", figure_rank_transfer),
+           ("enumeration_cost_by_bound.png", figure_enumeration_cost),
            ("ball_coverage_by_depth.png", figure_ball_coverage),
            ("front_position_vs_bound.png", figure_front_position),
            ("regret_vs_race_size.png", figure_race_size),
