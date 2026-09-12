@@ -165,20 +165,60 @@ def figure_basins(path: Path) -> None:
         ax.scatter([p[0] for p in group], [p[1] for p in group], s=70,
                    color=colour, label=label, zorder=3,
                    edgecolor="white", linewidth=0.8)
-    # Alternate the label side. Several cells sit within a few tenths of a percent of
-    # each other, and a fixed offset stacked their names on top of one another.
+    # Where each label goes is decided against the marks, not by alternating sides. The
+    # alternating version put every label to the RIGHT and only varied up or down, so a point
+    # with a neighbour just right of it had its name written across that neighbour: measured
+    # on the drawn figure, 2 of 13 marks carried label pixels inside them.
+    CO_CHU, CAO_CHU, BAN_KINH = 7, 7, 13.0   # fontsize, line height, mark radius in px
+    # The scale is set HERE, before anything reads a display coordinate. It used to be set
+    # further down, after this placement had already measured the figure on a linear x axis
+    # -- a layout that never reached the page, so every clearance test was answering about a
+    # different picture.
+    ax.set_xscale("log")
+    fig.canvas.draw()                        # transData is only valid once laid out
+    vi_tri = [ax.transData.transform((b, r)) for b, r, *_ in sorted(points)]
+    da_dat = []
     for index, (basin, rank, _flag, dataset, mode) in enumerate(sorted(points)):
-        ax.annotate(f"{dataset.replace('_bond', '').replace('_full', '')}·{mode[:4]}",
-                    (basin, rank), fontsize=7, color="#444444",
-                    xytext=(5, 5) if index % 2 == 0 else (5, -10),
-                    textcoords="offset points")
+        ten = f"{dataset.replace('_bond', '').replace('_full', '')}·{mode[:4]}"
+        # Width from the string: no renderer measurement is needed for a monospaced-enough
+        # estimate at this size, and over-estimating is the safe direction for a clearance
+        # test.
+        rong = 0.62 * CO_CHU * len(ten) * fig.dpi / 72.0
+        cao = CAO_CHU * fig.dpi / 72.0
+        x, y = vi_tri[index]
+        chon = None
+        # The offset clears the mark's own radius: starting closer put the first letter
+        # inside the very mark the label names.
+        xa = BAN_KINH + 3
+        for dx, dy, ha in ((xa, 3, "left"), (xa, -3 - cao, "left"),
+                           (-xa - rong, 3, "right"), (-xa - rong, -3 - cao, "right")):
+            hop = (x + dx, y + dy, x + dx + rong, y + dy + cao)
+            # Every mark EXCEPT this label's own: sitting beside its own point is the
+            # arrangement, not a collision, and testing against it rejected all four corners.
+            va_dau = any(not (hop[2] < mx - BAN_KINH or hop[0] > mx + BAN_KINH
+                              or hop[3] < my - BAN_KINH or hop[1] > my + BAN_KINH)
+                         for j, (mx, my) in enumerate(vi_tri) if j != index)
+            va_chu = any(not (hop[2] < o[0] or hop[0] > o[2]
+                              or hop[3] < o[1] or hop[1] > o[3]) for o in da_dat)
+            if not (va_dau or va_chu):
+                chon = (dx, dy, ha, hop)
+                break
+        if chon is None:
+            # Nothing clear: keep the old placement rather than drop the label. A name in a
+            # crowded corner is still readable; a missing name is a point nobody can identify.
+            chon = (BAN_KINH + 3, 3 if index % 2 == 0 else -3 - cao, "left", None)
+        dx, dy, ha, hop = chon
+        if hop is not None:
+            da_dat.append(hop)
+        ax.annotate(ten, (basin, rank), fontsize=CO_CHU, color="#444444",
+                    xytext=(dx * 72.0 / fig.dpi, dy * 72.0 / fig.dpi),
+                    textcoords="offset points", ha="left", va="bottom")
     ax.axhline(1.0, color="#999999", linewidth=0.8, linestyle=":")
     # The one string on this canvas that was still English in the printed draft: every
     # other word here came from the label file and this one was typed in place.
     ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0), fontsize=8,
                 color="#555555",
                 va="bottom", ha="right")
-    ax.set_xscale("log")
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
     # The title states the half that holds without exception. The converse -- a
