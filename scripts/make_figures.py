@@ -56,6 +56,12 @@ CD = 1.007
 METHODS = ["aco", "pso", "multiswarm", "genetic", "clpso", "local_search", "random"]
 # Colourblind-safe (Okabe-Ito), fixed order so a rebuild never recolours a line.
 COLOURS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#000000", "#999999"]
+# A second channel for the same seven, because the paper is read on paper. Hue alone is not an
+# encoding once a page is photocopied: at print threshold the three palest colours above go to
+# white and their series leave the figure without anything saying they are gone. Shape and dash
+# do not depend on the reproduction, so each method keeps its identity in a greyscale proof.
+MARKERS = ["o", "s", "^", "D", "v", "P", "X"]
+DASHES = ["-", "--", "-.", ":", (0, (3, 1, 1, 1)), (0, (5, 1)), (0, (1, 1))]
 QUANTA = ["q000", "q002", "q005", "q010", "q020", "q050", "q100"]
 STATS_LOG = {"Cuneiform": "s5", "QM9_bond": "qm9", "BZR_bond": "BZRbond",
              "COX2_bond": "COX2bond", "DHFR_bond": "DHFRbond",
@@ -96,22 +102,23 @@ def figure_quantum(path: Path) -> None:
         ranks.append(got)
 
     fig, ax = plt.subplots(figsize=(7.2, 4.4))
-    for method, colour in zip(METHODS, COLOURS):
-        ax.plot(levels, [r[method] for r in ranks], marker="o", markersize=4,
+    for method, colour, mark, dash in zip(METHODS, COLOURS, MARKERS, DASHES):
+        ax.plot(levels, [r[method] for r in ranks], marker=mark, markersize=5,
+                linestyle=dash,
                 linewidth=1.6, color=colour, label=method)
     # The critical difference drawn against the flattest interesting line, so the
     # comparison a reader needs -- movement against the threshold of significance -- is
     # on the page rather than left to arithmetic.
     base = ranks[0]["local_search"]
     ax.axhspan(base - CD / 2, base + CD / 2, color="#999999", alpha=0.13, zorder=0)
-    ax.annotate(text["cd"], xy=(levels[-1], base + CD / 2), fontsize=8,
+    ax.annotate(text["cd"], xy=(levels[-1], base + CD / 2), fontsize=10,
                 color="#555555", va="bottom", ha="right")
     ax.set_xscale("log")
     ax.invert_xaxis()
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
     ax.set_title(text["title"], loc="left")
-    ax.legend(frameon=False, fontsize=8, ncol=4, loc="upper center",
+    ax.legend(frameon=False, fontsize=10, ncol=4, loc="upper center",
               bbox_to_anchor=(0.5, -0.16))
     style(ax)
     fig.tight_layout()
@@ -437,6 +444,7 @@ def figure_rank_transfer(path: Path) -> None:
                          f"figure would assert a comparison nothing measured")
 
     methods = sorted({m for mode in du_lieu.values() for r in mode.values() for m in r})
+    marks = dict(zip(methods, MARKERS))
     colours = dict(zip(methods, ["#0072B2", "#D55E00", "#009E73", "#CC79A7",
                                  "#E69F00", "#56B4E9", "#999999"]))
     import matplotlib.pyplot as plt
@@ -451,23 +459,23 @@ def figure_rank_transfer(path: Path) -> None:
         for y, collection in enumerate(cols):
             ranks = du_lieu[mode].get(collection)
             if not ranks:
-                ax.annotate(text["absent"], xy=(1.0, y), fontsize=7, color="#999999",
+                ax.annotate(text["absent"], xy=(1.0, y), fontsize=9, color="#999999",
                             va="center")
                 continue
             best = min(ranks, key=ranks.get)
             for method, value in ranks.items():
-                ax.scatter(value, y, s=46 if method == best else 26,
-                           color=colours[method], zorder=3,
+                ax.scatter(value, y, s=52 if method == best else 30,
+                           color=colours[method], marker=marks[method], zorder=3,
                            edgecolor="black" if method == best else "none",
                            linewidth=0.8)
             ax.annotate(best, xy=(ranks[best], y), xytext=(-6, 8),
-                        textcoords="offset points", fontsize=7, ha="right",
+                        textcoords="offset points", fontsize=9, ha="right",
                         color=colours[best])
         ax.set_yticks(range(len(cols)))
-        ax.set_yticklabels(cols, fontsize=8)
+        ax.set_yticklabels(cols, fontsize=10)
         ax.set_ylim(len(cols) - 0.4, -1.1)
         ax.set_xlabel(text["xlabel"])
-        ax.set_title(text["modes"][mode], fontsize=9, loc="left")
+        ax.set_title(text["modes"][mode], fontsize=10, loc="left")
         ax.grid(axis="x", lw=0.4, color="#DDDDDD", zorder=0)
         for edge in ("top", "right"):
             ax.spines[edge].set_visible(False)
@@ -475,10 +483,10 @@ def figure_rank_transfer(path: Path) -> None:
         ax.plot([1.0, 1.0 + cd], [-0.7, -0.7], lw=2.2, color="#333333",
                 solid_capstyle="butt", clip_on=False, zorder=4)
         ax.annotate(text["cd_label"].format(cd=f"{cd:.3f}".replace(".", ",")),
-                    xy=(1.0, -0.7), xytext=(0, 5), textcoords="offset points", fontsize=7)
-    handles = [plt.Line2D([], [], marker="o", ls="", color=colours[m], label=m)
+                    xy=(1.0, -0.7), xytext=(0, 5), textcoords="offset points", fontsize=9)
+    handles = [plt.Line2D([], [], marker=marks[m], ls="", color=colours[m], label=m)
                for m in methods]
-    figure.legend(handles=handles, frameon=False, fontsize=8, ncol=len(methods),
+    figure.legend(handles=handles, frameon=False, fontsize=10, ncol=len(methods),
                   loc="lower center", bbox_to_anchor=(0.5, -0.02))
     figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
     figure.tight_layout(rect=(0, 0.06, 1, 0.94))
