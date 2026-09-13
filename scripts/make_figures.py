@@ -28,10 +28,16 @@ sys.path.insert(0, str(ROOT / "src"))
 from wfsmbench.measure.ranks import mean_ranks as parse_ranks  # noqa: E402
 FIGS = RESULTS / "figures"
 
-# Axis labels, titles and legends are Vietnamese, because the draft is Vietnamese down to the
-# figure labels; this file is source, which is published and stays ASCII. So the words live
-# beside the manuscript and are read from there.
-LABELS_PATH = ROOT.parent / "paper" / "figure_labels.vi.json"
+# Axis labels, titles and legends are ENGLISH, and the draft they go into is Vietnamese. That
+# is deliberate, decided 2026-09-13: a figure drawn once in English survives the translation
+# pass, while a Vietnamese one would have to be redrawn from the artefacts and re-checked at
+# exactly the point where nobody wants to be re-checking figures. The caption under each
+# figure stays in the draft and stays Vietnamese; only what is inside the picture is here.
+#
+# The words still live beside the manuscript rather than in this file, for the reason they
+# always did: this file is published source and stays ASCII, and the labels are prose that
+# the manuscript side edits.
+LABELS_PATH = ROOT.parent / "paper" / "figure_labels.en.json"
 
 
 def labels(figure: str) -> dict:
@@ -49,6 +55,22 @@ def labels(figure: str) -> dict:
 import matplotlib                                              # noqa: E402
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt                                # noqa: E402
+
+# Vector, not raster. A PDF figure sets no resolution for the typesetter to fight with, prints
+# at whatever the page gives it, and keeps its labels as TEXT -- so a reader can select a
+# collection name out of the paper, and a later translation pass can be checked by reading the
+# file rather than by looking at pixels.
+#
+# fonttype 42 embeds the glyphs as TrueType rather than tracing them as paths. Paths would
+# still LOOK right and would lose exactly what the format was chosen for: the text.
+matplotlib.rcParams["pdf.fonttype"] = 42
+matplotlib.rcParams["pdf.compression"] = 6
+
+# No creation date inside the file. Without this every rebuild writes seven different files
+# for the same measurements, the copier reports all seven stale on every run, and the check
+# that exists to say "this figure no longer matches its artefact" says it constantly -- which
+# is the same as saying nothing. Passed at save time because there is no rcParam for it.
+KHONG_NGAY = {"CreationDate": None}
 
 # A dark rim on every marker, for every figure in this file. Measured 2026-09-12 on a print
 # threshold: a marker filled with its series colour has the luminance of that colour and
@@ -102,6 +124,33 @@ def style(ax) -> None:
     ax.set_axisbelow(True)
 
 
+# The draft's text column, measured from the one figure that is neither shrunk nor stretched:
+# ball coverage is drawn 6.4in wide, asked for at \linewidth, and its 10pt label arrives at
+# 10.13pt -- so the column is 6.48in. A figure asked for at 0.86\linewidth prints at 5.57in.
+COT_IN = 6.48
+
+
+def _phong_chu(fig, rong_in: float, rect=None) -> None:
+    """Scale every string in the figure by the inverse of the shrink the draft will apply.
+
+    Called before saving, so the numbers the builders pass stay readable as what the PAGE
+    receives. Not applied to figures already printing at their nominal size: scaling their
+    text would be a change with no reader on the other end of it.
+
+    The layout is then re-run with the rectangle the builder used. Without that the figure
+    keeps a layout computed for the smaller type -- measured on the first build of this
+    change, the front-position figure's axis label ran straight across its own tick numbers,
+    because room had been reserved for 4.9pt text and 8pt text was put into it.
+    """
+    import matplotlib.text
+    he_so = rong_in / fig.get_size_inches()[0]
+    if he_so >= 0.95:
+        return
+    for chu in fig.findobj(matplotlib.text.Text):
+        chu.set_fontsize(chu.get_fontsize() / he_so)
+    fig.tight_layout() if rect is None else fig.tight_layout(rect=rect)
+
+
 def figure_quantum(path: Path) -> None:
     """Plateau structure varies twentyfold; no method's rank follows it."""
     text = labels("dia-hinh-bi-ep-doi")
@@ -133,7 +182,7 @@ def figure_quantum(path: Path) -> None:
               bbox_to_anchor=(0.5, -0.16))
     style(ax)
     fig.tight_layout()
-    fig.savefig(path, dpi=200, bbox_inches="tight")
+    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -229,7 +278,7 @@ def figure_basins(path: Path) -> None:
     ax.legend(frameon=False, fontsize=8, loc="upper left")
     style(ax)
     fig.tight_layout()
-    fig.savefig(path, dpi=200, bbox_inches="tight")
+    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -309,7 +358,8 @@ def figure_front_position(path: Path) -> None:
     fig.legend(frameon=False, fontsize=9, ncol=3, loc="lower center",
                bbox_to_anchor=(0.5, -0.05))
     fig.tight_layout(rect=(0.02, 0.06, 1, 0.95))
-    fig.savefig(path, dpi=200, bbox_inches="tight")
+    _phong_chu(fig, 0.86 * COT_IN, rect=(0.02, 0.06, 1, 0.95))
+    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -386,7 +436,8 @@ def figure_race_size(path: Path) -> None:
     left.legend(frameon=False, fontsize=7.5, loc="upper right", bbox_to_anchor=(1.0, 1.02))
     fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
     fig.tight_layout(rect=(0, 0, 1, 0.94))
-    fig.savefig(path, dpi=200, bbox_inches="tight")
+    _phong_chu(fig, 0.86 * COT_IN, rect=(0, 0, 1, 0.94))
+    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -451,7 +502,7 @@ def figure_ball_coverage(path: Path) -> None:
     for edge in ("top", "right"):
         ax.spines[edge].set_visible(False)
     figure.tight_layout()
-    figure.savefig(path, dpi=200)
+    figure.savefig(path, dpi=200, metadata=KHONG_NGAY)
     plt.close(figure)
 
 
@@ -545,7 +596,9 @@ def figure_rank_transfer(path: Path) -> None:
         # The critical distance, drawn once as a span the reader can carry along the axis.
         ax.plot([1.0, 1.0 + cd], [-0.7, -0.7], lw=2.2, color="#333333",
                 solid_capstyle="butt", clip_on=False, zorder=4)
-        ax.annotate(text["cd_label"].format(cd=f"{cd:.3f}".replace(".", ",")),
+        # A point, not a comma: the figure reads in English now, and a comma decimal inside an
+        # English label is the one place the two languages would visibly collide.
+        ax.annotate(text["cd_label"].format(cd=f"{cd:.3f}"),
                     xy=(1.0, -0.7), xytext=(0, 5), textcoords="offset points", fontsize=9)
     handles = [plt.Line2D([], [], marker=marks[m], ls="", color=colours[m], label=m)
                for m in methods]
@@ -553,7 +606,8 @@ def figure_rank_transfer(path: Path) -> None:
                   loc="lower center", bbox_to_anchor=(0.5, -0.02))
     figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
     figure.tight_layout(rect=(0, 0.06, 1, 0.94))
-    figure.savefig(path, dpi=200, bbox_inches="tight")
+    _phong_chu(figure, COT_IN, rect=(0, 0.06, 1, 0.94))
+    figure.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(figure)
 
 
@@ -647,17 +701,18 @@ def figure_enumeration_cost(path: Path) -> None:
                   loc="lower center", bbox_to_anchor=(0.5, -0.04))
     figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
     figure.tight_layout(rect=(0, 0.07, 1, 0.94))
-    figure.savefig(path, dpi=200, bbox_inches="tight")
+    _phong_chu(figure, COT_IN, rect=(0, 0.07, 1, 0.94))
+    figure.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(figure)
 
 
-FIGURES = [("rank_transfer_by_collection.png", figure_rank_transfer),
-           ("enumeration_cost_by_bound.png", figure_enumeration_cost),
-           ("ball_coverage_by_depth.png", figure_ball_coverage),
-           ("front_position_vs_bound.png", figure_front_position),
-           ("regret_vs_race_size.png", figure_race_size),
-           ("quantum_sweep.png", figure_quantum),
-           ("basin_vs_aco.png", figure_basins)]
+FIGURES = [("rank_transfer_by_collection.pdf", figure_rank_transfer),
+           ("enumeration_cost_by_bound.pdf", figure_enumeration_cost),
+           ("ball_coverage_by_depth.pdf", figure_ball_coverage),
+           ("front_position_vs_bound.pdf", figure_front_position),
+           ("regret_vs_race_size.pdf", figure_race_size),
+           ("quantum_sweep.pdf", figure_quantum),
+           ("basin_vs_aco.pdf", figure_basins)]
 
 
 def main() -> int:
@@ -669,8 +724,12 @@ def main() -> int:
     for name, build in FIGURES:
         build(FIGS / name)
         print(f"[done] {(FIGS / name).relative_to(ROOT)}")
-    stale = sorted(p.name for p in FIGS.glob("*.png")
-                   if p.name not in {n for n, _ in FIGURES})
+    # Every file, not only one extension. The figures moved from PNG to PDF on 2026-09-13, and
+    # a scan that looked for PNGs would have reported the directory clean while seven stale
+    # rasters sat in it -- which is the exact failure this note exists to report.
+    stale = sorted(p.name for p in FIGS.iterdir()
+                   if p.is_file() and not p.name.startswith(".")
+                   and p.name not in {n for n, _ in FIGURES})
     if stale:
         print(f"[note] {len(stale)} image(s) in figures/ are not produced by this script "
               f"and may predate the current results: {', '.join(stale)}")
