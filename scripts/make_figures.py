@@ -510,7 +510,12 @@ def figure_rank_transfer(path: Path) -> None:
         for y, collection in enumerate(cols):
             ranks = du_lieu[mode].get(collection)
             if not ranks:
-                ax.annotate(text["absent"], xy=(1.0, y), fontsize=9, color="#999999",
+                # Near-black, not the palette's grey. This line explains a row that carries
+                # no mark at all, and in that grey it was the first thing a print threshold
+                # removed -- leaving an empty row and nothing saying why, which reads as lost
+                # data rather than as a cell that was never measured. It is text about the
+                # figure, not one of the series, so it takes the colour of text.
+                ax.annotate(text["absent"], xy=(1.0, y), fontsize=9, color="#1A1A1A",
                             va="center")
                 continue
             best = min(ranks, key=ranks.get)
