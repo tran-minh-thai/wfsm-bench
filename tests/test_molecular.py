@@ -79,26 +79,26 @@ def test_edge_labels_are_read_from_the_one_hot_when_present():
 
 
 def test_limit_selects_a_prefix_of_the_molecules():
-    """SUA 2026-09-02: check WHICH molecules come back, not only how many.
+    """CORRECTED 2026-09-02: check WHICH molecules come back, not only how many.
 
     The previous version asserted len(graphs) == 1 after asking for one molecule, which any
     selection rule satisfies -- the last molecule, a random one, an empty one rebuilt from
     nothing. Strengthening it to compare the molecule itself turned up something the count
     could never have shown, and it is not a bug: see the test below.
     """
-    tat_ca, _labels = build()
+    everything, _labels = build()
     graphs, _labels = build_graphs(GRAPH_OF_NODE, NODE_LABELS, POSITIONS, EDGE_PAIRS, limit=1)
     assert len(graphs) == 1
-    assert tat_ca[0] != tat_ca[1], "both molecules are identical; this check cannot fail"
+    assert everything[0] != everything[1], "both molecules are identical; this check cannot fail"
 
     # Structure, not weights: the weights are the subject of the next test.
-    def hinh_dang(g):
+    def shape_of(g):
         return (g["id"], g["vertices"],
                 sorted((e["src"], e["dst"], e["label"]) for e in g["edges"]))
 
-    assert hinh_dang(graphs[0]) == hinh_dang(tat_ca[0]), (
-        f"limit=1 returned a molecule that is not the first: got {hinh_dang(graphs[0])}, "
-        f"the collection starts with {hinh_dang(tat_ca[0])}")
+    assert shape_of(graphs[0]) == shape_of(everything[0]), (
+        f"limit=1 returned a molecule that is not the first: got {shape_of(graphs[0])}, "
+        f"the collection starts with {shape_of(everything[0])}")
 
 
 def test_the_weight_scale_is_a_property_of_the_subset_that_was_loaded():
@@ -116,24 +116,24 @@ def test_the_weight_scale_is_a_property_of_the_subset_that_was_loaded():
     subset size. Anyone making the scaling global would make that sentence false, and this is
     what would tell them.
     """
-    tat_ca, _labels = build()
-    mot, _labels = build_graphs(GRAPH_OF_NODE, NODE_LABELS, POSITIONS, EDGE_PAIRS, limit=1)
+    everything, _labels = build()
+    first_only, _labels = build_graphs(GRAPH_OF_NODE, NODE_LABELS, POSITIONS, EDGE_PAIRS, limit=1)
 
-    def trong_so(g):
+    def weights_of(g):
         return [e["weight"] for e in sorted(g["edges"], key=lambda e: (e["src"], e["dst"]))]
 
-    day_du, cat_bot = trong_so(tat_ca[0]), trong_so(mot[0])
-    assert day_du != cat_bot, (
-        f"the same molecule kept its weights across two different subsets ({day_du}); the "
+    full_weights, subset_weights = weights_of(everything[0]), weights_of(first_only[0])
+    assert full_weights != subset_weights, (
+        f"the same molecule kept its weights across two different subsets ({full_weights}); the "
         f"scaling has become global, and the manuscript's note about the w_max anchor "
         f"varying by subset is now false")
-    assert min(day_du) == min(cat_bot) == WEIGHT_MIN, "the shortest bond is the floor in both"
-    assert max(cat_bot) == WEIGHT_MAX, (
+    assert min(full_weights) == min(subset_weights) == WEIGHT_MIN, "the shortest bond is the floor in both"
+    assert max(subset_weights) == WEIGHT_MAX, (
         f"in a subset holding only the first molecule its longest bond must reach the ceiling; "
-        f"got {cat_bot}")
-    assert max(day_du) < WEIGHT_MAX, (
+        f"got {subset_weights}")
+    assert max(full_weights) < WEIGHT_MAX, (
         f"with the longer second molecule loaded, the first molecule's longest bond is no "
-        f"longer the longest overall and must sit below the ceiling; got {day_du}")
+        f"longer the longest overall and must sit below the ceiling; got {full_weights}")
 
 def test_a_collection_without_a_role_assignment_is_refused():
     with pytest.raises(ValueError):

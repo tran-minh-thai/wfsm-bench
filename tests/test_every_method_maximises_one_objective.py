@@ -48,12 +48,12 @@ METHODS = {
 }
 
 
-def _du_lieu():
+def _data():
     graphs, _ = load_dataset(SAMPLE)
     return graphs, build_statistics(graphs)
 
 
-def _tham_so() -> Params:
+def _params() -> Params:
     """One Params for every method, built the way the study builds it."""
     return Params(max_nodes=4, max_edges=4, min_support=2,
                   size_reference=STUDY_SIZE_REFERENCE, swarm_size=5, iterations=3)
@@ -61,19 +61,19 @@ def _tham_so() -> Params:
 
 @pytest.mark.parametrize("method", sorted(METHODS))
 def test_the_reported_fitness_is_the_shared_objective(method: str) -> None:
-    graphs, stats = _du_lieu()
-    params = _tham_so()
+    graphs, stats = _data()
+    params = _params()
     result = METHODS[method](graphs, stats, params, 0)
     best = result.gbest
     assert best is not None, (
         f"{method} returned no pattern at a budget of {BUDGET}; this check cannot say what it "
         f"was maximising")
     pattern = best.particle.pattern
-    lai = score_fitness(best.evaluation, pattern.num_nodes(), pattern.num_edges(),
+    rescored = score_fitness(best.evaluation, pattern.num_nodes(), pattern.num_edges(),
                         stats, params)
-    assert lai == pytest.approx(best.fitness, abs=1e-12), (
+    assert rescored == pytest.approx(best.fitness, abs=1e-12), (
         f"{method} reports {best.fitness!r} for the pattern it returned, and the shared "
-        f"objective scores that same pattern {lai!r}. The method is climbing a different "
+        f"objective scores that same pattern {rescored!r}. The method is climbing a different "
         f"function from the one the analysis is about.")
 
 
@@ -81,12 +81,12 @@ def test_no_method_alters_the_parameters_it_was_given() -> None:
     """The anchors are constants of the study, which is the half of the claim a value check
     cannot see: a method that quietly rescaled its own copy would still report a matching
     number for its own pattern."""
-    graphs, stats = _du_lieu()
-    params = _tham_so()
-    truoc = replace(params)
-    for method, chay in sorted(METHODS.items()):
-        chay(graphs, stats, params, 0)
-        assert params == truoc, f"{method} mutated the shared parameters"
+    graphs, stats = _data()
+    params = _params()
+    before = replace(params)
+    for method, run_method in sorted(METHODS.items()):
+        run_method(graphs, stats, params, 0)
+        assert params == before, f"{method} mutated the shared parameters"
 
 
 def test_the_anchors_are_the_same_for_every_method() -> None:
@@ -97,19 +97,19 @@ def test_the_anchors_are_the_same_for_every_method() -> None:
     taken from its own sample of the data, which would show up as two different values for
     one pattern.
     """
-    graphs, stats = _du_lieu()
-    params = _tham_so()
-    diem: dict[str, float] = {}
-    for method, chay in sorted(METHODS.items()):
-        best = chay(graphs, stats, params, 0).gbest
+    graphs, stats = _data()
+    params = _params()
+    score_by_pattern: dict[str, float] = {}
+    for method, run_method in sorted(METHODS.items()):
+        best = run_method(graphs, stats, params, 0).gbest
         if best is None:
             continue
         pattern = best.particle.pattern
-        khoa = pattern.canonical_key() if hasattr(pattern, "canonical_key") else str(pattern)
-        lai = score_fitness(best.evaluation, pattern.num_nodes(), pattern.num_edges(),
+        key = pattern.canonical_key() if hasattr(pattern, "canonical_key") else str(pattern)
+        rescored = score_fitness(best.evaluation, pattern.num_nodes(), pattern.num_edges(),
                             stats, params)
-        cu = diem.setdefault(khoa, lai)
-        assert cu == pytest.approx(lai, abs=1e-12), (
-            f"one pattern scores {cu} for one method and {lai} for {method}; the two are not "
+        earlier = score_by_pattern.setdefault(key, rescored)
+        assert earlier == pytest.approx(rescored, abs=1e-12), (
+            f"one pattern scores {earlier} for one method and {rescored} for {method}; the two are not "
             f"normalising against the same anchors")
-    assert diem, "no method returned a pattern; the check compared nothing"
+    assert score_by_pattern, "no method returned a pattern; the check compared nothing"

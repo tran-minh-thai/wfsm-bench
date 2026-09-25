@@ -71,7 +71,7 @@ matplotlib.rcParams["pdf.compression"] = 6
 # for the same measurements, the copier reports all seven stale on every run, and the check
 # that exists to say "this figure no longer matches its artefact" says it constantly -- which
 # is the same as saying nothing. Passed at save time because there is no rcParam for it.
-KHONG_NGAY = {"CreationDate": None}
+NO_DATE_METADATA = {"CreationDate": None}
 
 # A dark rim on every marker, for every figure in this file. Measured 2026-09-12 on a print
 # threshold: a marker filled with its series colour has the luminance of that colour and
@@ -128,10 +128,10 @@ def style(ax) -> None:
 # The draft's text column, measured from the one figure that is neither shrunk nor stretched:
 # ball coverage is drawn 6.4in wide, asked for at \linewidth, and its 10pt label arrives at
 # 10.13pt -- so the column is 6.48in. A figure asked for at 0.86\linewidth prints at 5.57in.
-COT_IN = 6.48
+COLUMN_WIDTH_IN = 6.48
 
 
-def _phong_chu(fig, rong_in: float, rect=None) -> None:
+def _scale_text_for_print(fig, printed_width_in: float, rect=None) -> None:
     """Scale every string in the figure by the inverse of the shrink the draft will apply.
 
     Called before saving, so the numbers the builders pass stay readable as what the PAGE
@@ -144,11 +144,11 @@ def _phong_chu(fig, rong_in: float, rect=None) -> None:
     because room had been reserved for 4.9pt text and 8pt text was put into it.
     """
     import matplotlib.text
-    he_so = rong_in / fig.get_size_inches()[0]
-    if he_so >= 0.95:
+    print_ratio = printed_width_in / fig.get_size_inches()[0]
+    if print_ratio >= 0.95:
         return
-    for chu in fig.findobj(matplotlib.text.Text):
-        chu.set_fontsize(chu.get_fontsize() / he_so)
+    for text_artist in fig.findobj(matplotlib.text.Text):
+        text_artist.set_fontsize(text_artist.get_fontsize() / print_ratio)
     fig.tight_layout() if rect is None else fig.tight_layout(rect=rect)
 
 
@@ -183,7 +183,7 @@ def figure_quantum(path: Path) -> None:
               bbox_to_anchor=(0.5, -0.16))
     style(ax)
     fig.tight_layout()
-    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
+    fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -219,48 +219,48 @@ def figure_basins(path: Path) -> None:
     # alternating version put every label to the RIGHT and only varied up or down, so a point
     # with a neighbour just right of it had its name written across that neighbour: measured
     # on the drawn figure, 2 of 13 marks carried label pixels inside them.
-    CO_CHU, CAO_CHU, BAN_KINH = 7, 7, 13.0   # fontsize, line height, mark radius in px
+    LABEL_FONTSIZE, LABEL_LINE_HEIGHT, MARK_RADIUS = 7, 7, 13.0   # fontsize, line height, mark radius in px
     # The scale is set HERE, before anything reads a display coordinate. It used to be set
     # further down, after this placement had already measured the figure on a linear x axis
     # -- a layout that never reached the page, so every clearance test was answering about a
     # different picture.
     ax.set_xscale("log")
     fig.canvas.draw()                        # transData is only valid once laid out
-    vi_tri = [ax.transData.transform((b, r)) for b, r, *_ in sorted(points)]
-    da_dat = []
+    mark_positions = [ax.transData.transform((b, r)) for b, r, *_ in sorted(points)]
+    placed_boxes = []
     for index, (basin, rank, _flag, dataset, mode) in enumerate(sorted(points)):
-        ten = f"{dataset.replace('_bond', '').replace('_full', '')}·{mode[:4]}"
+        label_text = f"{dataset.replace('_bond', '').replace('_full', '')}·{mode[:4]}"
         # Width from the string: no renderer measurement is needed for a monospaced-enough
         # estimate at this size, and over-estimating is the safe direction for a clearance
         # test.
-        rong = 0.62 * CO_CHU * len(ten) * fig.dpi / 72.0
-        cao = CAO_CHU * fig.dpi / 72.0
-        x, y = vi_tri[index]
-        chon = None
+        box_width = 0.62 * LABEL_FONTSIZE * len(label_text) * fig.dpi / 72.0
+        box_height = LABEL_LINE_HEIGHT * fig.dpi / 72.0
+        x, y = mark_positions[index]
+        chosen_offset = None
         # The offset clears the mark's own radius: starting closer put the first letter
         # inside the very mark the label names.
-        xa = BAN_KINH + 3
-        for dx, dy, ha in ((xa, 3, "left"), (xa, -3 - cao, "left"),
-                           (-xa - rong, 3, "right"), (-xa - rong, -3 - cao, "right")):
-            hop = (x + dx, y + dy, x + dx + rong, y + dy + cao)
+        offset_px = MARK_RADIUS + 3
+        for dx, dy, ha in ((offset_px, 3, "left"), (offset_px, -3 - box_height, "left"),
+                           (-offset_px - box_width, 3, "right"), (-offset_px - box_width, -3 - box_height, "right")):
+            label_box = (x + dx, y + dy, x + dx + box_width, y + dy + box_height)
             # Every mark EXCEPT this label's own: sitting beside its own point is the
             # arrangement, not a collision, and testing against it rejected all four corners.
-            va_dau = any(not (hop[2] < mx - BAN_KINH or hop[0] > mx + BAN_KINH
-                              or hop[3] < my - BAN_KINH or hop[1] > my + BAN_KINH)
-                         for j, (mx, my) in enumerate(vi_tri) if j != index)
-            va_chu = any(not (hop[2] < o[0] or hop[0] > o[2]
-                              or hop[3] < o[1] or hop[1] > o[3]) for o in da_dat)
-            if not (va_dau or va_chu):
-                chon = (dx, dy, ha, hop)
+            hits_mark = any(not (label_box[2] < mx - MARK_RADIUS or label_box[0] > mx + MARK_RADIUS
+                              or label_box[3] < my - MARK_RADIUS or label_box[1] > my + MARK_RADIUS)
+                         for j, (mx, my) in enumerate(mark_positions) if j != index)
+            hits_label = any(not (label_box[2] < o[0] or label_box[0] > o[2]
+                              or label_box[3] < o[1] or label_box[1] > o[3]) for o in placed_boxes)
+            if not (hits_mark or hits_label):
+                chosen_offset = (dx, dy, ha, label_box)
                 break
-        if chon is None:
+        if chosen_offset is None:
             # Nothing clear: keep the old placement rather than drop the label. A name in a
             # crowded corner is still readable; a missing name is a point nobody can identify.
-            chon = (BAN_KINH + 3, 3 if index % 2 == 0 else -3 - cao, "left", None)
-        dx, dy, ha, hop = chon
-        if hop is not None:
-            da_dat.append(hop)
-        ax.annotate(ten, (basin, rank), fontsize=CO_CHU, color="#444444",
+            chosen_offset = (MARK_RADIUS + 3, 3 if index % 2 == 0 else -3 - box_height, "left", None)
+        dx, dy, ha, label_box = chosen_offset
+        if label_box is not None:
+            placed_boxes.append(label_box)
+        ax.annotate(label_text, (basin, rank), fontsize=LABEL_FONTSIZE, color="#444444",
                     xytext=(dx * 72.0 / fig.dpi, dy * 72.0 / fig.dpi),
                     textcoords="offset points", ha="left", va="bottom")
     ax.axhline(1.0, color="#999999", linewidth=0.8, linestyle=":")
@@ -279,7 +279,7 @@ def figure_basins(path: Path) -> None:
     ax.legend(frameon=False, fontsize=8, loc="upper left")
     style(ax)
     fig.tight_layout()
-    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
+    fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -359,8 +359,8 @@ def figure_front_position(path: Path) -> None:
     fig.legend(frameon=False, fontsize=9, ncol=3, loc="lower center",
                bbox_to_anchor=(0.5, -0.05))
     fig.tight_layout(rect=(0.02, 0.06, 1, 0.95))
-    _phong_chu(fig, 0.86 * COT_IN, rect=(0.02, 0.06, 1, 0.95))
-    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
+    _scale_text_for_print(fig, 0.86 * COLUMN_WIDTH_IN, rect=(0.02, 0.06, 1, 0.95))
+    fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -391,8 +391,8 @@ def figure_race_size(path: Path) -> None:
     # three lines of its own tick labels, which is not an axes box, and the legend and the
     # truncation note were then drawn into a space that no longer existed. The height is set
     # from the PRINTED box the panels need, not from a canvas nobody sees.
-    CO_CHU_IN = 0.86 * COT_IN / 10.4
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15) / CO_CHU_IN))
+    print_scale = 0.86 * COLUMN_WIDTH_IN / 10.4
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15) / print_scale))
 
     # Left: the mean total regret against the mean floor. Averaging is linear, so the gap
     # between the two lines IS the mean of the per-cell gaps -- no cross-cell subtraction.
@@ -455,13 +455,13 @@ def figure_race_size(path: Path) -> None:
     # right of a box too short to hold it, so it printed across the tick marks and the axis
     # label it was sitting on top of. It describes both panels anyway, so the figure is the
     # right owner of it, not the left panel.
-    handles, ten = left.get_legend_handles_labels()
-    fig.legend(handles, ten, frameon=False, fontsize=7.5, ncol=3,
+    handles, label_text = left.get_legend_handles_labels()
+    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=3,
                loc="lower center", bbox_to_anchor=(0.5, -0.01))
     fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
     fig.tight_layout(rect=(0, 0.10, 1, 0.94))
-    _phong_chu(fig, 0.86 * COT_IN, rect=(0, 0.10, 1, 0.94))
-    fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
+    _scale_text_for_print(fig, 0.86 * COLUMN_WIDTH_IN, rect=(0, 0.10, 1, 0.94))
+    fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
 
@@ -489,16 +489,16 @@ def figure_ball_coverage(path: Path) -> None:
     criterion being a rule that always says "give up".
     """
     text = labels("do-phu-qua-cau")
-    do_thi = {}
+    coverage_by_collection = {}
     for source in sorted(INVARIANT.glob("bound_locality_d*.csv")):
         with source.open(encoding="utf-8") as handle:
             for row in csv.DictReader(handle):
-                do_thi.setdefault(row["dataset"], {})[int(row["depth"])] = (
+                coverage_by_collection.setdefault(row["dataset"], {})[int(row["depth"])] = (
                     100.0 * float(row["ball_coverage_pooled"]))
-    if len(do_thi) < 2:
-        raise SystemExit(f"[fail] {INVARIANT} holds ball coverage for {len(do_thi)} "
+    if len(coverage_by_collection) < 2:
+        raise SystemExit(f"[fail] {INVARIANT} holds ball coverage for {len(coverage_by_collection)} "
                          f"collection(s); run scripts/measure_bound_locality.py at each depth")
-    depths = sorted({d for series in do_thi.values() for d in series})
+    depths = sorted({d for series in coverage_by_collection.values() for d in series})
     if len(depths) < 3:
         raise SystemExit(f"[fail] only {len(depths)} depth(s) measured; a curve needs a range, "
                          f"and a two-point line would assert a shape nothing measured")
@@ -506,7 +506,7 @@ def figure_ball_coverage(path: Path) -> None:
     import matplotlib.pyplot as plt
     figure, ax = plt.subplots(figsize=(6.4, 3.6))
     colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
-    for (name, series), colour in zip(sorted(do_thi.items()), colours):
+    for (name, series), colour in zip(sorted(coverage_by_collection.items()), colours):
         xs = [d for d in depths if d in series]
         ax.plot(xs, [series[d] for d in xs], marker="o", ms=4, lw=1.6,
                 color=colour, label=name, zorder=3)
@@ -526,7 +526,7 @@ def figure_ball_coverage(path: Path) -> None:
     for edge in ("top", "right"):
         ax.spines[edge].set_visible(False)
     figure.tight_layout()
-    figure.savefig(path, dpi=200, metadata=KHONG_NGAY)
+    figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA)
     plt.close(figure)
 
 
@@ -551,7 +551,7 @@ def figure_rank_transfer(path: Path) -> None:
     """
     text = labels("thu-hang-khong-chuyen")
     logs = _stats_logs()
-    du_lieu: dict[str, dict[str, dict[str, float]]] = {}
+    ranks_by_mode: dict[str, dict[str, dict[str, float]]] = {}
     cd = None
     for collection, stem in logs.items():
         source = RESULTS / f"{stem}_statistics.log"
@@ -564,18 +564,18 @@ def figure_rank_transfer(path: Path) -> None:
         for mode in text["modes"]:
             ranks = parse_ranks(body, mode)
             if ranks:
-                du_lieu.setdefault(mode, {})[collection] = ranks
-    if cd is None or len(du_lieu) < 2:
-        raise SystemExit(f"[fail] rank data for {len(du_lieu)} mode(s) and CD={cd}; the "
+                ranks_by_mode.setdefault(mode, {})[collection] = ranks
+    if cd is None or len(ranks_by_mode) < 2:
+        raise SystemExit(f"[fail] rank data for {len(ranks_by_mode)} mode(s) and CD={cd}; the "
                          f"figure would assert a comparison nothing measured")
 
-    methods = sorted({m for mode in du_lieu.values() for r in mode.values() for m in r})
+    methods = sorted({m for mode in ranks_by_mode.values() for r in mode.values() for m in r})
     marks = dict(zip(methods, MARKERS))
     colours = dict(zip(methods, ["#0072B2", "#D55E00", "#009E73", "#CC79A7",
                                  "#E69F00", "#56B4E9", "#999999"]))
     import matplotlib.pyplot as plt
-    modes = list(du_lieu)
-    cols = sorted({c for mode in du_lieu.values() for c in mode})
+    modes = list(ranks_by_mode)
+    cols = sorted({c for mode in ranks_by_mode.values() for c in mode})
     # Height is DERIVED from the row count, not fixed. The figure is drawn 9.6in wide and
     # printed at COT_IN, so every length on the canvas arrives at 0.675 of itself; a height
     # chosen once for a canvas the reader never sees is how six rows ended up closer together
@@ -583,9 +583,9 @@ def figure_rank_transfer(path: Path) -> None:
     # inches -- 0.30in against a 10pt label, which is a line and a half -- the fixed furniture
     # (both titles, the axis label, the legend, the critical-distance strip) is added in the
     # same units, and only then is the canvas height the quotient of the two.
-    CO_CHU_IN = COT_IN / 9.6
-    cao_in = (0.30 * len(cols) + 1.55) / CO_CHU_IN
-    figure, axes = plt.subplots(1, len(modes), figsize=(9.6, cao_in),
+    print_scale = COLUMN_WIDTH_IN / 9.6
+    height_in = (0.30 * len(cols) + 1.55) / print_scale
+    figure, axes = plt.subplots(1, len(modes), figsize=(9.6, height_in),
                                 sharex=True, sharey=True)
     # One ORDER for both panels. With sharey and a per-mode order, a mode measured on five
     # collections and a mode measured on six put different collections on the same row, and
@@ -593,7 +593,7 @@ def figure_rank_transfer(path: Path) -> None:
     # figure. A collection a mode has no data for gets a blank row, which is the honest shape.
     for ax, mode in zip(axes, modes):
         for y, collection in enumerate(cols):
-            ranks = du_lieu[mode].get(collection)
+            ranks = ranks_by_mode[mode].get(collection)
             if not ranks:
                 # Near-black, not the palette's grey. This line explains a row that carries
                 # no mark at all, and in that grey it was the first thing a print threshold
@@ -646,8 +646,8 @@ def figure_rank_transfer(path: Path) -> None:
                   loc="lower center", bbox_to_anchor=(0.5, -0.02))
     figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
     figure.tight_layout(rect=(0, 0.06, 1, 0.94))
-    _phong_chu(figure, COT_IN, rect=(0, 0.06, 1, 0.94))
-    figure.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
+    _scale_text_for_print(figure, COLUMN_WIDTH_IN, rect=(0, 0.06, 1, 0.94))
+    figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(figure)
 
 
@@ -671,16 +671,16 @@ def enumeration_cost() -> dict[str, list[tuple[int, int, float]]]:
                     continue
                 bound, pool = int(row["size_bound"]), int(row["exhaustive_patterns"])
                 cell = (pool, float(row["exhaustive_seconds"]) / pool)
-                cu = data.setdefault(row["dataset"], {}).get(bound)
+                earlier_cell = data.setdefault(row["dataset"], {}).get(bound)
                 # The same cell in two artefact files is not a duplicate to be deduplicated:
                 # it is two measurements of one thing, and this figure cannot choose between
                 # them. Cuneiform bound 6 sits in two files for exactly this reason -- one
                 # timed both sides, the other timed gSpan alone -- and only the timed one
                 # reaches here, because the other leaves exhaustive_seconds empty.
-                if cu is not None and cu != cell:
+                if earlier_cell is not None and earlier_cell != cell:
                     raise SystemExit(
                         f"[fail] {row['dataset']} bound {bound} is measured twice and the two "
-                        f"disagree: pool {cu[0]} vs {cell[0]}, {cu[1]:.4f} vs {cell[1]:.4f} "
+                        f"disagree: pool {earlier_cell[0]} vs {cell[0]}, {earlier_cell[1]:.4f} vs {cell[1]:.4f} "
                         f"seconds per pattern. Two files claim the same cell; the figure "
                         f"cannot pick one.")
                 data[row["dataset"]][bound] = cell
@@ -704,11 +704,11 @@ def figure_enumeration_cost(path: Path) -> None:
     if not data:
         raise SystemExit("[fail] no timed enumeration rows in results/gspan_baseline_*.csv; "
                          "run stage 18 and stage 20 on the measurement machine")
-    thieu = sorted(f"{name} ({len(cells)})" for name, cells in data.items() if len(cells) < 3)
-    if thieu:
+    too_few = sorted(f"{name} ({len(cells)})" for name, cells in data.items() if len(cells) < 3)
+    if too_few:
         raise SystemExit(
-            f"[fail] {len(thieu)} collection(s) have fewer than three size bounds measured: "
-            f"{', '.join(thieu)}. Two points make a straight line on any axis, so the curve "
+            f"[fail] {len(too_few)} collection(s) have fewer than three size bounds measured: "
+            f"{', '.join(too_few)}. Two points make a straight line on any axis, so the curve "
             f"would assert a growth rate nothing measured. Run stage 20.")
 
     import matplotlib.pyplot as plt
@@ -717,8 +717,8 @@ def figure_enumeration_cost(path: Path) -> None:
     # ran into the right panel's, and the left panel's y label into the suptitle. The height
     # is chosen so the printed panels are as tall as they are wide is not the point -- the
     # point is that it is chosen in printed inches at all.
-    CO_CHU_IN = COT_IN / 10.0
-    figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05) / CO_CHU_IN),
+    print_scale = COLUMN_WIDTH_IN / 10.0
+    figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05) / print_scale),
                                sharex=True)
     colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
     bounds = sorted({k for cells in data.values() for k, _pool, _per in cells})
@@ -755,8 +755,8 @@ def figure_enumeration_cost(path: Path) -> None:
     # the right panel's y label, and tight_layout's default gutter was measured for the type
     # size before the scaling pass, not after it.
     figure.tight_layout(rect=(0, 0.11, 1, 0.94), w_pad=2.4)
-    _phong_chu(figure, COT_IN, rect=(0, 0.11, 1, 0.94))
-    figure.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
+    _scale_text_for_print(figure, COLUMN_WIDTH_IN, rect=(0, 0.11, 1, 0.94))
+    figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(figure)
 
 

@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def _tracked() -> list[Path]:
     """Every file git publishes, identified by PROPERTY rather than by a list of names.
 
-    SUA 2026-09-02. The previous version scanned *.py under three named directories, which
+    CORRECTED 2026-09-02. The previous version scanned *.py under three named directories, which
     was 112 of the 351 tracked files -- thirty-two per cent -- while the rule it states is
     about the repository. A list of directories goes stale at exactly the moment someone adds
     a fourth, and the earlier version of this same list had already gone stale once: it named
@@ -175,8 +175,8 @@ def test_the_scan_covers_the_repository_rather_than_a_corner_of_it() -> None:
         f"would pass over nothing")
     # Every published extension is inside the content scope: catching a new kind of file by
     # property means nobody has to remember to add it.
-    ngoai = sorted({p.suffix for p in tracked if p.is_file()} - {p.suffix for p in PUBLISHED_TEXT})
-    assert not ngoai, f"tracked file kinds excluded from the content rules: {ngoai}"
+    uncovered_kinds = sorted({p.suffix for p in tracked if p.is_file()} - {p.suffix for p in PUBLISHED_TEXT})
+    assert not uncovered_kinds, f"tracked file kinds excluded from the content rules: {uncovered_kinds}"
 
 
 def test_the_rules_reject_what_they_forbid() -> None:
@@ -191,8 +191,8 @@ def test_the_rules_reject_what_they_forbid() -> None:
     assert not VIETNAMESE.search("mean regret over sixty-one cells"), "plain ASCII was flagged"
 
     # Paper numbering: hits a numbered result, ignores the object named in words.
-    for xau in ("see Theorem 17", "Proposition 4 predicts", "\u00a7 3.1", "\u0110\u1ecbnh l\u00fd 17"):
-        assert PAPER_NUMBERING.search(xau), f"paper numbering not seen in {xau!r}"
+    for sample in ("see Theorem 17", "Proposition 4 predicts", "\u00a7 3.1", "\u0110\u1ecbnh l\u00fd 17"):
+        assert PAPER_NUMBERING.search(sample), f"paper numbering not seen in {sample!r}"
     assert not PAPER_NUMBERING.search("a priori bracket on the mean"), "a named object was flagged"
 
     # Encoding: the allowed set is COMPUTED, so five of the eleven characters source may

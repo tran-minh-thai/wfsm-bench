@@ -233,37 +233,37 @@ def main(argv: list[str]) -> int:
                 flagged += 1
                 rows.append((path.name, name, found))
 
-    da_xet = verdicts()
+    reviewed = verdicts()
 
     # A verdict naming a check that no longer exists is a record nobody can act on, and it
     # would quietly stop covering whatever replaced that check.
-    ton_tai = {(f, n) for f, n, _found in
+    existing = {(f, n) for f, n, _found in
                [(path.name, name, None)
                 for path in sorted(TESTS.glob("test_*.py"))
                 for name, _node, _body in functions(path)]}
-    chet = sorted(k for k in da_xet if k not in ton_tai)
-    if chet:
-        for filename, name in chet:
+    stale = sorted(k for k in reviewed if k not in existing)
+    if stale:
+        for filename, name in stale:
             print(f"[refused] verdict names a check that no longer exists: "
                   f"{filename}::{name}", file=sys.stderr)
         return 2
 
-    moi = [r for r in rows if (r[0], r[1]) not in da_xet]
-    cu = [r for r in rows if (r[0], r[1]) in da_xet]
+    unreviewed = [r for r in rows if (r[0], r[1]) not in reviewed]
+    known = [r for r in rows if (r[0], r[1]) in reviewed]
 
-    if moi:
+    if unreviewed:
         print("NOT YET EXAMINED -- this is the work list:")
-        for filename, name, found in moi:
+        for filename, name, found in unreviewed:
             print(f"{filename}::{name}\n    {', '.join(found)}")
     else:
         print("NOT YET EXAMINED: none -- every flag below already carries a verdict.")
 
-    if cu:
+    if known:
         by_verdict: dict[str, int] = {}
-        for filename, name, _found in cu:
-            key = da_xet[(filename, name)]["verdict"]
+        for filename, name, _found in known:
+            key = reviewed[(filename, name)]["verdict"]
             by_verdict[key] = by_verdict.get(key, 0) + 1
-        print(f"\nalready examined ({len(cu)}): "
+        print(f"\nalready examined ({len(known)}): "
               + ", ".join(f"{k} {v}" for k, v in sorted(by_verdict.items()))
               + f" -- see {VERDICTS.name}")
     signals = sum(len(found) for _f, _n, found in rows)

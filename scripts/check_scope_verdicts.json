@@ -234,7 +234,7 @@
     },
     {
       "file": "test_theory_predictions.py",
-      "check": "test_v3_proposition_4_predicts_the_measured_optimum",
+      "check": "test_v3_the_frontier_argmax_predicts_the_measured_optimum",
       "verdict": "false-positive",
       "why": "Computes the argmax from the objective's definition and compares it with a measurement read from the artefact; the literals it matches are the model's parameters, not the answer. Discriminating: sum mode yields three distinct predictions and matches 14 of 14. Refutable: raising gamma from 0.1 to 2.0 makes it wrong on 14 of 14.",
       "on": "2026-09-02"

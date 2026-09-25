@@ -78,7 +78,7 @@ def predicted_argmax(series: list[dict], mode: str) -> int:
 
 
 @pytest.mark.parametrize("mode", ["sum", "per_edge"])
-def test_v3_proposition_4_predicts_the_measured_optimum(mode: str) -> None:
+def test_v3_the_frontier_argmax_predicts_the_measured_optimum(mode: str) -> None:
     series = frontier_series()
     measured = {}
     for row in read("weight_mode_landscape.csv"):

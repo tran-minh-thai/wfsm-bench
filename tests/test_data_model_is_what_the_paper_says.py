@@ -41,7 +41,7 @@ def _scan(path: Path) -> tuple[int, int, int]:
 @pytest.mark.skipif(not FILES, reason="no collections on this machine")
 @pytest.mark.parametrize("path", FILES, ids=lambda p: p.stem)
 def test_no_collection_carries_a_parallel_edge(path: Path) -> None:
-    """SUA 2026-09-02: scan the whole file, not its first two hundred graphs.
+    """CORRECTED 2026-09-02: scan the whole file, not its first two hundred graphs.
 
     The previous version stopped at graphs[:200] while the manuscript states the property of
     the whole data. Every collection here is larger than that -- 306 to 5000 graphs -- so the
@@ -69,10 +69,10 @@ def test_the_scan_here_agrees_with_the_artefact_the_paper_quotes() -> None:
     import csv
     rows = list(csv.DictReader(PROFILE.open(encoding="utf-8")))
     assert rows, "the dataset profile is empty; this check would compare nothing"
-    hien_vat = {r["dataset"]: (int(r["graphs"]), int(r["edges_total_raw"]),
+    artefact_profile = {r["dataset"]: (int(r["graphs"]), int(r["edges_total_raw"]),
                                int(r["parallel_edges"])) for r in rows}
 
-    # SUA 2026-09-08: compare COLLECTION BY COLLECTION, not by one grand total.
+    # CORRECTED 2026-09-08: compare COLLECTION BY COLLECTION, not by one grand total.
     #
     # The total was wrong in two ways at once. It could not say WHICH collection had drifted
     # -- the message gave two triples and left the reader to subtract -- and it could be
@@ -80,32 +80,32 @@ def test_the_scan_here_agrees_with_the_artefact_the_paper_quotes() -> None:
     # reading too low. Measured on the experiment machine: the totals differed by exactly
     # (473, 76667, 0), which is one whole collection absent, and the message named neither
     # the collection nor the fact that anything was missing.
-    lech = []
+    disagreements = []
     for path in FILES:
-        if path.stem not in hien_vat:
+        if path.stem not in artefact_profile:
             continue
-        quet = _scan(path)
-        if quet != hien_vat[path.stem]:
-            lech.append((path.stem, quet, hien_vat[path.stem]))
-    assert not lech, (
-        f"{len(lech)} of {len(FILES)} collection(s) on this machine disagree with the "
+        scanned = _scan(path)
+        if scanned != artefact_profile[path.stem]:
+            disagreements.append((path.stem, scanned, artefact_profile[path.stem]))
+    assert not disagreements, (
+        f"{len(disagreements)} of {len(FILES)} collection(s) on this machine disagree with the "
         f"artefact the paper quotes. One of the two is measuring something else:\n"
-        + "\n".join(f"  {ten}: this scan reads {a} (graphs, edges, parallel), "
-                     f"the artefact says {b}" for ten, a, b in lech))
+        + "\n".join(f"  {collection_name}: this scan reads {a} (graphs, edges, parallel), "
+                     f"the artefact says {b}" for collection_name, a, b in disagreements))
 
-    co_o_day = {path.stem for path in FILES}
-    thieu = sorted(set(hien_vat) - co_o_day)
-    assert not thieu, (
-        f"{len(thieu)} of {len(hien_vat)} collection(s) the paper quotes are NOT on this "
-        f"machine: {thieu}. Every collection present agrees, so nothing has drifted -- the "
+    present_here = {path.stem for path in FILES}
+    absent_here = sorted(set(artefact_profile) - present_here)
+    assert not absent_here, (
+        f"{len(absent_here)} of {len(artefact_profile)} collection(s) the paper quotes are NOT on this "
+        f"machine: {absent_here}. Every collection present agrees, so nothing has drifted -- the "
         f"data is simply absent, and any stage needing it cannot run here. "
         f"scripts/prepare_datasets.py builds the TUDataset collections; anything it does "
         f"not build is tracked in data/ and arrives with a pull.")
 
-    la_mat = sorted(co_o_day - set(hien_vat))
-    assert not la_mat, (
-        f"{len(la_mat)} collection(s) on this machine are absent from the profile the paper "
-        f"quotes: {la_mat}. Either the profile is stale or a collection was added without "
+    unknown_here = sorted(present_here - set(artefact_profile))
+    assert not unknown_here, (
+        f"{len(unknown_here)} collection(s) on this machine are absent from the profile the paper "
+        f"quotes: {unknown_here}. Either the profile is stale or a collection was added without "
         f"being profiled; a number quoted from a stale profile describes data nobody has.")
 
 

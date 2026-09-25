@@ -80,7 +80,7 @@ def regret_groups(rows: list[dict]) -> list[Group]:
         kept = [r for r in disjoint if keep(r)]
         if not kept:
             continue
-        regret, doan = {}, {}
+        regret, spreads = {}, {}
         for name in names:
             column = RACE_COLUMN if name == "race" else f"{FIXED_PREFIX}{name}"
             values = [float(r[column]) for r in kept if r.get(column)]
@@ -90,8 +90,8 @@ def regret_groups(rows: list[dict]) -> list[Group]:
                 # has already been run over its seeds, so the seed-level variation is inside
                 # each value and cannot be recovered from here. What scatters across the
                 # rows is the cell, and that is what the column has to be read as.
-                doan[name] = spread(values)
-        out.append(Group(key=key, cells=len(kept), regret=regret, spread=doan))
+                spreads[name] = spread(values)
+        out.append(Group(key=key, cells=len(kept), regret=regret, spread=spreads))
     return out
 
 

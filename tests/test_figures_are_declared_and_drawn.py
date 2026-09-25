@@ -25,7 +25,7 @@ DRAFT = ROOT.parent / "paper" / "ban_thao.tex"
 # The manuscript pulls each figure in by its own name, without an extension, so the artefact
 # filenames live in the generator's copy map rather than anywhere in the draft.
 # Checking only the prose would look clean while naming nothing.
-SO_LIEU = ROOT.parent / "paper" / "bang" / "so_lieu.tex"
+NUMBERS_TEX = ROOT.parent / "paper" / "bang" / "so_lieu.tex"
 
 # Figures the draft must cite. The other builders serve sections not yet written, so they are
 # listed here rather than required of the draft -- and listing them is what makes adding a
@@ -39,7 +39,7 @@ def _declared() -> list[str]:
     return [name for name, _build in module.FIGURES]
 
 
-def _anh_xa_cua_bo_sinh() -> dict:
+def _generator_image_map() -> dict:
     """Draft-side figure name -> artefact filename, read from the generator that copies them."""
     spec = importlib.util.spec_from_file_location(
         "sync_manuscript_numbers", DRAFT.parent / "tools" / "sync_manuscript_numbers.py")
@@ -50,7 +50,7 @@ def _anh_xa_cua_bo_sinh() -> dict:
 
 @pytest.mark.skipif(not DRAFT.exists(), reason="the draft is outside this repository")
 def test_the_builder_declares_the_figures_the_draft_uses() -> None:
-    """SUA 2026-09-11: derived from the generator instead of a set of filenames kept here.
+    """CORRECTED 2026-09-11: derived from the generator instead of a set of filenames kept here.
 
     The list here went stale the way a list of names always does. It named four figures while
     the draft used six, so two of them were outside every check in this file -- and the two it
@@ -58,9 +58,9 @@ def test_the_builder_declares_the_figures_the_draft_uses() -> None:
     likely to be updated.
     """
     declared = set(_declared())
-    dung = set(_anh_xa_cua_bo_sinh().values())
-    assert dung, "the generator copies no figure; there is nothing to check"
-    missing = sorted(dung - declared)
+    copied = set(_generator_image_map().values())
+    assert copied, "the generator copies no figure; there is nothing to check"
+    missing = sorted(copied - declared)
     assert not missing, (
         f"the draft uses {missing}, which no builder in this repository produces. The file in "
         f"the draft's directory is then whatever was left there, with nothing keeping it in "
@@ -85,18 +85,18 @@ def test_every_declared_figure_is_on_disk_and_not_empty() -> None:
 def test_no_image_in_the_figures_directory_is_orphaned() -> None:
     r"""A picture nothing builds any more predates the current results and will still be read.
 
-    SUA 2026-09-02: glob every file, not *.png. Restricting by extension makes the check blind
+    CORRECTED 2026-09-02: glob every file, not *.png. Restricting by extension makes the check blind
     to exactly the file someone adds next -- a leftover .pdf or .svg sits in the directory,
     gets picked up by \includegraphics, which resolves by extension order rather than by which
     file is current, and is read as a fresh figure. The check also asserts the directory is not
     empty, since an empty directory has no orphans and reports a pass.
     """
     declared = set(_declared())
-    tep = sorted(p for p in FIGS.iterdir() if p.is_file() and not p.name.startswith("."))
-    assert len(tep) >= 4, (
-        f"only {len(tep)} file(s) in {FIGS}; with none there this check finds no orphans and "
+    files_on_disk = sorted(p for p in FIGS.iterdir() if p.is_file() and not p.name.startswith("."))
+    assert len(files_on_disk) >= 4, (
+        f"only {len(files_on_disk)} file(s) in {FIGS}; with none there this check finds no orphans and "
         f"says so as if it had looked")
-    orphans = sorted(p.name for p in tep if p.name not in declared)
+    orphans = sorted(p.name for p in files_on_disk if p.name not in declared)
     assert not orphans, (
         f"{len(orphans)} image(s) no builder produces: {orphans}\n"
         f"  delete them, or add the builder back -- a stale picture is read as a fresh one")
@@ -104,7 +104,7 @@ def test_no_image_in_the_figures_directory_is_orphaned() -> None:
 
 @pytest.mark.skipif(not DRAFT.exists(), reason="the draft is outside this repository")
 def test_every_drawn_figure_is_included_by_the_draft() -> None:
-    """SUA 2026-09-11: ask whether the draft INCLUDES the figure, not whether it names the file.
+    """CORRECTED 2026-09-11: ask whether the draft INCLUDES the figure, not whether it names the file.
 
     The old version searched the draft for the source filename, e.g. basin_vs_aco.png. That
     only ever matched because each caption carried a provenance line printing the artefact
@@ -120,25 +120,25 @@ def test_every_drawn_figure_is_included_by_the_draft() -> None:
     import importlib.util
     spec = importlib.util.spec_from_file_location(
         "sync_manuscript_numbers", DRAFT.parent / "tools" / "sync_manuscript_numbers.py")
-    sinh = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(sinh)
+    generator_module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(generator_module)
 
-    than = DRAFT.read_text(encoding="utf-8")
-    nhung = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{hinh/([A-Za-z0-9_-]+)\}", than))
-    assert nhung, "the draft includes no figure at all; the pattern stopped matching"
+    body_text = DRAFT.read_text(encoding="utf-8")
+    included = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{hinh/([A-Za-z0-9_-]+)\}", body_text))
+    assert included, "the draft includes no figure at all; the pattern stopped matching"
 
-    ten_bai = set(sinh.IMAGES)
-    assert ten_bai, "the generator copies no figure; there is nothing to check"
+    copied_names = set(generator_module.IMAGES)
+    assert copied_names, "the generator copies no figure; there is nothing to check"
 
-    thieu = sorted(ten_bai - nhung)
-    assert not thieu, (
-        f"the generator copies {thieu} into the draft's figure directory and no include line "
-        f"puts {'them' if len(thieu) > 1 else 'it'} on a page; a figure nobody sees is a "
+    lacking = sorted(copied_names - included)
+    assert not lacking, (
+        f"the generator copies {lacking} into the draft's figure directory and no include line "
+        f"puts {'them' if len(lacking) > 1 else 'it'} on a page; a figure nobody sees is a "
         f"figure that still has to be kept in step with its artefact")
 
-    la = sorted(nhung - ten_bai)
-    assert not la, (
-        f"the draft includes {la}, which the generator does not copy. Those files are whatever "
+    uninvited = sorted(included - copied_names)
+    assert not uninvited, (
+        f"the draft includes {uninvited}, which the generator does not copy. Those files are whatever "
         f"was last left in the directory, and nothing keeps them current with any artefact.")
 
 
@@ -165,12 +165,12 @@ def _builders() -> dict[str, str]:
     import ast
     text = SCRIPT.read_text(encoding="utf-8")
     tree = ast.parse(text)
-    than = {node.name: ast.get_source_segment(text, node)
+    body_text = {node.name: ast.get_source_segment(text, node)
             for node in tree.body if isinstance(node, ast.FunctionDef)}
     spec = importlib.util.spec_from_file_location("make_figures", SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return {name: than[build.__name__] for name, build in module.FIGURES}
+    return {name: body_text[build.__name__] for name, build in module.FIGURES}
 
 
 @needs_manuscript("figure_labels.en.json")
@@ -186,10 +186,10 @@ def test_every_figure_draws_its_labels_from_the_label_file() -> None:
     """
     builders = _builders()
     assert len(builders) >= 4, f"only {len(builders)} builder(s) found; the parse is wrong"
-    cam = sorted(name for name, than in builders.items() if "labels(" not in than)
-    assert not cam, (
-        f"{len(cam)} of {len(builders)} figure(s) never ask the label file for anything, so "
-        f"they render in whatever language their source was written in: {cam}")
+    silent = sorted(name for name, body_text in builders.items() if "labels(" not in body_text)
+    assert not silent, (
+        f"{len(silent)} of {len(builders)} figure(s) never ask the label file for anything, so "
+        f"they render in whatever language their source was written in: {silent}")
 
 
 @needs_manuscript("figure_labels.en.json")
@@ -199,20 +199,20 @@ def test_no_label_key_is_orphaned_and_none_is_missing() -> None:
     import re
     keys = {k for k in json.loads(LABELS.read_text(encoding="utf-8")) if not k.startswith("_")}
     asked = set()
-    for than in _builders().values():
-        asked |= set(re.findall(r'labels\(\s*["\']([^"\']+)["\']\s*\)', than))
+    for body_text in _builders().values():
+        asked |= set(re.findall(r'labels\(\s*["\']([^"\']+)["\']\s*\)', body_text))
     assert asked, "no builder asks for a label key; the parse is wrong"
-    thieu = sorted(asked - keys)
-    thua = sorted(keys - asked)
-    assert not thieu, f"builders ask for keys the label file does not have: {thieu}"
-    assert not thua, (
-        f"the label file carries keys no builder asks for: {thua}. Either a figure was "
+    lacking = sorted(asked - keys)
+    unused_keys = sorted(keys - asked)
+    assert not lacking, f"builders ask for keys the label file does not have: {lacking}"
+    assert not unused_keys, (
+        f"the label file carries keys no builder asks for: {unused_keys}. Either a figure was "
         f"deleted and its labels stayed, or a builder stopped asking.")
 
 
 # ------------------------------------------- the cost figure refuses a curve through two dots
 
-COT = ("dataset,graph_limit,size_bound,min_support,gspan_patterns,gspan_seconds,"
+HEADER_ROW = ("dataset,graph_limit,size_bound,min_support,gspan_patterns,gspan_seconds,"
        "exhaustive_patterns,exhaustive_seconds,speedup,sets_agree,supports_disagreeing,"
        "gspan_optimum_edges,gspan_optimum_fitness")
 
@@ -222,10 +222,10 @@ def _o(dataset: str, bound: int, pool: int, seconds: str) -> str:
     return f"{dataset},200,{bound},2,{pool},1.000,{pool},{seconds},1.0,1,0,3,0.1"
 
 
-def _bo_ve(tmp_path: Path, *rows: str):
+def _builder_on(tmp_path: Path, *rows: str):
     """A module bound to a results directory holding exactly the cells named."""
     (tmp_path / "gspan_baseline_probe.csv").write_text(
-        "\n".join((COT, *rows)) + "\n", encoding="utf-8")
+        "\n".join((HEADER_ROW, *rows)) + "\n", encoding="utf-8")
     spec = importlib.util.spec_from_file_location("make_figures_probe", SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -243,7 +243,7 @@ def test_the_cost_figure_refuses_a_collection_measured_at_two_bounds(tmp_path: P
     demonstrated rather than asserted -- a guard nobody has seen fail is a guard nobody knows
     is wired up.
     """
-    module = _bo_ve(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
+    module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
                     _o("Beta", 4, 100, "10.0"), _o("Beta", 5, 300, "60.0"),
                     _o("Beta", 6, 900, "400.0"))
     with pytest.raises(SystemExit) as refused:
@@ -256,7 +256,7 @@ def test_the_cost_figure_refuses_a_collection_measured_at_two_bounds(tmp_path: P
 @needs_manuscript("figure_labels.en.json")
 def test_the_cost_figure_draws_once_every_collection_has_three(tmp_path: Path) -> None:
     """The other half of the refusal: it must pass on data that earns it."""
-    module = _bo_ve(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
+    module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
                     _o("Alpha", 6, 900, "400.0"))
     module.figure_enumeration_cost(tmp_path / "cost.png")
     assert (tmp_path / "cost.png").stat().st_size > 5000
@@ -265,7 +265,7 @@ def test_the_cost_figure_draws_once_every_collection_has_three(tmp_path: Path) -
 @needs_manuscript("figure_labels.en.json")
 def test_the_cost_figure_refuses_a_cell_two_artefacts_disagree_on(tmp_path: Path) -> None:
     """One cell, two measurements: the figure cannot pick, so it must not pick silently."""
-    module = _bo_ve(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
+    module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
                     _o("Alpha", 6, 900, "400.0"), _o("Alpha", 6, 900, "700.0"))
     with pytest.raises(SystemExit) as refused:
         module.figure_enumeration_cost(tmp_path / "cost.png")
@@ -280,7 +280,7 @@ def test_the_cost_figure_ignores_a_cell_with_no_enumeration_time(tmp_path: Path)
     artefact that holds such a cell -- Cuneiform at bound 6, timed on one side only -- sits
     beside the one that holds the real measurement.
     """
-    module = _bo_ve(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
+    module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
                     _o("Alpha", 6, 900, "400.0"), _o("Alpha", 7, 2700, ""))
     assert [bound for bound, _pool, _per in module.enumeration_cost()["Alpha"]] == [4, 5, 6]
 
@@ -293,10 +293,10 @@ VISIBLE = {"annotate", "set_title", "set_xlabel", "set_ylabel", "suptitle", "tex
            "set_label", "set_xticklabels", "set_yticklabels"}
 
 
-def _visible_literals(than: str) -> list[str]:
+def _visible_literals(body_text: str) -> list[str]:
     import ast
     found = []
-    for node in ast.walk(ast.parse(than)):
+    for node in ast.walk(ast.parse(body_text)):
         if not (isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute)):
             continue
         if node.func.attr in VISIBLE and node.args:
@@ -312,7 +312,7 @@ def _visible_literals(than: str) -> list[str]:
 
 @needs_manuscript("figure_labels.en.json")
 def test_no_figure_prints_a_string_typed_into_the_source() -> None:
-    """SUA 2026-09-12: the label-file checks ask the wrong question by one step.
+    """CORRECTED 2026-09-12: the label-file checks ask the wrong question by one step.
 
     One asks whether a builder calls labels() at all, the other compares the file's keys with
     the keys asked for. The basin figure passed both and still printed ACO first in English on
@@ -327,7 +327,7 @@ def test_no_figure_prints_a_string_typed_into_the_source() -> None:
     """
     builders = _builders()
     assert len(builders) >= 4, f"only {len(builders)} builder(s) found; the parse is wrong"
-    typed = {name: _visible_literals(than) for name, than in builders.items()}
+    typed = {name: _visible_literals(body_text) for name, body_text in builders.items()}
     typed = {name: found for name, found in typed.items() if found}
     assert not typed, (
         "a figure prints words that never passed through paper/figure_labels.en.json, so they "

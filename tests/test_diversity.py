@@ -81,9 +81,9 @@ def test_the_sample_collection_cannot_exercise_the_diversity_rule():
     from wfsmbench.preprocess.statistics import build_statistics
     graphs, _ = load_dataset(SAMPLE)
     stats = build_statistics(graphs)
-    ket_qua = _run(graphs, stats, top_k=20)
-    assert len(ket_qua.top_k) <= 3, (
-        f"the sample now yields {len(ket_qua.top_k)} patterns at top_k=20; it may be able to "
+    diversity_result = _run(graphs, stats, top_k=20)
+    assert len(diversity_result.top_k) <= 3, (
+        f"the sample now yields {len(diversity_result.top_k)} patterns at top_k=20; it may be able to "
         f"exercise the diversity rule after all, so move the real check back onto it")
 
 
@@ -91,7 +91,7 @@ def test_the_sample_collection_cannot_exercise_the_diversity_rule():
                     reason=f"needs a real collection at {COLLECTION.name}; the sample has "
                            f"three patterns and cannot exercise this rule")
 def test_diverse_archive_raises_top_k_diversity():
-    """SUA 2026-09-02. Two faults in one line, and the second is why this moved collections.
+    """CORRECTED 2026-09-02. Two faults in one line, and the second is why this moved collections.
 
     The assertion was `d_diverse >= d_plain`, which EQUALITY satisfies -- so a diversity term
     that did nothing at all would pass a test named for raising diversity. And it ran on the
