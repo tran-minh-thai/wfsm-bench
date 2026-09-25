@@ -42,19 +42,19 @@ PATTERN = re.compile(r"^commit\s*=\s*(\S+)", re.MULTILINE)
 # upkeep: re-running a stage changes its record, which is what takes it off.
 
 
-def roots() -> list[str]:
-    done = subprocess.run(["git", "rev-list", "--max-parents=0", "HEAD"], cwd=ROOT,
+def roots(repo: Path = ROOT) -> list[str]:
+    done = subprocess.run(["git", "rev-list", "--max-parents=0", "HEAD"], cwd=repo,
                           capture_output=True, text=True)
     return done.stdout.split() if done.returncode == 0 else []
 
 
-def unchanged_since_compression(path: Path) -> bool:
+def unchanged_since_compression(path: Path, repo: Path = ROOT) -> bool:
     """True when the file's bytes equal its blob in the root commit of this history."""
-    relative = path.relative_to(ROOT).as_posix()
-    current = subprocess.run(["git", "hash-object", "--no-filters", str(path)], cwd=ROOT,
+    relative = path.relative_to(repo).as_posix()
+    current = subprocess.run(["git", "hash-object", "--no-filters", str(path)], cwd=repo,
                              capture_output=True, text=True).stdout.strip()
-    for root in roots():
-        then = subprocess.run(["git", "rev-parse", f"{root}:{relative}"], cwd=ROOT,
+    for root in roots(repo):
+        then = subprocess.run(["git", "rev-parse", f"{root}:{relative}"], cwd=repo,
                               capture_output=True, text=True)
         if then.returncode == 0 and then.stdout.strip() == current:
             return True
@@ -67,9 +67,24 @@ def recorded_commit(path: Path) -> str | None:
     return found.group(1).strip() if found else None
 
 
-def git_ok(*args: str) -> bool:
-    return subprocess.run(["git", *args], cwd=ROOT,
+def git_ok(*args: str, repo: Path = ROOT) -> bool:
+    return subprocess.run(["git", *args], cwd=repo,
                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+
+
+def excused(path: Path, commit: str, repo: Path = ROOT) -> bool:
+    """A pre-compression record: bytes unchanged since the root, commit outside the history.
+
+    CORRECTED 2026-09-25, the same day the property replaced the list. Its first version
+    asked whether the commit EXISTS ("cat-file -e") instead of whether it is REACHABLE. On
+    the development machine the old commits are gone, so the two agree; the measurement
+    machine's clone predates the compression and still holds them as unreachable objects,
+    so there the excuse never applied and all twelve old records failed. Reachability is
+    the property that matters: an object only one machine still happens to hold lets
+    nobody reproduce a number from a clone.
+    """
+    return (unchanged_since_compression(path, repo)
+            and not git_ok("merge-base", "--is-ancestor", commit, "HEAD", repo=repo))
 
 
 @pytest.mark.skipif(not FILES, reason="no environment files present")
@@ -78,7 +93,7 @@ def test_the_commit_beside_an_artefact_exists_and_is_on_this_branch(path: Path) 
     commit = recorded_commit(path)
     if commit is None:
         pytest.skip(f"{path.name} records no commit field")
-    if unchanged_since_compression(path) and not git_ok("cat-file", "-e", f"{commit}^{{commit}}"):
+    if excused(path, commit):
         pytest.skip(f"{path.name} names {commit}, recorded before the 2026-08-25 compression")
     assert git_ok("cat-file", "-e", f"{commit}^{{commit}}"), (
         f"{path.name} names commit {commit!r}, which this repository does not contain. "
@@ -98,3 +113,50 @@ def test_the_audit_reaches_a_useful_number_of_files() -> None:
         f"only {len(parsed)} of {len(FILES)} environment files yielded a commit field; "
         f"the parse is probably broken rather than the data"
     )
+
+
+def test_the_excuse_does_not_depend_on_which_old_objects_a_machine_still_holds(
+        tmp_path: Path) -> None:
+    """Every state a record can be in, built in a scratch repository.
+
+    The case that broke on the measurement machine is the second: a pre-compression commit
+    that still EXISTS in that clone's object store but is on no branch. It cannot occur on a
+    machine that cloned after the compression, which is why a check run only there missed it.
+    """
+    repo = tmp_path / "repo"
+    (repo / "results").mkdir(parents=True)
+
+    def run(*args: str, stdin: str = "") -> str:
+        return subprocess.run(["git", *args], cwd=repo, input=stdin, capture_output=True,
+                              text=True, check=True).stdout.strip()
+
+    run("init", "-q", "-b", "main")
+    run("config", "user.email", "t@example.invalid")
+    run("config", "user.name", "test")
+    # As in the real repository: artefact bytes are stored as written. Without it a machine
+    # with core.autocrlf=input stores these CRLF records as LF, and "unchanged since the
+    # root" compares CRLF on disk with LF in the blob -- which is how this test first failed.
+    (repo / ".gitattributes").write_text("results*/** -text\n")
+    empty_tree = run("mktree")
+    orphan = run("commit-tree", empty_tree, "-m", "made before the compression")[:7]
+    assert git_ok("cat-file", "-e", f"{orphan}^{{commit}}", repo=repo), "orphan not created"
+
+    kept = repo / "results" / "environment_stage1.txt"      # orphan that still exists
+    gone = repo / "results" / "environment_stage2.txt"      # commit absent altogether
+    kept.write_bytes(f"node = X\r\ncommit = {orphan}\r\n".encode())
+    gone.write_bytes(b"node = X\r\ncommit = deadbee\r\n")
+    run("add", "-A"); run("commit", "-qm", "the compression")
+
+    assert excused(kept, orphan, repo), "an unreachable orphan still in the store is excused"
+    assert excused(gone, "deadbee", repo), "an absent commit is excused"
+
+    # A stage re-run from the current commit: its record changes and names a reachable
+    # commit, so it is no longer excused -- and the strict check it then faces passes.
+    head = run("rev-parse", "--short", "HEAD")
+    kept.write_bytes(f"node = X\r\ncommit = {head}\r\n".encode())
+    assert not excused(kept, head, repo)
+    assert git_ok("merge-base", "--is-ancestor", head, "HEAD", repo=repo)
+
+    # A record rewritten with a dead commit is not excused either, so the strict check fails.
+    gone.write_bytes(b"node = Y\r\ncommit = deadbee\r\n")
+    assert not excused(gone, "deadbee", repo)
