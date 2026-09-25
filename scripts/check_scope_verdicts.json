@@ -184,6 +184,13 @@
       "on": "2026-09-02"
     },
     {
+      "file": "test_environment_gate.py",
+      "check": "test_following_the_advice_opens_the_gate",
+      "verdict": "false-positive",
+      "why": "The literal is a filename the test itself writes; the claim is read back from a real bare remote, and the gate is then run again. Refutable: against the gate as it was before 2026-09-25 it fails, since no command was printed to follow.",
+      "on": "2026-09-25"
+    },
+    {
       "file": "test_publish_results.py",
       "check": "test_a_commit_whose_push_failed_is_pushed_by_the_next_call",
       "verdict": "false-positive",

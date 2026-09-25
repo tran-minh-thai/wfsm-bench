@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import argparse
 import platform
+import re
 import sys
 from pathlib import Path
 
@@ -187,6 +188,46 @@ def behind_remote() -> tuple[str, str]:
     return "current", f"up to date with {upstream}"
 
 
+def refusal_advice(verdict: str) -> list[str]:
+    """What to do about a refused checkout, one cause per message.
+
+    The old message sent every refusal to the development machine. For "behind" the fix is
+    a pull right here. For "ahead" it was worse than unhelpful: the usual cause on the
+    measurement machine is a publish whose push failed, so the commits hold artefacts and
+    nothing else -- and since this gate runs before every stage, it blocked the very
+    publish that would have pushed them, while pointing at a machine with nothing to fix.
+    """
+    if verdict == "behind":
+        return ["The code moved on since this checkout was updated. Here: git pull --ff-only"]
+    code, upstream = git("rev-parse", "--abbrev-ref", "@{upstream}")
+    if code != 0 or not upstream:
+        return ["This branch tracks no remote branch, so nothing can be compared."]
+    _, log = git("log", "--format=%h %s", f"{upstream}..HEAD")
+    commits = [line for line in log.splitlines() if line]
+    _, changed = git("diff", "--name-only", f"{upstream}...HEAD")
+    # An artefact tree is any top-level directory whose name starts with "results" -- the
+    # same property publish_results.py stages by, so the two cannot disagree about a new tree.
+    outside = [path for path in changed.splitlines()
+               if path and not ("/" in path and path.split("/", 1)[0].startswith("results"))]
+    lines = [f"{len(commits)} commit(s) made here and not on {upstream}:"]
+    lines += [f"    {entry}" for entry in commits[:10]]
+    if len(commits) > 10:
+        lines.append(f"    ... and {len(commits) - 10} more")
+    if outside:
+        lines.append("They touch code, which leaves from the development machine only:")
+        lines += [f"    {path}" for path in outside[:10]]
+        lines.append("Move these commits to the development machine, or drop them here; "
+                     "then: git pull --ff-only")
+        return lines
+    stage = next((m.group(1) for entry in commits
+                  if (m := re.search(r"Add stage (\d+) artefacts", entry))), "<N>")
+    publisher = Path("scripts") / "publish_results.py"
+    lines.append("They hold only artefacts: a publish whose push failed. Push them, then run "
+                 "the same stages again:")
+    lines.append(f'    "{sys.executable}" {publisher} --stage {stage}')
+    return lines
+
+
 def read(path: Path) -> dict[str, str]:
     values = {}
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -225,8 +266,8 @@ def main(argv: list[str]) -> int:
             print("behind: its artefacts would describe code already moved past. "
                   "ahead: they would name a commit no reader can check out. Either way "
                   "the recorded hash stops being something anyone else can verify.")
-            print("Fix on the development machine, then here: "
-                  "git checkout <branch> && git pull --ff-only")
+            for line in refusal_advice(verdict):
+                print(line)
             return 1
         # Recorded, not merely enforced. A gate that passes leaves no trace, so an
         # artefact written when the check could not run looks exactly like one written
