@@ -8,6 +8,16 @@ REM  cloning again, and reuses the virtual environment.
 REM
 REM  Run it either from inside a checkout, or from an empty folder to have it
 REM  clone one. Double-click, or from a Command Prompt:  run_all_windows.bat
+REM
+REM  Stage numbers after the name are passed to run_experiments_windows.bat, so a
+REM  short run can check the whole path -- update, tests, one stage, publish, the
+REM  final check -- before a long one:   run_all_windows.bat 14
+REM  With none, the suite's default stages run.
+REM
+REM  PULL BEFORE STARTING IT. cmd reads a batch file a command at a time, by byte
+REM  offset, so if the pull in step 1 rewrites this file while it runs, the rest is
+REM  read from the new file at the old offsets and executes fragments. Pulled first,
+REM  step 1 finds nothing to change:   git pull --ff-only   then   run_all_windows.bat
 REM ============================================================================
 setlocal enabledelayedexpansion
 
@@ -136,7 +146,12 @@ REM  checkout matching its commit, and writes an environment file per stage.
 echo.
 echo [6/6] Running the experiment suite...
 echo       Stages and their timings are listed at the top of run_experiments_windows.bat.
-call run_experiments_windows.bat
+if "%~1"=="" (
+    echo       Stages: the suite's default set.
+) else (
+    echo       Stages: %*
+)
+call run_experiments_windows.bat %*
 if errorlevel 1 goto :fail
 
 REM --- Done -----------------------------------------------------------------

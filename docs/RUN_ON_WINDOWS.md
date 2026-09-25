@@ -60,7 +60,10 @@ git pull --ff-only
 
 If `git checkout main` instead lands on a `main` older than 2026-08-25, it shares no history
 with the remote and `git pull` fails; replace it with `git checkout -B main origin/main`.
-`run_all_windows.bat` does both of these by itself.
+`run_all_windows.bat` does both of these by itself, but do them by hand before starting it the
+first time: the move rewrites `run_all_windows.bat`, and cmd reads a batch file by byte offset,
+so a file rewritten while it runs executes fragments of the new one. Pull first, always; then
+the runner's own pull has nothing to change.
 
 The stage table, what each stage supports, and its measured or estimated cost are in the
 header comment of `run_experiments_windows.bat`. That file is the source of truth for what

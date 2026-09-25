@@ -6,6 +6,12 @@ below and writes one log per step to results\logs. Use these steps when a step
 fails and you want to repeat it on its own, or when you would rather watch each
 one.
 
+Update the checkout (step 1) BEFORE starting run_all_windows.bat, never only from
+inside it. cmd reads a batch file by byte offset, so a pull that rewrites the file
+while it runs makes the rest execute as fragments of the new version.
+
+Stage numbers after the name run only those stages:  run_all_windows.bat 14
+
 Every command is meant for Command Prompt (cmd), one line at a time.
 
 
