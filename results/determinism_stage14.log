@@ -1,0 +1,60 @@
+
+=== selQM9_bond vs qm9 ===
+comparing _selQM9_bond against _qm9
+
+  weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
+      560 rows only in weight_mode_runs_selQM9_bond.csv, e.g. ('QM9_bond', '5', '2', 'discounted', '240', 'aco', '20')
+      560 rows only in weight_mode_runs_qm9.csv, e.g. ('QM9_bond', '5', '2', 'discounted', '120', 'aco', '0')
+
+560 rows across 1 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.
+
+=== selBZR_bond vs BZRbond ===
+comparing _selBZR_bond against _BZRbond
+
+  weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
+      560 rows only in weight_mode_runs_selBZR_bond.csv, e.g. ('BZR_bond', '5', '2', 'discounted', '240', 'aco', '20')
+      560 rows only in weight_mode_runs_BZRbond.csv, e.g. ('BZR_bond', '5', '2', 'discounted', '120', 'aco', '0')
+
+560 rows across 1 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.
+
+=== selCOX2_bond vs COX2bond ===
+comparing _selCOX2_bond against _COX2bond
+
+  weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
+      560 rows only in weight_mode_runs_selCOX2_bond.csv, e.g. ('COX2_bond', '5', '2', 'discounted', '240', 'aco', '20')
+      560 rows only in weight_mode_runs_COX2bond.csv, e.g. ('COX2_bond', '5', '2', 'discounted', '120', 'aco', '0')
+
+560 rows across 1 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.
+
+=== selDHFR_bond vs DHFRbond ===
+comparing _selDHFR_bond against _DHFRbond
+
+  weight_mode_runs         280 rows compared, 0 disagree   (differing bytes)
+      280 rows only in weight_mode_runs_selDHFR_bond.csv, e.g. ('DHFR_bond', '5', '2', 'sum', '240', 'aco', '20')
+      280 rows only in weight_mode_runs_DHFRbond.csv, e.g. ('DHFR_bond', '5', '2', 'sum', '120', 'aco', '0')
+
+280 rows across 1 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.
+
+=== selalchemy_full_bond vs alch ===
+comparing _selalchemy_full_bond against _alch
+
+  weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
+      560 rows only in weight_mode_runs_selalchemy_full_bond.csv, e.g. ('alchemy_full_bond', '5', '2', 'discounted', '240', 'aco', '20')
+      560 rows only in weight_mode_runs_alch.csv, e.g. ('alchemy_full_bond', '5', '2', 'discounted', '120', 'aco', '0')
+
+560 rows across 1 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.
+
+=== selCuneiform vs s5 ===
+comparing _selCuneiform against _s5
+
+  weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
+      560 rows only in weight_mode_runs_selCuneiform.csv, e.g. ('Cuneiform', '5', '2', 'discounted', '240', 'aco', '20')
+      560 rows only in weight_mode_runs_s5.csv, e.g. ('Cuneiform', '5', '2', 'discounted', '120', 'aco', '0')
+
+560 rows across 1 families, 0 disagreements
+[ok] identical -- these numbers depend on the commit, not on the machine.
