@@ -12,6 +12,16 @@ while it runs makes the rest execute as fragments of the new version.
 
 Stage numbers after the name run only those stages:  run_all_windows.bat 14
 
+To re-run every stage whose artefacts name a commit that is not in this history
+(made before the 2026-08-25 compression), in one command:
+
+    run_all_windows.bat rerun-untraceable
+
+The set is computed by scripts\stages_to_rerun.py from results\environment_stage*.txt
+and printed with the reason for each stage before anything runs. Do not push code
+to main while it runs: each stage's publish pulls, and a pulled code change would
+be what the remaining stages run.
+
 Every command is meant for Command Prompt (cmd), one line at a time.
 
 

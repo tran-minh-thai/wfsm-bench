@@ -41,7 +41,14 @@ git pull --ff-only
 run_experiments_windows.bat            REM the default stages, in result-per-hour order
 run_experiments_windows.bat 3 4 5      REM only some
 run_experiments_windows.bat 19         REM one stage by number
+run_all_windows.bat rerun-untraceable  REM every stage whose record names a commit not in this history
 ```
+
+`rerun-untraceable` computes its set with `scripts/stages_to_rerun.py` from
+`results/environment_stage*.txt`, prints each stage with the reason, runs the calibration stages
+first and the determinism check last, and says so when there is nothing to re-run. Do not push
+code to `main` while it runs: each stage's publish pulls, and the stages after it would then
+run the pulled code.
 
 Name the branch before pulling. A bare `git pull` updates whichever branch the machine is
 standing on -- which is how a stage once ran three commits behind.

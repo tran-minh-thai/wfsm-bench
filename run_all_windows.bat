@@ -14,6 +14,10 @@ REM  short run can check the whole path -- update, tests, one stage, publish, th
 REM  final check -- before a long one:   run_all_windows.bat 14
 REM  With none, the suite's default stages run.
 REM
+REM  run_all_windows.bat rerun-untraceable   re-runs, in one go, every stage whose record
+REM  names a commit that is not in this history (scripts\stages_to_rerun.py computes the
+REM  set). Run again afterwards, it finds nothing and says so.
+REM
 REM  PULL BEFORE STARTING IT. cmd reads a batch file a command at a time, by byte
 REM  offset, so if the pull in step 1 rewrites this file while it runs, the rest is
 REM  read from the new file at the old offsets and executes fragments. Pulled first,
@@ -146,13 +150,33 @@ REM  checkout matching its commit, and writes an environment file per stage.
 echo.
 echo [6/6] Running the experiment suite...
 echo       Stages and their timings are listed at the top of run_experiments_windows.bat.
-if "%~1"=="" (
+set STAGE_ARGS=%*
+if /i not "%~1"=="rerun-untraceable" goto :stages_chosen
+REM  The set is computed from the stage records, never typed: every stage whose record
+REM  names a commit outside this history, calibration first, the determinism check last.
+REM  Exit 3 means nothing to re-run and must NOT fall through: an empty list here would
+REM  make the suite run its default stages instead.
+echo       Stages: those whose artefacts cannot be traced to a commit here --
+%PY% scripts\stages_to_rerun.py > results\logs\stages_to_rerun.txt
+if errorlevel 3 goto :nothing_to_rerun
+if errorlevel 1 goto :fail
+set STAGE_ARGS=
+set /p STAGE_ARGS=<results\logs\stages_to_rerun.txt
+if "!STAGE_ARGS!"=="" goto :fail
+:stages_chosen
+if "!STAGE_ARGS!"=="" (
     echo       Stages: the suite's default set.
 ) else (
-    echo       Stages: %*
+    echo       Stages: !STAGE_ARGS!
 )
-call run_experiments_windows.bat %*
+call run_experiments_windows.bat !STAGE_ARGS!
 if errorlevel 1 goto :fail
+goto :done
+
+:nothing_to_rerun
+echo       Nothing to re-run: every stage record names a commit in this history.
+
+:done
 
 REM --- Done -----------------------------------------------------------------
 echo.
