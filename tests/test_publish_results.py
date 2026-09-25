@@ -179,3 +179,92 @@ def test_it_does_not_carry_a_merge_commit(tmp_path: Path) -> None:
     merges = subprocess.run(["git", "log", "--merges", "--oneline", "main"], cwd=remote,
                             capture_output=True, text=True).stdout.strip()
     assert merges == "", f"a merge commit reached the remote:\n{merges}"
+
+
+# ------------------------------------------------- a commit whose push failed must still leave
+
+def _pushed_repo(tmp_path: Path) -> tuple[Path, Path]:
+    """(work, remote): a checkout already in step with a bare remote, as after a good stage."""
+    remote = tmp_path / "remote.git"
+    git(tmp_path, "init", "-q", "--bare", str(remote))
+    repo = tmp_path / "work"
+    (repo / "scripts").mkdir(parents=True)
+    (repo / "results").mkdir()
+    (repo / "src").mkdir()
+    git(repo, "init", "-q", "-b", "main")
+    git(repo, "config", "user.email", "t@example.invalid")
+    git(repo, "config", "user.name", "test")
+    (repo / "scripts" / "publish_results.py").write_text(SCRIPT.read_text())
+    (repo / "results" / ".keep").write_text("")
+    (repo / "src" / "a.py").write_text("x = 1\n")
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "init")
+    git(repo, "remote", "add", "origin", str(remote))
+    git(repo, "push", "-q", "-u", "origin", "main")
+    return repo, remote
+
+
+def _remote_files(remote: Path) -> str:
+    return subprocess.run(["git", "ls-tree", "-r", "--name-only", "main"], cwd=remote,
+                          capture_output=True, text=True).stdout
+
+
+def test_a_commit_whose_push_failed_is_pushed_by_the_next_call(tmp_path: Path) -> None:
+    """The state a failed push leaves: artefacts committed here, nothing new to stage.
+
+    Before 2026-09-25 the next call printed [nothing] and exited zero, and the commit stayed
+    on the measurement machine while every later call reported all was well.
+    """
+    repo, remote = _pushed_repo(tmp_path)
+    (repo / "results" / "stage_18.csv").write_text("dataset,pool\nBZR_bond,359\n")
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "Add stage 18 artefacts")
+    assert "results/stage_18.csv" not in _remote_files(remote), "the setup already pushed"
+
+    done = publish(repo, "--stage", "19")
+    assert done.returncode == 0, done.stderr
+    assert "[unpushed]" in done.stdout and "[nothing]" not in done.stdout, done.stdout
+    assert "[ok] pushed 1 earlier commit(s)" in done.stdout, done.stdout
+    assert "results/stage_18.csv" in _remote_files(remote), "the committed artefact never left"
+
+    again = publish(repo, "--stage", "19")
+    assert again.returncode == 0 and "[nothing]" in again.stdout, again.stdout
+
+
+def test_a_dry_run_names_the_unpushed_commit_and_moves_nothing(tmp_path: Path) -> None:
+    repo, remote = _pushed_repo(tmp_path)
+    (repo / "results" / "stage_18.csv").write_text("a\n1\n")
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "Add stage 18 artefacts")
+    done = publish(repo, "--stage", "19", "--dry-run")
+    assert done.returncode == 0, done.stderr
+    assert "Add stage 18 artefacts" in done.stdout, "the unpushed commit was not named"
+    assert "[dry-run]" in done.stdout
+    assert "results/stage_18.csv" not in _remote_files(remote), "a dry run moved the remote"
+
+
+def test_refuses_to_carry_an_unpushed_commit_that_touches_code(tmp_path: Path) -> None:
+    """Pushing earlier commits must not become a way for code to leave the measurement machine.
+
+    Checked on both paths: with nothing new to stage, and with a fresh artefact to publish,
+    since a push from either carries every earlier unpushed commit along.
+    """
+    repo, remote = _pushed_repo(tmp_path)
+    (repo / "src" / "a.py").write_text("x = 2\n")
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "edit made on the wrong machine")
+
+    done = publish(repo, "--stage", "19")
+    assert done.returncode == 1, done.stdout
+    assert "src/a.py" in done.stderr, done.stderr
+
+    (repo / "results" / "fresh.csv").write_text("a\n1\n")
+    with_artefact = publish(repo, "--stage", "19")
+    assert with_artefact.returncode == 1, with_artefact.stdout
+    assert "src/a.py" in with_artefact.stderr, with_artefact.stderr
+    assert "x = 1" in subprocess.run(["git", "show", "main:src/a.py"], cwd=remote,
+                                     capture_output=True, text=True).stdout, \
+        "the code edit reached the remote"
+
+
+def test_no_origin_is_reported_as_unverified(scratch: Path) -> None:
+    """Without a remote nothing can be compared, and that must not read as all pushed."""
+    done = publish(scratch, "--stage", "9", "--dry-run")
+    assert done.returncode == 0, done.stderr
+    assert "[unverified]" in done.stdout, done.stdout

@@ -110,10 +110,11 @@ if errorlevel 1 (
 dir /b data\*.json
 
 REM --- Step 5: tests --------------------------------------------------------
-REM  After the datasets, not before: three tests exercise the real datasets and
-REM  skip without them, which would report 152 passed and look like a fault.
+REM  After the datasets, not before: the tests that exercise the real datasets skip
+REM  without them. No expected count is printed -- the one that was, 155, stayed on
+REM  screen long after the suite passed a thousand. pytest's own last line is shown.
 echo.
-echo [5/6] Running the test suite ^(expect 155 passed^)...
+echo [5/6] Running the test suite ^(any failure stops the run; skips are expected^)...
 %PY% -m pytest -q > results\logs\03_tests.log 2>&1
 if errorlevel 1 (
     echo   ERROR: tests failed. See results\logs\03_tests.log
@@ -169,9 +170,10 @@ exit /b %PUBLISHED%
 :check_published
 REM  Each stage pushes its own artefacts as it finishes (publish_results.py), so nothing
 REM  is sent by hand. This checks that claim instead of printing it. Two things can be
-REM  left behind: artefacts never committed, and a commit whose push failed. The second
-REM  is silent -- a later publish finds nothing new to stage, prints [nothing] and exits
-REM  zero, while the commit stays on this machine.
+REM  left behind: artefacts never committed, and a commit whose push failed. The next
+REM  publish pushes the second kind too (since 2026-09-25; before, it printed [nothing]
+REM  and left the commit here), but only if one runs -- a failure in the last stage
+REM  leaves nothing after it to do so.
 echo  Checking that every artefact reached GitHub...
 git fetch --quiet origin
 if errorlevel 1 (
@@ -204,9 +206,8 @@ if not "%LEFT_FILES%"=="0" (
 if not "%LEFT_COMMITS%"=="0" (
     echo      %LEFT_COMMITS% commit^(s^) made here but not pushed:
     git log --oneline "@{upstream}..HEAD"
-    echo      Push them -- rebase, never merge, as publish_results.py does:
-    echo          git pull --rebase origin %BRANCH%
-    echo          git push origin %BRANCH%
+    echo      The same command pushes them, rebasing, and refuses if one touches code:
+    echo          %PY% scripts\publish_results.py --stage ^<N^>
 )
 exit /b 1
 

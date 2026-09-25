@@ -95,9 +95,13 @@ into data\ and carry on.
 --------
     .venv\Scripts\python -m pytest -q
 
-Expect "155 passed". Run this after the datasets, not before: three tests
-exercise the real datasets and skip without them, which reports "152 passed,
-3 skipped" and looks like a fault when it is not.
+Read the last line: it must say "passed" and must not say "failed" or
+"error". No count is given here on purpose -- it grows whenever a test is added,
+and a number written down goes stale without anyone noticing (this file said 155
+long after the suite passed a thousand). Skips are expected: some tests need a
+real dataset, and some need the manuscript, which is not in this repository.
+Run this after the datasets, not before, so the dataset tests run instead of
+skipping.
 
 Anything failing means the checkout or the install is wrong - stop here rather
 than running experiments on it.
@@ -155,11 +159,10 @@ run_all_windows.bat checks this at the end and says which of these it found:
     All artefacts are on GitHub.        done
     N artefact file(s) not committed    a stage wrote them and did not publish:
                                           .venv\Scripts\python scripts\publish_results.py --stage N
-    N commit(s) made here but not       a push failed after its commit; the next
-      pushed                            publish finds nothing new and does not push
-                                        them, so push by hand, rebasing:
-                                          git pull --rebase origin main
-                                          git push origin main
+    N commit(s) made here but not       a push failed after its commit. The same
+      pushed                            command pushes them, rebasing, and refuses
+                                        if one of them touches code:
+                                          .venv\Scripts\python scripts\publish_results.py --stage N
 
 To check by hand at any time -- both must print nothing:
 

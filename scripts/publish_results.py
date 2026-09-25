@@ -6,16 +6,19 @@ own instructions forbid it. The other pushed the logs and left the CSVs behind, 
 `.gitignore` still carried a glob from a deleted runner and swallowed them without a word --
 the run printed [ok] and the artefact simply never existed for anyone else.
 
-So this does four things, and the third is the reason it exists:
+So this does five things, and the third is the reason it exists:
 
-  1. refuses if anything outside the artefact trees is modified. A stage publishes
-     measurements, not code; code reaches this machine by git and leaves the same way, from
-     the development machine.
+  1. refuses if anything outside the artefact trees is modified, or if a commit made here and
+     not yet pushed touches anything outside them. A stage publishes measurements, not code;
+     code reaches this machine by git and leaves the same way, from the development machine.
   2. stages the artefact trees only.
   3. **names every file under them that git is ignoring.** That is the silent loss, and
      naming it is the whole point: a file that exists on disk and cannot reach a commit
      should not be discoverable only by someone later asking where it went.
   4. rebases rather than merges, then pushes.
+  5. pushes commits an earlier call made but failed to push, even when nothing new is
+     staged. Before 2026-09-25 that case printed [nothing] and exited zero, so a stage whose
+     push had failed once never left the machine and every later call said all was well.
 
     python scripts/publish_results.py --stage 17
     python scripts/publish_results.py --stage 17 --dry-run
@@ -103,6 +106,31 @@ def ignored_under_results() -> tuple[list[str], int]:
     return fresh, old
 
 
+def unpushed() -> list[str] | None:
+    """Commits on HEAD that no ref of origin holds, oldest first; None when there is no origin.
+
+    Read from the remote-tracking refs, without fetching: a successful push or pull moves
+    them, so a commit outside every one of them is a commit that has never left this machine.
+    None rather than every commit when origin is missing -- "cannot tell" must not read as
+    "all of history is unpushed".
+    """
+    if subprocess.run(["git", "remote", "get-url", "origin"], cwd=ROOT,
+                      capture_output=True).returncode != 0:
+        return None
+    out = git("rev-list", "--reverse", "HEAD", "--not", "--remotes=origin")
+    return [line for line in out.splitlines() if line]
+
+
+def code_in(commits: list[str]) -> list[str]:
+    """Paths outside the artefact trees that any of these commits touches."""
+    trees = artefact_trees()
+    touched = set()
+    for sha in commits:
+        touched.update(line for line in git("diff-tree", "--no-commit-id", "--name-only",
+                                            "-r", "--root", sha).splitlines() if line)
+    return sorted(path for path in touched if not any(path.startswith(t) for t in trees))
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--stage", required=True, help="stage number, for the commit message")
@@ -118,6 +146,23 @@ def main() -> int:
         print("          A stage publishes measurements, not code. Commit code on the\n"
               "          development machine and pull it here.", file=sys.stderr)
         return 1
+
+    # Every push below carries these along, so they are checked before anything is staged.
+    pending = unpushed()
+    if pending is None:
+        print("[unverified] no remote named origin, so commits made here cannot be checked "
+              "against it")
+    elif pending:
+        code = code_in(pending)
+        if code:
+            print(f"[refused] {len(pending)} commit(s) made here and not pushed touch files "
+                  f"outside {' '.join(artefact_trees())}:", file=sys.stderr)
+            for path in code:
+                print(f"          {path}", file=sys.stderr)
+            print("          Publishing would push them too. Code leaves from the development\n"
+                  "          machine; move these commits there, or drop them here.",
+                  file=sys.stderr)
+            return 1
 
     fresh_ignored, old_ignored = ignored_under_results()
     if old_ignored:
@@ -136,8 +181,22 @@ def main() -> int:
     git("add", "--", *artefact_trees())
     staged = [line for line in git("diff", "--cached", "--name-only").splitlines() if line]
     if not staged:
+        if pending:
+            print(f"[unpushed] nothing new to stage, but {len(pending)} commit(s) made here "
+                  f"never reached origin -- an earlier publish whose push failed:")
+            for sha in pending:
+                print(f"          {git('log', '-1', '--format=%h %s', sha).strip()}")
+            if args.dry_run:
+                print("[dry-run] stopping before push; run without --dry-run to publish")
+                return 0
+            branch = git("rev-parse", "--abbrev-ref", "HEAD").strip()
+            git("pull", "--rebase", "origin", branch)
+            git("push", "origin", branch)
+            print(f"[ok] pushed {len(pending)} earlier commit(s) to origin/{branch} "
+                  f"as {git('rev-parse', '--short', 'HEAD').strip()}")
+            return 0
         print(f"[nothing] no change under {' '.join(artefact_trees())} to publish. "
-              f"Nothing was written, or it was already committed.")
+              f"Nothing was written, or it was already committed and pushed.")
         return 0
 
     print(f"[staged] {len(staged)} file(s):")
@@ -156,7 +215,8 @@ def main() -> int:
     # machine until it is pushed, and the branch's own instructions forbid one.
     git("pull", "--rebase", "origin", branch)
     git("push", "origin", branch)
-    print(f"[ok] pushed {len(staged)} artefact(s) to origin/{branch} "
+    carried = f", with {len(pending)} earlier unpushed commit(s)" if pending else ""
+    print(f"[ok] pushed {len(staged)} artefact(s) to origin/{branch}{carried} "
           f"as {git('rev-parse', '--short', 'HEAD').strip()}")
     return 0
 
