@@ -24,21 +24,41 @@ ROOT = Path(__file__).resolve().parents[1]
 FILES = sorted((ROOT / "results").glob("environment_stage*.txt"))
 PATTERN = re.compile(r"^commit\s*=\s*(\S+)", re.MULTILINE)
 
-# Stages that ran before the history was compressed on 2026-08-25. Their commits were real
+# Records written before the history was compressed on 2026-08-25. Their commits were real
 # and their numbers are real, but the commits they name no longer exist in this repository:
 # the whole history was replaced by a single commit to clean up its commit
 # messages, and any rewrite invalidates every hash recorded before it.
 #
-# This is a LOSS, and it is declared rather than skipped. Naming the files means a NEW
-# dangling hash still fails the check -- what is excused here is exactly this list and
-# nothing else. Artefacts produced from now on record commits that resolve.
-BEFORE_THE_COMPRESSION = {
-    "environment_stage1.txt", "environment_stage3.txt", "environment_stage9.txt",
-    "environment_stage10.txt", "environment_stage11.txt", "environment_stage12.txt",
-    "environment_stage13.txt", "environment_stage14.txt", "environment_stage15.txt",
-    "environment_stage16.txt", "environment_stage16_n267_superseded.txt",
-    "environment_stage17.txt", "environment_stage18.txt",
-}
+# This is a LOSS, and it is declared rather than skipped. What is excused is decided by a
+# PROPERTY: the record's bytes are still exactly those it had in the compression commit, the
+# root of this history. A record written or rewritten since then -- a new stage, or an old
+# stage run again -- is no longer excused and must name a commit that resolves; a new
+# dangling hash therefore still fails.
+#
+# CORRECTED 2026-09-25. This used to be a list of thirteen file names, and it broke the
+# re-run it should have welcomed: the first stage re-run from the current commit made its
+# record resolvable, the list then refused it ("take it off the list"), and every later
+# re-run session would have stopped at the test step the same way. The property needs no
+# upkeep: re-running a stage changes its record, which is what takes it off.
+
+
+def roots() -> list[str]:
+    done = subprocess.run(["git", "rev-list", "--max-parents=0", "HEAD"], cwd=ROOT,
+                          capture_output=True, text=True)
+    return done.stdout.split() if done.returncode == 0 else []
+
+
+def unchanged_since_compression(path: Path) -> bool:
+    """True when the file's bytes equal its blob in the root commit of this history."""
+    relative = path.relative_to(ROOT).as_posix()
+    current = subprocess.run(["git", "hash-object", "--no-filters", str(path)], cwd=ROOT,
+                             capture_output=True, text=True).stdout.strip()
+    for root in roots():
+        then = subprocess.run(["git", "rev-parse", f"{root}:{relative}"], cwd=ROOT,
+                              capture_output=True, text=True)
+        if then.returncode == 0 and then.stdout.strip() == current:
+            return True
+    return False
 
 
 def recorded_commit(path: Path) -> str | None:
@@ -58,12 +78,7 @@ def test_the_commit_beside_an_artefact_exists_and_is_on_this_branch(path: Path) 
     commit = recorded_commit(path)
     if commit is None:
         pytest.skip(f"{path.name} records no commit field")
-    if path.name in BEFORE_THE_COMPRESSION:
-        assert not git_ok("merge-base", "--is-ancestor", commit, "HEAD"), (
-            f"{path.name} is listed as predating the history compression, but its commit "
-            f"{commit} IS reachable. Take it off the list -- a file excused for a reason "
-            f"that no longer applies is an excuse nobody rechecks."
-        )
+    if unchanged_since_compression(path) and not git_ok("cat-file", "-e", f"{commit}^{{commit}}"):
         pytest.skip(f"{path.name} names {commit}, recorded before the 2026-08-25 compression")
     assert git_ok("cat-file", "-e", f"{commit}^{{commit}}"), (
         f"{path.name} names commit {commit!r}, which this repository does not contain. "
