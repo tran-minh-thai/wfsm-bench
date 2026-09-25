@@ -6,6 +6,7 @@ Cuneiform                            0.5
 DHFR_bond                           none
 QM9_bond                             0.6
 alchemy_full_bond                    0.8
+pdb_contact                         none
 
-5/7 collections calibrated
-2 without a stable rho: any run of theirs under discounting is refused by the runners rather than defaulted.
+5/8 collections calibrated
+3 without a stable rho: any run of theirs under discounting is refused by the runners rather than defaulted.
