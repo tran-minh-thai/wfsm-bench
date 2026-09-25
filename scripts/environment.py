@@ -160,7 +160,7 @@ def behind_remote() -> tuple[str, str]:
     days: the artefacts look ordinary and describe code the author has already moved
     past. It happened here -- a stage ran three commits behind and nothing in its
     output said so. A bare `git pull` does not prevent it, because it pulls whichever
-    branch the machine happens to be standing on, and this repository has three.
+    branch the machine happens to be standing on, and this repository has more than one.
 
     A fetch that cannot reach the network is reported as unverified, never as passed:
     "could not check" and "checked, fine" must not print the same way.

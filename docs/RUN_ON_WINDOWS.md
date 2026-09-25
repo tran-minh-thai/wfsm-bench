@@ -36,15 +36,31 @@ Every experiment runs through one entry point, which writes an environment recor
 stage's artefacts and stops on the first failure:
 
 ```bat
-git checkout per-edge-objective
+git checkout main
 git pull --ff-only
 run_experiments_windows.bat            REM the default stages, in result-per-hour order
 run_experiments_windows.bat 3 4 5      REM only some
 run_experiments_windows.bat 19         REM one stage by number
 ```
 
-Name the branch before pulling. This repository has three, and a bare `git pull` updates
-whichever one the machine is standing on -- which is how a stage once ran three commits behind.
+Name the branch before pulling. A bare `git pull` updates whichever branch the machine is
+standing on -- which is how a stage once ran three commits behind.
+
+The work moved from `per-edge-objective` to `main` on 2026-09-25, and `per-edge-objective`
+was deleted. A checkout still standing on it moves across once, keeping its commits (the two
+branches share one history):
+
+```bat
+git fetch --prune origin
+git checkout -B main per-edge-objective
+git branch --set-upstream-to=origin/main
+git branch -d per-edge-objective
+git pull --ff-only
+```
+
+If `git checkout main` instead lands on a `main` older than 2026-08-25, it shares no history
+with the remote and `git pull` fails; replace it with `git checkout -B main origin/main`.
+`run_all_windows.bat` does both of these by itself.
 
 The stage table, what each stage supports, and its measured or estimated cost are in the
 header comment of `run_experiments_windows.bat`. That file is the source of truth for what

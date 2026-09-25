@@ -12,10 +12,10 @@ REM ============================================================================
 setlocal enabledelayedexpansion
 
 set REPO_URL=https://github.com/tran-minh-thai/wfsm-bench.git
-REM The work is not on the default branch, and cloning without naming one lands on
-REM main, which is many commits behind. A run started there produces artefacts that
-REM look ordinary and came from superseded code.
-set BRANCH=per-edge-objective
+REM The work is on main since 2026-09-25, when per-edge-objective became main and was
+REM deleted. The branch is still named, because a checkout keeps whatever branch it
+REM stood on, and :update_checkout below moves an old one across.
+set BRANCH=main
 set WORKERS=10
 set PRESET=balanced
 
@@ -42,15 +42,14 @@ echo.
 echo [1/6] Getting the code...
 if exist "src\wfsmbench" (
     echo   Already inside a checkout; switching to %BRANCH% and pulling.
-    git checkout %BRANCH%
-    git pull --ff-only
-    if errorlevel 1 echo   WARNING: pull failed, continuing with the local copy.
+    call :update_checkout
+    if errorlevel 1 goto :fail
 ) else (
     if exist "wfsm-bench\src\wfsmbench" (
         echo   Found wfsm-bench\ next to this file; entering and pulling.
         cd wfsm-bench
-        git checkout %BRANCH%
-        git pull --ff-only
+        call :update_checkout
+        if errorlevel 1 goto :fail
     ) else (
         echo   Cloning %REPO_URL% ^(branch %BRANCH%^)
         git clone -b %BRANCH% %REPO_URL%
@@ -157,6 +156,38 @@ echo.
 echo  Send back the CSV files and the logs folder.
 echo.
 pause
+exit /b 0
+
+:update_checkout
+REM Puts an existing checkout on %BRANCH% and pulls. Returns 1 only when running on
+REM would mean running code that is not on the remote at all.
+git fetch --prune origin
+if errorlevel 1 (
+    echo   WARNING: could not reach the remote; continuing with the local copy.
+    exit /b 0
+)
+REM per-edge-objective became main and was deleted on 2026-09-25. Its history IS main's,
+REM so a checkout still standing on it moves across with its commits, pushed or not.
+git rev-parse --verify --quiet refs/heads/per-edge-objective >NUL
+if not errorlevel 1 (
+    echo   Moving this checkout from per-edge-objective to %BRANCH% ^(one time^).
+    git checkout -B %BRANCH% per-edge-objective || exit /b 1
+    git branch --set-upstream-to=origin/%BRANCH% || exit /b 1
+    git branch -d per-edge-objective
+) else (
+    git checkout %BRANCH% || exit /b 1
+)
+REM A local main from before the 2026-08-25 history compression shares no commit with
+REM origin/main. The pull below would fail, and the old warning then ran that code anyway.
+git merge-base HEAD origin/%BRANCH% >NUL
+if errorlevel 1 (
+    echo   ERROR: local %BRANCH% shares no history with origin/%BRANCH%; it predates
+    echo   the 2026-08-25 history compression. Replace it, then run this again:
+    echo       git checkout -B %BRANCH% origin/%BRANCH%
+    exit /b 1
+)
+git pull --ff-only
+if errorlevel 1 echo   WARNING: pull failed, continuing with the local copy.
 exit /b 0
 
 :fail

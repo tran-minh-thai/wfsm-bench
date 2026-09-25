@@ -45,11 +45,12 @@ REM
 REM  Every stage writes CSV rows as it produces them, so an interrupted stage
 REM  keeps what it finished. Re-running a stage overwrites only its own files.
 REM
-REM  Code reaches this machine by git, never by file sync. Name the branch -- this
-REM  repository has three, and a bare `git pull` updates whichever one the machine is
-REM  standing on, which is how a stage once ran three commits behind:
+REM  Code reaches this machine by git, never by file sync. Name the branch -- a bare
+REM  `git pull` updates whichever one the machine is standing on, which is how a stage
+REM  once ran three commits behind. The work is on main since 2026-09-25; a checkout
+REM  still on the deleted per-edge-objective moves across as docs\RUN_ON_WINDOWS.md says:
 REM
-REM      git checkout per-edge-objective
+REM      git checkout main
 REM      git pull --ff-only
 REM      run_experiments_windows.bat            (all stages)
 REM      run_experiments_windows.bat 3 4 5      (only some)

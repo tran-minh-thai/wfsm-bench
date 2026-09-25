@@ -22,12 +22,11 @@ tick "Add python.exe to PATH" during setup, then open a NEW Command Prompt.
 Pick a folder to work in, then clone:
 
     cd /d "%USERPROFILE%\Documents"
-    git clone -b per-edge-objective https://github.com/tran-minh-thai/wfsm-bench.git
+    git clone -b main https://github.com/tran-minh-thai/wfsm-bench.git
     cd wfsm-bench
 
-Name the branch. The work is not on the default one, and a clone without -b lands
-on main, which is many commits behind -- it runs and produces artefacts that look
-ordinary and came from superseded code.
+The work is on main, the default branch, since 2026-09-25. The branch is still
+named so that the command says which code it fetches.
 
 The repository is private, so the GitHub account you are signed in as must have
 access. If the clone asks for a password, use a personal access token, not the
@@ -37,8 +36,20 @@ Already have a checkout? Update it instead -- naming the branch here too, since 
 bare pull updates whichever branch the machine is standing on:
 
     cd /d "%USERPROFILE%\Documents\wfsm-bench"
-    git checkout per-edge-objective
+    git checkout main
     git pull --ff-only
+
+If that checkout is still on per-edge-objective (deleted 2026-09-25, when it became
+main), move it across once instead; its commits come with it:
+
+    git fetch --prune origin
+    git checkout -B main per-edge-objective
+    git branch --set-upstream-to=origin/main
+    git branch -d per-edge-objective
+    git pull --ff-only
+
+If "git checkout main" lands on a main older than 2026-08-25, the pull fails because
+the two share no history. Replace it:  git checkout -B main origin/main
 
 
 2. VIRTUAL ENVIRONMENT
