@@ -145,12 +145,33 @@ runs one thing at a time to get wall-clock numbers that can be compared. Take
 gaps and hit counts from the budget sweep and times from here.
 
 
-9. WHAT TO SEND BACK
---------------------
-    dir results\*.csv
-    dir results\figures\*.png
+9. RESULTS GO BACK BY GIT -- NOTHING IS SENT BY HAND
+----------------------------------------------------
+Each stage commits and pushes its own artefacts the moment it finishes
+(scripts\publish_results.py, called by run_experiments_windows.bat), so an
+interrupted suite has already delivered every stage that completed.
+run_all_windows.bat checks this at the end and says which of these it found:
 
-Send the CSV files, and the logs if anything failed.
+    All artefacts are on GitHub.        done
+    N artefact file(s) not committed    a stage wrote them and did not publish:
+                                          .venv\Scripts\python scripts\publish_results.py --stage N
+    N commit(s) made here but not       a push failed after its commit; the next
+      pushed                            publish finds nothing new and does not push
+                                        them, so push by hand, rebasing:
+                                          git pull --rebase origin main
+                                          git push origin main
+
+To check by hand at any time -- both must print nothing:
+
+    git fetch origin
+    git status --short -- "results*"
+    git log --oneline "@{upstream}..HEAD"
+
+Not pushed, on purpose (git ignores them):
+  - results\logs\ -- the step logs. If a step failed, send that one log.
+  - results\figures\*.pdf -- figures are drawn from the pushed artefacts on the
+    development machine. Nothing in the suite draws them here, so a PDF in that
+    folder may be older than the run.
 
 
 NOTES

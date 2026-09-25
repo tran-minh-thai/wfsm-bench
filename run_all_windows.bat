@@ -147,16 +147,68 @@ echo.
 echo  Result tables in results\ :
 dir /b results\*.csv 2>NUL
 echo.
-echo  Figures in results\figures\ :
-dir /b results\figures\*.png 2>NUL
+REM  Figures are PDF since 2026-09-13. Nothing in this run draws them -- the suite only
+REM  prints the make_figures command -- so whatever is listed may predate this run, and
+REM  git ignores the directory, so none of it is pushed. Saying so is the point: a list
+REM  under "FINISHED" reads as this run's output.
+echo  Figures in results\figures\ ^(drawn by scripts\make_figures.py, NOT by this run,
+echo  and not pushed: git ignores them^):
+dir /b results\figures\*.pdf 2>NUL
+if errorlevel 1 echo    ^(none^)
 echo.
-echo  Step logs in results\logs\ :
+echo  Step logs in results\logs\ ^(not pushed: git ignores them^):
 dir /b results\logs\*.log 2>NUL
 echo.
-echo  Send back the CSV files and the logs folder.
+REM  Not :fail on a non-zero return: every step DID finish, and :fail says otherwise.
+call :check_published
+set PUBLISHED=%errorlevel%
 echo.
 pause
-exit /b 0
+exit /b %PUBLISHED%
+
+:check_published
+REM  Each stage pushes its own artefacts as it finishes (publish_results.py), so nothing
+REM  is sent by hand. This checks that claim instead of printing it. Two things can be
+REM  left behind: artefacts never committed, and a commit whose push failed. The second
+REM  is silent -- a later publish finds nothing new to stage, prints [nothing] and exits
+REM  zero, while the commit stays on this machine.
+echo  Checking that every artefact reached GitHub...
+git fetch --quiet origin
+if errorlevel 1 (
+    echo    WARNING: could not reach GitHub, so this is UNVERIFIED -- not the same as pushed.
+    echo    Run this file again when the network is back.
+    exit /b 0
+)
+REM  Without an upstream the count below fails, stays at zero, and would read as pushed.
+git rev-parse --abbrev-ref "@{upstream}" >NUL 2>&1
+if errorlevel 1 (
+    echo    UNVERIFIED: this branch tracks no branch on GitHub, so nothing can be compared.
+    echo    Set it with:  git branch --set-upstream-to=origin/%BRANCH%
+    exit /b 1
+)
+set LEFT_FILES=0
+for /f "delims=" %%L in ('git status --porcelain -- "results*"') do set /a LEFT_FILES+=1
+set LEFT_COMMITS=0
+for /f %%N in ('git rev-list --count "@{upstream}..HEAD"') do set LEFT_COMMITS=%%N
+if "%LEFT_FILES%%LEFT_COMMITS%"=="00" (
+    echo    All artefacts are on GitHub. Nothing to send by hand.
+    exit /b 0
+)
+echo    NOT everything reached GitHub:
+if not "%LEFT_FILES%"=="0" (
+    echo      %LEFT_FILES% artefact file^(s^) not committed:
+    git status --short -- "results*"
+    echo      Publish them with the stage number they belong to:
+    echo          %PY% scripts\publish_results.py --stage ^<N^>
+)
+if not "%LEFT_COMMITS%"=="0" (
+    echo      %LEFT_COMMITS% commit^(s^) made here but not pushed:
+    git log --oneline "@{upstream}..HEAD"
+    echo      Push them -- rebase, never merge, as publish_results.py does:
+    echo          git pull --rebase origin %BRANCH%
+    echo          git push origin %BRANCH%
+)
+exit /b 1
 
 :update_checkout
 REM Puts an existing checkout on %BRANCH% and pulls. Returns 1 only when running on
