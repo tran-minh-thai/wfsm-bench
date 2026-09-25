@@ -102,9 +102,40 @@ def test_no_image_in_the_figures_directory_is_orphaned() -> None:
         f"  delete them, or add the builder back -- a stale picture is read as a fresh one")
 
 
-@pytest.mark.skipif(not DRAFT.exists(), reason="the draft is outside this repository")
-def test_every_drawn_figure_is_included_by_the_draft() -> None:
+def _included_figures(tex: str) -> tuple[set[str], list[str]]:
+    """({figure name}, [include arguments that are not a figure in hinh/]) for one draft.
+
+    Comments go first: a figure taken off the page with a leading % is not on the page, and
+    matching the raw text counted it as included. Every include argument is then read, not only
+    the ones already in the expected shape -- an argument outside that shape (an extension, a
+    different directory) used to be invisible, so a stale picture pulled in as hinh/old.pdf
+    passed. Here it is returned, and reported, instead.
+    """
+    visible = "\n".join(re.sub(r"(?<!\\)%.*", "", line) for line in tex.splitlines())
+    names, odd = set(), []
+    for argument in re.findall(r"\\includegraphics\s*(?:\[[^\]]*\])?\s*\{([^}]*)\}", visible):
+        shape = re.fullmatch(r"(?:\./)?hinh/([A-Za-z0-9_-]+)", argument.strip())
+        if shape:
+            names.add(shape.group(1))
+        else:
+            odd.append(argument.strip())
+    return names, odd
+
+
+# Every draft that exists is checked, not one named file. The English manuscript became the
+# submission version on 2026-09-25 while this check still read only the Vietnamese draft, so
+# the file that would be submitted was outside it.
+DRAFTS = [ROOT.parent / "paper" / "manuscript.tex", DRAFT]
+
+
+@pytest.mark.parametrize("draft", DRAFTS, ids=lambda p: p.name)
+def test_every_drawn_figure_is_included_by_the_draft(draft: Path) -> None:
     """CORRECTED 2026-09-11: ask whether the draft INCLUDES the figure, not whether it names the file.
+
+    CORRECTED 2026-09-25: two blind spots, both passing silently, found by feeding the check
+    altered drafts. A figure commented out with % still counted as included, and an include
+    written with an extension (hinh/old.pdf) was not seen at all, so a stale picture on the page
+    passed. Of six altered drafts the old version caught three; see _included_figures.
 
     The old version searched the draft for the source filename, e.g. basin_vs_aco.png. That
     only ever matched because each caption carried a provenance line printing the artefact
@@ -117,15 +148,20 @@ def test_every_drawn_figure_is_included_by_the_draft() -> None:
     a page, and that is what the include line says. The mapping from artefact to the name the
     draft uses lives in the generator, so it is read from there rather than restated here.
     """
+    if not draft.exists():
+        pytest.skip(f"{draft.name} is outside this repository and not present here")
     import importlib.util
     spec = importlib.util.spec_from_file_location(
-        "sync_manuscript_numbers", DRAFT.parent / "tools" / "sync_manuscript_numbers.py")
+        "sync_manuscript_numbers", draft.parent / "tools" / "sync_manuscript_numbers.py")
     generator_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(generator_module)
 
-    body_text = DRAFT.read_text(encoding="utf-8")
-    included = set(re.findall(r"\\includegraphics(?:\[[^\]]*\])?\{hinh/([A-Za-z0-9_-]+)\}", body_text))
-    assert included, "the draft includes no figure at all; the pattern stopped matching"
+    included, odd = _included_figures(draft.read_text(encoding="utf-8"))
+    assert included, f"{draft.name} includes no figure at all; the pattern stopped matching"
+    assert not odd, (
+        f"{draft.name} includes {odd}, which is not a figure by name in hinh/. The generator "
+        f"copies into hinh/ without an extension in the name, so anything else on the page is "
+        f"a file nothing keeps current.")
 
     copied_names = set(generator_module.IMAGES)
     assert copied_names, "the generator copies no figure; there is nothing to check"

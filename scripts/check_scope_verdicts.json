@@ -73,17 +73,17 @@
     },
     {
       "file": "test_figures_are_declared_and_drawn.py",
-      "check": "test_the_builder_declares_the_figures_the_draft_cites",
+      "check": "test_the_builder_declares_the_figures_the_draft_uses",
       "verdict": "false-positive",
-      "why": "The cited set is a non-empty literal, so the difference cannot be empty for want of input.",
-      "on": "2026-09-02"
+      "why": "Replaces test_the_builder_declares_the_figures_the_draft_cites (renamed 2026-09-11, its verdict left behind naming a dead check). The old reason -- the cited set is a non-empty literal -- no longer applies: the set is now read from the generator's copy map, and the check asserts it is non-empty before taking the difference. Refutable: dropping one figure from the builder's FIGURES makes it fail, naming that figure; the unaltered builder passes. Not flagged by the audit, reviewed by hand because two or more asserts count as a guard there.",
+      "on": "2026-09-25"
     },
     {
       "file": "test_figures_are_declared_and_drawn.py",
-      "check": "test_the_draft_refers_to_each_figure_it_should",
-      "verdict": "false-positive",
-      "why": "As above.",
-      "on": "2026-09-02"
+      "check": "test_every_drawn_figure_is_included_by_the_draft",
+      "verdict": "fixed",
+      "why": "Replaces test_the_draft_refers_to_each_figure_it_should (renamed 2026-09-11, verdict 'as above' left behind). Fed six altered drafts, the rewritten check caught three: a figure commented out with % still counted as on the page, and an include written hinh/x.pdf was invisible, so a stale picture passed. It also read only ban_thao.tex after manuscript.tex became the submission version. Now strips comments, reports every include argument outside hinh/<name>, and runs on each draft present. 14 of 14 altered drafts behave as they should across both drafts, including an escaped \\% that must not read as a comment.",
+      "on": "2026-09-25"
     },
     {
       "file": "test_generated_tables_declare_everything.py",
