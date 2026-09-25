@@ -125,8 +125,8 @@ turn-over condition agrees with the measured peak in 14/14 configurations
 Usable only if the optimum is interior at EVERY bound and lands on the same
 pattern each time: a peak that moves with the bound belongs to where the search
 was cut off, not to the objective.
-  size 4: 712 patterns matched once [42s]
-  size 5: 4991 patterns matched once [673s]
+  size 4: 712 patterns matched once [43s]
+  size 5: 4991 patterns matched once [697s]
   rho  size 4             size 5             
      1  k=4 at-the-bound  k=5 at-the-bound  
    0.9  k=4 at-the-bound  k=5 at-the-bound  
