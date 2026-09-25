@@ -18,6 +18,7 @@ import json
 import re
 import statistics
 import sys
+import textwrap
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -385,7 +386,13 @@ def figure_race_size(path: Path) -> None:
     complete = [n for n in sizes if len(present(data, n)) == len(data)]
     dropped = len(data) - len(balanced)
 
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, 4.2))
+    # Drawn 10.4in wide and printed at 0.86 of the column, so every length on the canvas
+    # arrives at 0.536 of itself. At the old height the printed axes box came out shorter than
+    # three lines of its own tick labels, which is not an axes box, and the legend and the
+    # truncation note were then drawn into a space that no longer existed. The height is set
+    # from the PRINTED box the panels need, not from a canvas nobody sees.
+    CO_CHU_IN = 0.86 * COT_IN / 10.4
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15) / CO_CHU_IN))
 
     # Left: the mean total regret against the mean floor. Averaging is linear, so the gap
     # between the two lines IS the mean of the per-cell gaps -- no cross-cell subtraction.
@@ -425,18 +432,35 @@ def figure_race_size(path: Path) -> None:
         ax.axvline(complete[-1], color="#999999", linewidth=0.9, alpha=0.6, zorder=2)
         # Rotated along the rule itself: a horizontal note here landed on the curves in one
         # panel and under the legend in the other, and the panels cannot share a free corner.
-        ax.annotate(text["truncation"].format(n=dropped), xy=(complete[-1], 0.5),
+        # Wrapped, and wrapped HERE rather than in the label file: the words are the
+        # manuscript's, the number of characters that fit beside a rule is this figure's.
+        # Unwrapped, the line ran longer than the axes box is tall and crossed the title
+        # above it and the axis label below -- a note about the figure printed over the
+        # figure. Wrapping turns its length into width, which the panel has to spare.
+        ax.annotate("\n".join(textwrap.wrap(text["truncation"].format(n=dropped), 24)),
+                    xy=(complete[-1], 0.5),
                     xycoords=("data", "axes fraction"), xytext=(-4, 0),
-                    textcoords="offset points", fontsize=7.5, color="#555555",
-                    rotation=90, va="center", ha="right")
+                    textcoords="offset points", fontsize=7, color="#555555",
+                    rotation=90, va="center", ha="right", ma="center",
+                    # The note stands inside the data area because the rule it explains does.
+                    # A pale plate keeps it legible where it crosses a curve without hiding
+                    # the curve: the reader can still see the line run under the words.
+                    bbox=dict(boxstyle="square,pad=0.15", facecolor="white",
+                              edgecolor="none", alpha=0.7))
         ax.set_xticks(sizes)
         ax.set_xlabel(text["xlabel"], fontsize=9)
         style(ax)
 
-    left.legend(frameon=False, fontsize=7.5, loc="upper right", bbox_to_anchor=(1.0, 1.02))
+    # The legend sits OUTSIDE the axes, under both panels. Inside, it was drawn in the upper
+    # right of a box too short to hold it, so it printed across the tick marks and the axis
+    # label it was sitting on top of. It describes both panels anyway, so the figure is the
+    # right owner of it, not the left panel.
+    handles, ten = left.get_legend_handles_labels()
+    fig.legend(handles, ten, frameon=False, fontsize=7.5, ncol=3,
+               loc="lower center", bbox_to_anchor=(0.5, -0.01))
     fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
-    _phong_chu(fig, 0.86 * COT_IN, rect=(0, 0, 1, 0.94))
+    fig.tight_layout(rect=(0, 0.10, 1, 0.94))
+    _phong_chu(fig, 0.86 * COT_IN, rect=(0, 0.10, 1, 0.94))
     fig.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(fig)
 
@@ -551,12 +575,22 @@ def figure_rank_transfer(path: Path) -> None:
                                  "#E69F00", "#56B4E9", "#999999"]))
     import matplotlib.pyplot as plt
     modes = list(du_lieu)
-    figure, axes = plt.subplots(1, len(modes), figsize=(9.6, 3.4), sharex=True, sharey=True)
+    cols = sorted({c for mode in du_lieu.values() for c in mode})
+    # Height is DERIVED from the row count, not fixed. The figure is drawn 9.6in wide and
+    # printed at COT_IN, so every length on the canvas arrives at 0.675 of itself; a height
+    # chosen once for a canvas the reader never sees is how six rows ended up closer together
+    # than the height of one line of their own labels. Here the row pitch is stated in PRINTED
+    # inches -- 0.30in against a 10pt label, which is a line and a half -- the fixed furniture
+    # (both titles, the axis label, the legend, the critical-distance strip) is added in the
+    # same units, and only then is the canvas height the quotient of the two.
+    CO_CHU_IN = COT_IN / 9.6
+    cao_in = (0.30 * len(cols) + 1.55) / CO_CHU_IN
+    figure, axes = plt.subplots(1, len(modes), figsize=(9.6, cao_in),
+                                sharex=True, sharey=True)
     # One ORDER for both panels. With sharey and a per-mode order, a mode measured on five
     # collections and a mode measured on six put different collections on the same row, and
     # the shared tick labels then named the wrong ones -- measured on the first draft of this
     # figure. A collection a mode has no data for gets a blank row, which is the honest shape.
-    cols = sorted({c for mode in du_lieu.values() for c in mode})
     for ax, mode in zip(axes, modes):
         for y, collection in enumerate(cols):
             ranks = du_lieu[mode].get(collection)
@@ -587,19 +621,25 @@ def figure_rank_transfer(path: Path) -> None:
             # are what single the winner out.
         ax.set_yticks(range(len(cols)))
         ax.set_yticklabels(cols, fontsize=10)
-        ax.set_ylim(len(cols) - 0.4, -1.1)
+        # The critical-distance strip is BELOW the last row, not above the first. Above, it
+        # shared the band with the panel title and the two printed on top of each other: the
+        # title is drawn outside the axes and the strip inside it, so nothing in the layout
+        # engine knew they were neighbours. Below, the strip has a band of its own and the
+        # title has the whole band above the box.
+        ax.set_ylim(len(cols) + 0.45, -0.6)
         ax.set_xlabel(text["xlabel"])
         ax.set_title(text["modes"][mode], fontsize=10, loc="left")
         ax.grid(axis="x", lw=0.4, color="#DDDDDD", zorder=0)
         for edge in ("top", "right"):
             ax.spines[edge].set_visible(False)
         # The critical distance, drawn once as a span the reader can carry along the axis.
-        ax.plot([1.0, 1.0 + cd], [-0.7, -0.7], lw=2.2, color="#333333",
-                solid_capstyle="butt", clip_on=False, zorder=4)
+        ax.plot([1.0, 1.0 + cd], [len(cols) - 0.15, len(cols) - 0.15], lw=2.2,
+                color="#333333", solid_capstyle="butt", clip_on=False, zorder=4)
         # A point, not a comma: the figure reads in English now, and a comma decimal inside an
         # English label is the one place the two languages would visibly collide.
         ax.annotate(text["cd_label"].format(cd=f"{cd:.3f}"),
-                    xy=(1.0, -0.7), xytext=(0, 5), textcoords="offset points", fontsize=9)
+                    xy=(1.0, len(cols) - 0.15), xytext=(0, 5),
+                    textcoords="offset points", fontsize=8)
     handles = [plt.Line2D([], [], marker=marks[m], ls="", color=colours[m], label=m)
                for m in methods]
     figure.legend(handles=handles, frameon=False, fontsize=10, ncol=len(methods),
@@ -672,7 +712,14 @@ def figure_enumeration_cost(path: Path) -> None:
             f"would assert a growth rate nothing measured. Run stage 20.")
 
     import matplotlib.pyplot as plt
-    figure, axes = plt.subplots(1, 2, figsize=(10.0, 4.0), sharex=True)
+    # Same arithmetic as the two figures above. Drawn 10.0in wide, printed at COT_IN, so
+    # the canvas shrinks to 0.648 of itself; at the old height the left panel's axis label
+    # ran into the right panel's, and the left panel's y label into the suptitle. The height
+    # is chosen so the printed panels are as tall as they are wide is not the point -- the
+    # point is that it is chosen in printed inches at all.
+    CO_CHU_IN = COT_IN / 10.0
+    figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05) / CO_CHU_IN),
+                               sharex=True)
     colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
     bounds = sorted({k for cells in data.values() for k, _pool, _per in cells})
 
@@ -687,7 +734,6 @@ def figure_enumeration_cost(path: Path) -> None:
                               (axes[1], text["ylabel_per"], text["panel_per"])):
         ax.set_yscale("log")
         ax.set_xticks(bounds)
-        ax.set_xlabel(text["xlabel"], fontsize=9)
         ax.set_ylabel(ylabel, fontsize=9)
         ax.set_title(panel, loc="left", fontsize=9)
         style(ax)
@@ -698,10 +744,18 @@ def figure_enumeration_cost(path: Path) -> None:
     handles = [plt.Line2D([], [], marker="o", ms=4.5, lw=1.7, color=colour, label=name)
                for (name, _cells), colour in zip(sorted(data.items()), colours)]
     figure.legend(handles=handles, frameon=False, fontsize=8, ncol=3,
-                  loc="lower center", bbox_to_anchor=(0.5, -0.04))
+                  loc="lower center", bbox_to_anchor=(0.5, -0.075))
+    # One x label for both panels, not one each. The panels share the axis (sharex), so the
+    # second copy said nothing the first had not; it was also the copy that overhung the right
+    # edge, because it is centred under an axes whose right side IS the figure's right side,
+    # and the crop then took its closing bracket off.
+    figure.supxlabel(text["xlabel"], fontsize=9, y=0.105)
     figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
-    figure.tight_layout(rect=(0, 0.07, 1, 0.94))
-    _phong_chu(figure, COT_IN, rect=(0, 0.07, 1, 0.94))
+    # w_pad separates the two panels: the left panel's x label is long enough to reach under
+    # the right panel's y label, and tight_layout's default gutter was measured for the type
+    # size before the scaling pass, not after it.
+    figure.tight_layout(rect=(0, 0.11, 1, 0.94), w_pad=2.4)
+    _phong_chu(figure, COT_IN, rect=(0, 0.11, 1, 0.94))
     figure.savefig(path, dpi=200, metadata=KHONG_NGAY, bbox_inches="tight")
     plt.close(figure)
 
