@@ -25,6 +25,9 @@ def git(cwd: Path, *args: str) -> None:
 def _setup(tmp_path: Path) -> tuple[Path, Path]:
     remote = tmp_path / "remote.git"
     git(tmp_path, "init", "-q", "--bare", str(remote))
+    # Pinned: the default branch is a per-machine setting (master on the measurement machine),
+    # and a bare HEAD naming a branch nobody pushes clones empty -- see test_publish_results.
+    git(remote, "symbolic-ref", "HEAD", "refs/heads/main")
     repo = tmp_path / "work"
     for sub in ("scripts", "results", "src"):
         (repo / sub).mkdir(parents=True)
@@ -51,8 +54,15 @@ def _advance_remote(tmp_path: Path, remote: Path) -> None:
     git(tmp_path, "clone", "-q", str(remote), str(other))
     git(other, "config", "user.email", "o@example.invalid")
     git(other, "config", "user.name", "other")
+    before = _main_count(remote)
     (other / "src" / "b.py").write_text("y = 1\n")
     git(other, "add", "-A"); git(other, "commit", "-qm", "code moved on"); git(other, "push", "-q")
+    assert _main_count(remote) == before + 1, "main did not advance; the case never happened"
+
+
+def _main_count(remote: Path) -> int:
+    return int(subprocess.run(["git", "rev-list", "--count", "main"], cwd=remote,
+                              capture_output=True, text=True, check=True).stdout)
 
 
 def _artefact_commit(repo: Path, stage: int) -> None:

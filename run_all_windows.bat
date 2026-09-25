@@ -92,6 +92,10 @@ set PY=.venv\Scripts\python.exe
 REM --- Step 3: dependencies -------------------------------------------------
 echo.
 echo [3/6] Installing dependencies...
+REM  Old step logs go first. This directory is never pushed and was never cleaned, so a run
+REM  that stopped at step 5 left beside its own four logs six more from a runner generation
+REM  retired months earlier -- read, on 2026-09-25, as part of the failure.
+if exist "results\logs\*.log" del /q "results\logs\*.log"
 if not exist "results\logs" mkdir "results\logs"
 %PY% -m pip install --upgrade pip > results\logs\00_pip_upgrade.log 2>&1
 %PY% -m pip install -r requirements.txt > results\logs\01_pip_install.log 2>&1

@@ -46,6 +46,26 @@ def scratch(tmp_path: Path, monkeypatch) -> Path:
     return repo
 
 
+def bare_remote(tmp_path: Path) -> Path:
+    """A bare remote whose HEAD names main.
+
+    The default branch is a per-machine git setting: main on the development machine, master
+    on the measurement machine. A bare remote whose HEAD names a branch nobody pushes clones
+    EMPTY, so a test that clones it to play "someone else pushed" pushed to a new master
+    instead -- main never moved, and the case under test never happened. Measured there on
+    2026-09-25: two tests failed outright, and the merge-commit test passed without testing.
+    """
+    remote = tmp_path / "remote.git"
+    git(tmp_path, "init", "-q", "--bare", str(remote))
+    git(remote, "symbolic-ref", "HEAD", "refs/heads/main")
+    return remote
+
+
+def remote_main_count(remote: Path) -> int:
+    return int(subprocess.run(["git", "rev-list", "--count", "main"], cwd=remote,
+                              capture_output=True, text=True, check=True).stdout)
+
+
 def publish(repo: Path, *args: str) -> subprocess.CompletedProcess:
     return subprocess.run([sys.executable, "scripts/publish_results.py", *args],
                           cwd=repo, capture_output=True, text=True)
@@ -107,8 +127,7 @@ def test_it_actually_commits_and_pushes(tmp_path: Path) -> None:
     Everything above checks refusals. Telling someone to run a command that pushes, while
     only its refusals are tested, leaves the one path that changes a remote unverified.
     """
-    remote = tmp_path / "remote.git"
-    git(tmp_path, "init", "-q", "--bare", str(remote))
+    remote = bare_remote(tmp_path)
 
     repo = tmp_path / "work"
     (repo / "scripts").mkdir(parents=True)
@@ -150,8 +169,7 @@ def test_it_actually_commits_and_pushes(tmp_path: Path) -> None:
 
 def test_it_does_not_carry_a_merge_commit(tmp_path: Path) -> None:
     """Rebase, not merge: the branch's own instructions forbid a merge made here."""
-    remote = tmp_path / "remote.git"
-    git(tmp_path, "init", "-q", "--bare", str(remote))
+    remote = bare_remote(tmp_path)
     repo = tmp_path / "work"
     (repo / "scripts").mkdir(parents=True)
     (repo / "results").mkdir()
@@ -169,8 +187,10 @@ def test_it_does_not_carry_a_merge_commit(tmp_path: Path) -> None:
     git(tmp_path, "clone", "-q", str(remote), str(other))
     git(other, "config", "user.email", "o@example.invalid")
     git(other, "config", "user.name", "other")
+    before = remote_main_count(remote)
     (other / "note.txt").write_text("elsewhere\n")
     git(other, "add", "-A"); git(other, "commit", "-qm", "elsewhere"); git(other, "push", "-q")
+    assert remote_main_count(remote) == before + 1, "main did not advance; nothing to merge"
 
     (repo / "results" / "measured.log").write_text("done\n")
     done = subprocess.run([sys.executable, "scripts/publish_results.py", "--stage", "17"],
@@ -185,8 +205,7 @@ def test_it_does_not_carry_a_merge_commit(tmp_path: Path) -> None:
 
 def _pushed_repo(tmp_path: Path) -> tuple[Path, Path]:
     """(work, remote): a checkout already in step with a bare remote, as after a good stage."""
-    remote = tmp_path / "remote.git"
-    git(tmp_path, "init", "-q", "--bare", str(remote))
+    remote = bare_remote(tmp_path)
     repo = tmp_path / "work"
     (repo / "scripts").mkdir(parents=True)
     (repo / "results").mkdir()
