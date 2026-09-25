@@ -1,11 +1,11 @@
 
 === QM9_bond  n=200  seeds=20  workers=8 ===
   thresholds: 1%->2
-  size 5  supp   2 (1%) [sum]: enumerated 613 patterns [375s]
+  size 5  supp   2 (1%) [sum]: enumerated 613 patterns [371s]
       [     sum] optimum 0.2564 at 5e (at the bound), threshold slack, rho=+0.58, 185 local optima (bound 46, templates 17), 0.47 levels
           best F by edge count: 1:0.1330|2:0.2115|3:0.2310|4:0.2500|5:0.2565
   560 search runs to do
-  finished in 657s
+  finished in 672s
 
   size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    11.64%/00/00    26.83%/00/00    17.01%/00/00     1.96%/15/15    34.61%/00/00    44.89%/00/00    45.23%/00/00

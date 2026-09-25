@@ -5,7 +5,7 @@
       [     sum] optimum 0.2564 at 5e (at the bound), threshold slack, rho=+0.58, 235 local optima (bound 46, templates 17), 0.05 levels
           best F by edge count: 1:0.1300|2:0.2100|3:0.2300|4:0.2500|5:0.2600
   560 search runs to do
-  finished in 704s
+  finished in 654s
 
   size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    13.54%/00/00    26.51%/00/00    18.28%/00/00     2.09%/15/15    40.71%/00/00    41.06%/00/00    45.40%/00/00
