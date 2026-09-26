@@ -11,5 +11,5 @@ scipy = 1.18.0
 matplotlib = 3.11.1
 pyyaml = 6.0.3
 tree = clean
-commit = 5a1b2f0
+commit = 61e5b6b
 upstream = current (up to date with origin/main)
