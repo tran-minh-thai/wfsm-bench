@@ -2,14 +2,14 @@
 
 === COX2_bond  n=200  seeds=40  workers=8 ===
   thresholds: 1%->2
-  size 5  supp   2 (1%) [sum]: enumerated 360 patterns [378s]
+  size 5  supp   2 (1%) [sum]: enumerated 360 patterns [368s]
       [     sum] optimum 0.4593 at 4e (INTERIOR), threshold slack, rho=+0.19, 78 local optima (bound 6, templates 13), 1.00 levels
           best F by edge count: 1:0.1583|2:0.2839|3:0.3675|4:0.4593|5:0.3275
-  size 5  supp   2 (1%) [discounted]: enumerated 360 patterns [377s]
+  size 5  supp   2 (1%) [discounted]: enumerated 360 patterns [379s]
       [discounted] optimum 1.0920 at 3e (INTERIOR), threshold slack, rho=-0.07, 15 local optima (bound 6, templates 13), 1.00 levels
           best F by edge count: 1:0.8927|2:1.0573|3:1.0920|4:1.0882|5:0.5204
   1120 search runs to do
-  finished in 3957s
+  finished in 3920s
 
   size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    14.12%/13/13    39.36%/00/00    18.07%/08/08    10.08%/04/04    30.71%/01/01    22.21%/12/12    50.17%/00/00

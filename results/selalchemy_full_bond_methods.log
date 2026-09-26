@@ -2,14 +2,14 @@
 
 === alchemy_full_bond  n=200  seeds=40  workers=8 ===
   thresholds: 1%->2
-  size 5  supp   2 (1%) [sum]: enumerated 428 patterns [524s]
+  size 5  supp   2 (1%) [sum]: enumerated 428 patterns [528s]
       [     sum] optimum 0.0593 at 4e (INTERIOR), threshold slack, rho=-0.27, 24 local optima (bound 41, templates 15), 1.00 levels
           best F by edge count: 1:0.0160|2:0.0401|3:0.0526|4:0.0593|5:0.0142
-  size 5  supp   2 (1%) [discounted]: enumerated 428 patterns [524s]
+  size 5  supp   2 (1%) [discounted]: enumerated 428 patterns [527s]
       [discounted] optimum 0.1078 at 3e (INTERIOR), threshold slack, rho=-0.23, 14 local optima (bound 41, templates 15), 1.00 levels
           best F by edge count: 1:0.0516|2:0.0940|3:0.1078|4:0.1075|5:0.0410
   1120 search runs to do
-  finished in 2270s
+  finished in 2261s
 
   size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    27.65%/00/00    55.74%/00/00    35.93%/00/00     3.50%/26/26    57.20%/01/01    83.28%/00/00    76.75%/00/00

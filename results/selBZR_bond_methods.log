@@ -2,14 +2,14 @@
 
 === BZR_bond  n=200  seeds=40  workers=8 ===
   thresholds: 1%->2
-  size 5  supp   2 (1%) [sum]: enumerated 359 patterns [367s]
+  size 5  supp   2 (1%) [sum]: enumerated 359 patterns [364s]
       [     sum] optimum 0.3560 at 4e (INTERIOR), threshold slack, rho=+0.27, 72 local optima (bound 11, templates 13), 1.00 levels
           best F by edge count: 1:0.0941|2:0.1698|3:0.2629|4:0.3560|5:0.1676
-  size 5  supp   2 (1%) [discounted]: enumerated 359 patterns [364s]
+  size 5  supp   2 (1%) [discounted]: enumerated 359 patterns [363s]
       [discounted] optimum 0.7633 at 2e (INTERIOR), threshold slack, rho=-0.17, 13 local optima (bound 11, templates 13), 1.00 levels
           best F by edge count: 1:0.7085|2:0.7633|3:0.7575|4:0.7512|5:0.2920
   1120 search runs to do
-  finished in 5239s
+  finished in 5285s
 
   size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    30.03%/00/00    48.02%/00/00    32.51%/00/00    14.25%/03/03    42.20%/00/00    37.82%/01/01    57.80%/00/00
