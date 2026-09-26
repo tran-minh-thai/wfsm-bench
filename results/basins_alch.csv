@@ -1,5 +1,5 @@
-dataset,graph_limit,max_size,min_support,weight_mode,fitness_quantum,pool_size,optimum_multiplicity,policy,attractors,basin_optimum_pct,largest_basin_pct,optimum_is_largest,mean_path,max_path,unreached_from_pct
-alchemy_full_bond,200,5,2,sum,0,428,1,strict,24,0.467,51.168,0,2.350,6,94.393
-alchemy_full_bond,200,5,2,sum,0,428,1,plateau,24,0.467,51.168,0,2.350,6,94.393
-alchemy_full_bond,200,5,2,discounted,0,428,1,strict,14,10.280,54.206,0,2.491,8,96.729
-alchemy_full_bond,200,5,2,discounted,0,428,1,plateau,14,10.280,54.206,0,2.491,8,96.729
+dataset,graph_limit,graph_offset,max_size,min_support,weight_mode,fitness_quantum,pool_size,optimum_multiplicity,policy,attractors,basin_optimum_pct,largest_basin_pct,optimum_is_largest,mean_path,max_path,unreached_from_pct
+alchemy_full_bond,200,0,5,2,sum,0,428,1,strict,24,0.467,51.168,0,2.350,6,94.393
+alchemy_full_bond,200,0,5,2,sum,0,428,1,plateau,24,0.467,51.168,0,2.350,6,94.393
+alchemy_full_bond,200,0,5,2,discounted,0,428,1,strict,14,10.280,54.206,0,2.491,8,96.729
+alchemy_full_bond,200,0,5,2,discounted,0,428,1,plateau,14,10.280,54.206,0,2.491,8,96.729

@@ -1,5 +1,5 @@
-dataset,graph_limit,max_size,min_support,weight_mode,fitness_quantum,pool_size,optimum_multiplicity,policy,attractors,basin_optimum_pct,largest_basin_pct,optimum_is_largest,mean_path,max_path,unreached_from_pct
-COX2_bond,200,5,2,sum,0,360,1,strict,78,16.389,16.389,1,2.031,8,78.333
-COX2_bond,200,5,2,sum,0,360,1,plateau,78,16.389,16.389,1,2.031,8,78.333
-COX2_bond,200,5,2,discounted,0,360,1,strict,15,70.000,70.000,1,4.694,11,95.833
-COX2_bond,200,5,2,discounted,0,360,1,plateau,15,70.000,70.000,1,4.694,11,95.833
+dataset,graph_limit,graph_offset,max_size,min_support,weight_mode,fitness_quantum,pool_size,optimum_multiplicity,policy,attractors,basin_optimum_pct,largest_basin_pct,optimum_is_largest,mean_path,max_path,unreached_from_pct
+COX2_bond,200,0,5,2,sum,0,360,1,strict,78,16.389,16.389,1,2.031,8,78.333
+COX2_bond,200,0,5,2,sum,0,360,1,plateau,78,16.389,16.389,1,2.031,8,78.333
+COX2_bond,200,0,5,2,discounted,0,360,1,strict,15,70.000,70.000,1,4.694,11,95.833
+COX2_bond,200,0,5,2,discounted,0,360,1,plateau,15,70.000,70.000,1,4.694,11,95.833
