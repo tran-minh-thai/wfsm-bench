@@ -647,6 +647,10 @@ for %%D in (BZR_bond COX2_bond DHFR_bond alchemy_full_bond) do (
 %PY% scripts\run_selector.py --runs "results/weight_mode_runs_sel*.csv" ^
      > results\selector.log 2>&1 || goto :failed
 type results\selector.log
+REM  The all-pairs table the selector's regret is quoted from. Its inputs are fixed in
+REM  run_selector.py (ALL_PAIRS_RUNS), so this line cannot drift from what the table needs.
+%PY% scripts\run_selector.py --all-pairs --out results\selector_regret_allpairs.csv ^
+     > results\selector_allpairs.log 2>&1 || goto :failed
 echo     done %TIME%
 exit /b 0
 

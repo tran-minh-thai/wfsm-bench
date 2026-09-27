@@ -26,8 +26,8 @@ PATTERN = re.compile(r"^commit\s*=\s*(\S+)", re.MULTILINE)
 
 # Records written before the history was compressed on 2026-08-25. Their commits were real
 # and their numbers are real, but the commits they name no longer exist in this repository:
-# the whole history was replaced by a single commit to clean up its commit
-# messages, and any rewrite invalidates every hash recorded before it.
+# the whole history was replaced by a single commit to clean up its commit messages, and
+# any rewrite invalidates every hash recorded before it.
 #
 # This is a LOSS, and it is declared rather than skipped. What is excused is decided by a
 # PROPERTY: the record's bytes are still exactly those it had in the compression commit, the

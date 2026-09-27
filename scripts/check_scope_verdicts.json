@@ -191,6 +191,20 @@
       "on": "2026-09-25"
     },
     {
+      "file": "test_selector_artefact_regenerates.py",
+      "check": "test_the_all_pairs_table_regenerates_byte_for_byte",
+      "verdict": "false-positive",
+      "why": "Recomputes the table from the per-seed files and compares it with the artefact; the only literal is a floor on the number of inputs found. Refutable: dropping one input file from ALL_PAIRS_RUNS fails it, and so does the script without main().",
+      "on": "2026-09-27"
+    },
+    {
+      "file": "test_selector_artefact_regenerates.py",
+      "check": "test_the_stage_13_step_prints_its_verdict_and_writes",
+      "verdict": "false-positive",
+      "why": "The literals are the script's own output markers and a floor of one data row. Refutable: the script as it was for a month (no main) prints nothing and fails it.",
+      "on": "2026-09-27"
+    },
+    {
       "file": "test_publish_results.py",
       "check": "test_a_commit_whose_push_failed_is_pushed_by_the_next_call",
       "verdict": "false-positive",

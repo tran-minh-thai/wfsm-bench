@@ -45,6 +45,28 @@ RESULTS = ROOT / "results"
 
 FIXED = ("aco", "local_search")
 
+# The stage 13 per-seed files: two budgets each, disjoint seeds for race and bill.
+STAGE_13_RUNS = ["results/weight_mode_runs_sel*.csv"]
+
+# The inputs of results/selector_regret_allpairs.csv, the table the selector's regret is
+# quoted from. Four budget levels are what give it more than one budget pair per cell, so it
+# needs the method arms that ran at four -- QM9 (stage 2), Cuneiform at sizes 4, 5 and 6
+# (stages 8, 4 and 7) and the size-6 pruned arm (stage 5) -- beside the stage 13 files.
+#
+# CORRECTED 2026-09-27. This list was written nowhere. A commit of 2026-08-24 deleted this
+# script's main() along with a dead line it meant to remove, so stage 13 ran it as a no-op
+# for a month, printing nothing and exiting zero; and the table could not be regenerated,
+# because which files had produced it was not recorded. Recovered by search over the tracked
+# per-seed files: this set, and only it among the candidates, reproduces the table byte for
+# byte (122 rows). weight_mode_runs_macdet.csv is byte-identical to s4loose and would
+# serve equally; weight_mode_runs_noprune.csv would not.
+ALL_PAIRS_RUNS = ["results/weight_mode_runs_sel*.csv",
+                  "results/weight_mode_runs_qm9.csv",
+                  "results/weight_mode_runs_s4loose.csv",
+                  "results/weight_mode_runs_s5.csv",
+                  "results/weight_mode_runs_s6.csv",
+                  "results/weight_mode_runs_prune.csv"]
+
 
 def load(paths):
     """(dataset, mode, size, support) -> budget -> method -> seed -> fitness."""
@@ -145,3 +167,103 @@ def _score(cells, key, cheap, dear, split: bool):
     for fixed in FIXED:
         row[fixed] = regret(fixed, cells[key][dear], pay_seeds, methods)
     return [row]
+
+
+def summarise(rows, label):
+    print(f"\n  == {label} ==")
+    print(f"  {'dataset':<20}{'mode':<12}{'picked':<14}{'race':>8}{'aco':>9}{'ils':>9}"
+          f"{'race/pay seeds':>16}")
+    for row in rows:
+        dataset, mode, _size, _support = row["cell"]
+        def show(v): return f"{v:>8.2f}%" if v is not None else f"{'-':>9}"
+        print(f"  {dataset:<20}{mode:<12}{row['pick']:<14}{show(row['race'])}"
+              f"{show(row['aco'])}{show(row['local_search'])}"
+              f"{row['race_seeds']:>7}/{row['pay_seeds']:<6}")
+    print()
+    out = {}
+    for name, label2 in (("race", "race"), ("aco", "always-ACO"),
+                         ("local_search", "always-ILS")):
+        values = [r[name] for r in rows if r[name] is not None]
+        if not values:
+            print(f"  {label2:<14} no cell could be compared")
+            continue
+        out[name] = (statistics.mean(values), max(values), len(values))
+        print(f"  {label2:<14} mean regret {statistics.mean(values):>6.2f}%   "
+              f"worst {max(values):>6.2f}%   over {len(values)} cells")
+    return out
+
+
+def main(argv: list[str]) -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--runs", nargs="+", default=None,
+                    help="per-seed CSV files; globs are expanded. Default: the stage 13 "
+                         "files, or ALL_PAIRS_RUNS with --all-pairs")
+    ap.add_argument("--out", type=Path, default=RESULTS / "selector_regret.csv")
+    ap.add_argument("--all-pairs", action="store_true",
+                    help="score every budget pair, not just cheapest against dearest; this "
+                         "is what reaches cells with a sharp top")
+    args = ap.parse_args(argv)
+    runs = args.runs or (ALL_PAIRS_RUNS if args.all_pairs else STAGE_13_RUNS)
+
+    # Relative patterns resolve against the repository, not the directory the command was
+    # typed in, so the same invocation reads the same files from anywhere.
+    paths = sorted({p for pattern in runs
+                    for p in glob.glob(str(pattern) if Path(pattern).is_absolute()
+                                       else str(ROOT / pattern))})
+    if not paths:
+        print(f"[fail] no per-seed files matched {args.runs}. A selector scored over zero "
+              f"cells is not a scored selector.")
+        return 1
+    print(f"reading {len(paths)} per-seed files")
+    cells = load(paths)
+    if not cells:
+        print("[fail] the files held no rows.")
+        return 1
+
+    split_rows = evaluate(cells, split=True, all_pairs=args.all_pairs)
+    shared_rows = evaluate(cells, split=False, all_pairs=args.all_pairs)
+    if not split_rows:
+        print("[fail] no cell had two budgets and enough seeds to split.")
+        return 1
+
+    split_summary = summarise(split_rows, "DISJOINT SEEDS -- race on even, pay on odd")
+    shared_summary = summarise(shared_rows, "SHARED SEEDS -- as measured before, to size the optimism")
+
+    if "race" in split_summary and "race" in shared_summary:
+        honest, optimistic = split_summary["race"][0], shared_summary["race"][0]
+        print(f"\n  optimism of the shared-seed figure: {optimistic:.2f}% -> "
+              f"{honest:.2f}% ({honest - optimistic:+.2f} percentage points)")
+        best_fixed = min((split_summary[f][0] for f in FIXED if f in split_summary),
+                         default=None)
+        if best_fixed is not None:
+            print(f"  race against the best fixed rule, on disjoint seeds: "
+                  f"{honest:.2f}% vs {best_fixed:.2f}%  -> "
+                  f"{'race still wins' if honest < best_fixed else 'RACE NO LONGER WINS'}")
+
+    header = ("dataset,weight_mode,max_size,min_support,seed_split,race_budget,"
+              "pay_budget,picked,race_seeds,pay_seeds,top,tied_at_top,transfers,"
+              "estimated_right,regret_race,regret_aco,regret_ils")
+    lines = [header]
+    for label, rows in (("disjoint", split_rows), ("shared", shared_rows)):
+        for row in rows:
+            dataset, mode, size, support = row["cell"]
+            def num(v): return f"{v:.4f}" if v is not None else ""
+            lines.append(f"{dataset},{mode},{size},{support},{label},{row['cheap']},"
+                         f"{row['dear']},{row['pick']},{row['race_seeds']},"
+                         f"{row['pay_seeds']},{row['top']},{row['tied_at_top']},"
+                         f"{row['transfers']},{row['estimated_right']},"
+                         f"{num(row['race'])},{num(row['aco'])},"
+                         f"{num(row['local_search'])}")
+    # newline="": the same bytes on every system. The default translates to CRLF on Windows,
+    # so the measurement machine would rewrite an unchanged table as a changed file.
+    args.out.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="")
+    try:
+        shown = args.out.relative_to(ROOT)
+    except ValueError:
+        shown = args.out
+    print(f"\n[done] {shown}")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))
