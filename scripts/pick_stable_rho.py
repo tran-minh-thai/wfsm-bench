@@ -69,8 +69,11 @@ def report() -> int:
             calibrated[dataset] = max(values + [calibrated.get(dataset, float("-inf"))])
     swept = swept_datasets()
     # Every collection with data on disk, so the ones missing a calibration are listed
-    # rather than absent. A report of only what succeeded cannot show what did not.
-    present = sorted(p.stem for p in DATA.glob("*.json"))
+    # rather than absent. A report of only what succeeded cannot show what did not. And
+    # every collection a calibration artefact covers, even without its data here: a fresh
+    # clone holds none of the generated *_bond.json files, and listing by data alone made
+    # calibrated collections vanish from the report without a word.
+    present = sorted({p.stem for p in DATA.glob("*.json")} | swept)
     unstable = [name for name in present if name not in calibrated and name in swept]
     never = [name for name in present if name not in calibrated and name not in swept]
     print(f"{'collection':<24}{'calibrated rho':>16}")

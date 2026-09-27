@@ -50,6 +50,17 @@ def test_each_kind_of_uncalibrated_collection_gets_its_own_label(tool, capsys) -
     assert "1 never swept (Never)" in out
 
 
+def test_a_calibrated_collection_without_its_data_here_is_still_listed(tool, capsys) -> None:
+    """A fresh clone has no generated *_bond.json; the report must not drop those collections."""
+    (tool.DATA / "Stable.json").unlink()
+    (tool.DATA / "Unstable.json").unlink()
+    assert tool.report() == 0
+    out = capsys.readouterr().out
+    assert _line(out, "Stable").split()[-1] == "0.5"
+    assert _line(out, "Unstable").endswith("no stable rho")
+    assert "1/3 collections calibrated" in out
+
+
 def test_the_lookup_the_runners_read_is_unchanged(tool, capsys) -> None:
     for name, expected in (("Stable", "0.5"), ("Unstable", ""), ("Never", "")):
         assert tool.for_dataset(name) == 0
