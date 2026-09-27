@@ -1,12 +1,14 @@
 collection                calibrated rho
-BZR_MD                              none
+BZR_MD                       never swept
 BZR_bond                            0.15
 COX2_bond                            0.3
 Cuneiform                            0.5
-DHFR_bond                           none
+DHFR_bond                  no stable rho
 QM9_bond                             0.6
 alchemy_full_bond                    0.8
-pdb_contact                         none
+pdb_contact                  never swept
 
 5/8 collections calibrated
-3 without a stable rho: any run of theirs under discounting is refused by the runners rather than defaulted.
+1 swept without a stable rho (DHFR_bond): no discount in the range keeps the optimum interior on the same pattern as the bound widens.
+2 never swept (BZR_MD, pdb_contact): no calibration artefact covers them, so nothing is known about their discount.
+Either way, any run of theirs under discounting is refused by the runners rather than defaulted.
