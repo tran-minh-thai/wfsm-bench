@@ -41,25 +41,59 @@ def stable_values(path: Path) -> dict[str, list[float]]:
     return found
 
 
+def swept_datasets() -> set[str]:
+    """Every collection that has at least one row in a calibration artefact, stable or not."""
+    swept: set[str] = set()
+    for path in sorted(RESULTS.glob("degeneracy_rho*.csv")):
+        try:
+            swept |= {row.get("dataset", "?")
+                      for row in csv.DictReader(path.open(encoding="utf-8"))}
+        except OSError:
+            continue
+    return swept
+
+
 def report() -> int:
+    """One line per collection with data on disk, and why each uncalibrated one is so.
+
+    CORRECTED 2026-09-27. Both kinds of uncalibrated collection used to print "none" and
+    be counted together as "without a stable rho". They are different results: one was
+    swept and no discount in the range kept its optimum interior -- a finding about the
+    data -- while the other was never swept at all, which says nothing about it. The merged
+    label had already been copied into the project notes as "BZR_MD has no stable rho",
+    for a collection no stage has ever calibrated.
+    """
     calibrated: dict[str, float] = {}
     for path in sorted(RESULTS.glob("degeneracy_rho*.csv")):
         for dataset, values in stable_values(path).items():
             calibrated[dataset] = max(values + [calibrated.get(dataset, float("-inf"))])
+    swept = swept_datasets()
     # Every collection with data on disk, so the ones missing a calibration are listed
     # rather than absent. A report of only what succeeded cannot show what did not.
     present = sorted(p.stem for p in DATA.glob("*.json"))
+    unstable = [name for name in present if name not in calibrated and name in swept]
+    never = [name for name in present if name not in calibrated and name not in swept]
     print(f"{'collection':<24}{'calibrated rho':>16}")
-    missing = 0
     for name in present:
-        value = calibrated.get(name)
-        if value is None:
-            missing += 1
-        print(f"{name:<24}{(f'{value}' if value is not None else 'none'):>16}")
-    print(f"\n{len(present) - missing}/{len(present)} collections calibrated")
-    if missing:
-        print(f"{missing} without a stable rho: any run of theirs under discounting is "
-              f"refused by the runners rather than defaulted.")
+        if name in calibrated:
+            shown = f"{calibrated[name]}"
+        elif name in swept:
+            shown = "no stable rho"
+        else:
+            shown = "never swept"
+        print(f"{name:<24}{shown:>16}")
+    done = len(present) - len(unstable) - len(never)
+    print(f"\n{done}/{len(present)} collections calibrated")
+    if unstable:
+        print(f"{len(unstable)} swept without a stable rho ({', '.join(unstable)}): no discount "
+              f"in the range keeps the optimum interior on the same pattern as the bound "
+              f"widens.")
+    if never:
+        print(f"{len(never)} never swept ({', '.join(never)}): no calibration artefact covers "
+              f"them, so nothing is known about their discount.")
+    if unstable or never:
+        print("Either way, any run of theirs under discounting is refused by the runners "
+              "rather than defaulted.")
     return 0
 
 
