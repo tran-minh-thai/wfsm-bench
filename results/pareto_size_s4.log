@@ -1,5 +1,5 @@
 [mine] one enumeration covers every cell: bound=4 min_support=2 over 60 graphs
-[mine] 712 patterns in 33.7s; the 7 cells are filters over it
+[mine] 712 patterns in 27.2s; the 7 cells are filters over it
 
   bound=4 support=0.033  pool=   712 front= 10  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
   bound=4 support=0.100  pool=   712 front= 10  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e

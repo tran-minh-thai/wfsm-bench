@@ -1,7 +1,7 @@
 python = 3.12.10
 platform = Windows AMD64
 node = DESKTOP-G9ET6G9
-branch = per-edge-objective
+branch = main
 cpu = Intel64 Family 6 Model 165 Stepping 2, GenuineIntel
 cpu_count = 12
 memory_gb = 63.7
@@ -11,5 +11,5 @@ scipy = 1.18.0
 matplotlib = 3.11.1
 pyyaml = 6.0.3
 tree = clean
-commit = f69e028
-upstream = current (up to date with origin/per-edge-objective)
+commit = ef167e5
+upstream = current (up to date with origin/main)
