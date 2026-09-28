@@ -103,7 +103,20 @@ def pareto_rows() -> list[dict]:
     return V.pareto_rows(RESULTS)
 
 def test_v4_only_the_scalarisation_reaches_the_top_of_the_front() -> None:
-    """Pareto invariance under monotone reparameterisation, in its measurable form."""
+    """The parameter-free selectors stop short of the front's maximum when the front has an
+    interior; the scalarised one goes to it.
+
+    CORRECTED 2026-09-28. This used to assert that ideal and maxmin NEVER reach the front
+    maximum, and called that the measurable consequence of Pareto invariance. Both halves
+    were wrong. The proposition says dominance, hence the non-dominated set, is unchanged by
+    strictly increasing reparameterisation; it says nothing about where a selector lands on
+    the set. And the unconditional claim held only because every committed front spanned
+    three or more edge levels: re-running the _bond Pareto stage at bound 3, where most
+    fronts span two, put ideal and maxmin on the maximum in 60 of 66 rows. With two levels
+    there is no interior to stop at, so "not the maximum" can only mean "the minimum".
+    The claim is now scoped to fronts with an interior, and the two-level rows are printed
+    rather than hidden.
+    """
     rows = pareto_rows()
     if not rows:
         pytest.skip("no Pareto artefacts")
@@ -112,16 +125,27 @@ def test_v4_only_the_scalarisation_reaches_the_top_of_the_front() -> None:
     top = collections.Counter()
     total = collections.Counter()
     for r in rows:
-        total[r["selector"]] += 1
-        top[r["selector"]] += int(r["picked_edges"] == r["front_max_edges"])
+        levels = len(r["front_edge_range"].split("|"))
+        scope = "interior" if levels >= 3 else "two-level"
+        total[(scope, r["selector"])] += 1
+        top[(scope, r["selector"])] += int(r["picked_edges"] == r["front_max_edges"])
     print(f"\n[V4] {cells} cells over {len({r['dataset'] for r in rows})} collections; "
           f"at the front maximum: " +
-          ", ".join(f"{s} {top[s]}/{total[s]}" for s in sorted(total)))
+          ", ".join(f"{s}/{scope} {top[(scope, s)]}/{total[(scope, s)]}"
+                    for scope, s in sorted(total)))
     for selector in ("ideal", "maxmin"):
-        assert top[selector] == 0, (
-            f"{selector} reaches the front maximum in {top[selector]} of {total[selector]} "
-            f"cells; the measurable consequence of Pareto invariance has failed"
+        n = total[("interior", selector)]
+        assert n >= 100, (
+            f"only {n} {selector} rows on fronts with three or more edge levels; the check "
+            f"would be close to vacuous")
+        assert top[("interior", selector)] == 0, (
+            f"{selector} reaches the maximum of a front with an interior in "
+            f"{top[('interior', selector)]} of {n} rows"
         )
+    top = collections.Counter({s: top[("interior", s)] + top[("two-level", s)]
+                               for _scope, s in total})
+    total = collections.Counter({s: total[("interior", s)] + total[("two-level", s)]
+                                 for _scope, s in total})
     assert top["weighted"] > total["weighted"] // 2, (
         f"the scalarisation sits at the front maximum in only {top['weighted']} of "
         f"{total['weighted']}; the contrast the corollary predicts is not there"

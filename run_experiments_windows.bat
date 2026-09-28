@@ -30,7 +30,7 @@ REM   13  selector on disjoint seeds        C8        ~2.5 h
 REM   14  determinism: stage 13 vs earlier  -          ~10 s
 REM   15  calibrate rho, 4 collections      C4         ~15 m
 REM   16  Pareto selection on Cuneiform     -          ~6.5 h  not machine-dependent
-REM   17  Pareto selection, 5 collections   -          ~2 h    not machine-dependent
+REM   17  Pareto selection, 5 collections   -        ~3.2 h    not machine-dependent
 REM   18  gSpan head to head, timed         -          ~3 h    MEASURES TIME
 REM   19  gSpan agreement, counts only      -          ~7 h    not machine-dependent
 REM   20  enumeration cost, third bound   -        ~9-11 h  MEASURES TIME
@@ -206,11 +206,22 @@ REM  pick is 2, 3, 4 across the three bounds -- the bound minus one, every time 
 REM  both parameter-free picks are 2, 2, 3. The contrast the stage exists to measure is
 REM  visible inside this range, so widening it buys nothing but hours.
 REM
+REM  CORRECTED 2026-09-28: FOUR bounds, 3-4-5-6. The committed artefact had been written at
+REM  4-5-6 while this line said 3-4-5, so it could not be regenerated from the command
+REM  that claimed to produce it; re-running at 3-4-5 reproduced bounds 4 and 5 exactly
+REM  (240 rows, 5520 cells) and replaced bound 6, which the figure and the Pareto check use.
+REM  Bound 3 stays because it is informative, not cheap: most fronts there span only two
+REM  edge levels, and on those the parameter-free picks do land on the front maximum (60 of
+REM  66 rows) -- the probe above already showed it -- while on every front with three or
+REM  more levels they never do. The cost estimate above was also wrong: one enumeration at
+REM  bound 6 covers all four bounds, and the machine measured 11570.7 s for all five
+REM  collections (2297.9, 2079.2, 2379.7, 1865.6, 2948.3), about 3.2 h, not eight.
+REM
 REM  Not a timing measurement: every column is a count or a pattern size. Any machine
 REM  gives the same answer, which is why this is not in the default stage list.
 for %%D in (BZR_bond COX2_bond DHFR_bond QM9_bond alchemy_full_bond) do (
   echo     %%D   !TIME!
-  %PY% scripts\run_pareto_size.py --dataset %%D --graph-limit 200 --sizes 3 4 5 ^
+  %PY% scripts\run_pareto_size.py --dataset %%D --graph-limit 200 --sizes 3 4 5 6 ^
        --supports 0.01 0.0333333 0.10 0.20 0.30 0.50 0.60 0.70 ^
        --suffix _%%D > results\pareto_size_%%D.log 2>&1 || goto :failed
   type results\pareto_size_%%D.log
