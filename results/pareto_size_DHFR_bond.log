@@ -1,6 +1,14 @@
-[mine] one enumeration covers every cell: bound=6 min_support=2 over 200 graphs
-[mine] 991 patterns in 2379.7s; the 24 cells are filters over it
+[mine] one enumeration covers every cell: bound=5 min_support=2 over 200 graphs
+[mine] 359 patterns in 420.9s; the 24 cells are filters over it
 
+  bound=3 support=0.010  pool=    49 front=  8  front edges=1|2          ideal->1e  maxmin->1e  weighted->2e
+  bound=3 support=0.033  pool=    36 front=  7  front edges=1|2          ideal->1e  maxmin->1e  weighted->2e
+  bound=3 support=0.100  pool=    29 front=  4  front edges=1|2          ideal->2e  maxmin->2e  weighted->2e
+  bound=3 support=0.200  pool=    23 front=  4  front edges=1|2          ideal->2e  maxmin->2e  weighted->2e
+  bound=3 support=0.300  pool=    19 front=  4  front edges=1|2          ideal->2e  maxmin->2e  weighted->2e
+  bound=3 support=0.500  pool=    15 front=  2  front edges=1|2          ideal->2e  maxmin->2e  weighted->2e
+  bound=3 support=0.600  pool=    13 front=  2  front edges=1|2          ideal->2e  maxmin->2e  weighted->2e
+  bound=3 support=0.700  pool=    12 front=  2  front edges=1|2          ideal->2e  maxmin->2e  weighted->2e
   bound=4 support=0.010  pool=   136 front= 15  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
   bound=4 support=0.033  pool=   100 front= 14  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
   bound=4 support=0.100  pool=    78 front=  9  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
@@ -17,13 +25,5 @@
   bound=5 support=0.500  pool=    75 front=  9  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
   bound=5 support=0.600  pool=    69 front=  9  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
   bound=5 support=0.700  pool=    60 front=  9  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
-  bound=6 support=0.010  pool=   991 front= 34  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.033  pool=   724 front= 33  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.100  pool=   505 front= 22  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.200  pool=   376 front= 21  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.300  pool=   243 front= 21  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.500  pool=   160 front= 14  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.600  pool=   143 front= 14  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
-  bound=6 support=0.700  pool=   120 front= 14  front edges=1|2|3|4|5|6  ideal->4e  maxmin->3e  weighted->6e
 
 [ok] results\pareto_size_DHFR_bond.csv  (72 rows)
