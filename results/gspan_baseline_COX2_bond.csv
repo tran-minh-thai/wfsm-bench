@@ -1,4 +1,4 @@
 dataset,graph_limit,size_bound,min_support,gspan_patterns,gspan_seconds,exhaustive_patterns,exhaustive_seconds,speedup,sets_agree,supports_disagreeing,gspan_optimum_edges,gspan_optimum_fitness
-COX2_bond,200,4,2,134,2.465,134,63.847,25.90,1,0,3,0.367477
-COX2_bond,200,5,2,360,5.759,360,378.891,65.79,1,0,4,0.459318
 COX2_bond,200,6,2,928,12.060,928,2088.491,173.18,1,0/928,6,0.554478
+COX2_bond,200,4,2,134,2.546,134,61.330,24.09,1,0/134,3,0.367477
+COX2_bond,200,5,2,360,5.410,360,369.640,68.33,1,0/360,4,0.459318

@@ -1,4 +1,4 @@
   Cuneiform bound=6 support=2 ...
-    gSpan  42523 patterns in    518.0s | enumerator skipped | optimum 6 edges
+    gSpan  42523 patterns in    516.0s | enumerator skipped | optimum 6 edges
 
 [ok] results\gspan_baseline_Cuneiform_s6.csv  (1 rows)

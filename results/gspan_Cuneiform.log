@@ -1,13 +1,9 @@
   Cuneiform bound=3 support=2 ...
-    gSpan    127 patterns in      0.7s | enumerator    127 in      2.7s = 4.19x | sets agree 1, supports disagreeing 0 | optimum 3 edges
+    gSpan    127 patterns in      0.6s | enumerator    127 in      2.3s = 3.77x | sets agree 1, supports disagreeing 0/127 | optimum 3 edges
   Cuneiform bound=4 support=2 ...
-    gSpan    712 patterns in      5.6s | enumerator    712 in     27.4s = 4.92x | sets agree 1, supports disagreeing 0 | optimum 4 edges
+    gSpan    712 patterns in      5.3s | enumerator    712 in     26.3s = 5.00x | sets agree 1, supports disagreeing 0/712 | optimum 4 edges
   Cuneiform bound=5 support=2 ...
-    gSpan   4991 patterns in     51.7s | enumerator   4991 in    519.6s = 10.05x | sets agree 1, supports disagreeing 0 | optimum 5 edges
-
-[ok] results\gspan_baseline_Cuneiform.csv  (3 rows)
-  Cuneiform bound=6 support=2 ...
-    gSpan  42523 patterns in    501.2s | enumerator  42523 in  22424.2s = 44.74x | sets agree 1, supports disagreeing 0/42523 | optimum 6 edges
-  carrying over 3 timed cell(s) this run does not recompute
+    gSpan   4991 patterns in     49.8s | enumerator   4991 in    506.3s = 10.16x | sets agree 1, supports disagreeing 0/4991 | optimum 5 edges
+  carrying over 1 timed cell(s) this run does not recompute
 
 [ok] results\gspan_baseline_Cuneiform.csv  (4 rows)
