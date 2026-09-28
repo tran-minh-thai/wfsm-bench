@@ -1,5 +1,5 @@
-[mine] one enumeration covers every cell: bound=5 min_support=2 over 200 graphs
-[mine] 428 patterns in 547.0s; the 24 cells are filters over it
+[mine] one enumeration covers every cell: bound=6 min_support=2 over 200 graphs
+[mine] 1006 patterns in 2874.5s; the 32 cells are filters over it
 
   bound=3 support=0.010  pool=    55 front=  8  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->2e
   bound=3 support=0.033  pool=    33 front=  6  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->2e
@@ -25,5 +25,13 @@
   bound=5 support=0.500  pool=    10 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
   bound=5 support=0.600  pool=     8 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
   bound=5 support=0.700  pool=     4 front=  3  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
+  bound=6 support=0.010  pool=  1006 front= 29  front edges=1|2|3|4|5|6  ideal->3e  maxmin->4e  weighted->4e
+  bound=6 support=0.033  pool=   329 front= 20  front edges=1|2|3|4|5|6  ideal->3e  maxmin->3e  weighted->4e
+  bound=6 support=0.100  pool=   123 front= 15  front edges=1|2|3|4|5|6  ideal->3e  maxmin->3e  weighted->4e
+  bound=6 support=0.200  pool=    58 front= 10  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->4e
+  bound=6 support=0.300  pool=    31 front=  6  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->4e
+  bound=6 support=0.500  pool=    12 front=  5  front edges=1|2|3|4|5    ideal->3e  maxmin->3e  weighted->4e
+  bound=6 support=0.600  pool=     8 front=  4  front edges=1|2|3|4      ideal->3e  maxmin->3e  weighted->4e
+  bound=6 support=0.700  pool=     4 front=  3  front edges=1|2|3        ideal->2e  maxmin->2e  weighted->3e
 
-[ok] results\pareto_size_alchemy_full_bond.csv  (72 rows)
+[ok] results\pareto_size_alchemy_full_bond.csv  (96 rows)
