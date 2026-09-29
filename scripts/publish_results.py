@@ -6,7 +6,7 @@ own instructions forbid it. The other pushed the logs and left the CSVs behind, 
 `.gitignore` still carried a glob from a deleted runner and swallowed them without a word --
 the run printed [ok] and the artefact simply never existed for anyone else.
 
-So this does five things, and the third is the reason it exists:
+So this does six things, and the third is the reason it exists:
 
   1. refuses if anything outside the artefact trees is modified, or if a commit made here and
      not yet pushed touches anything outside them. A stage publishes measurements, not code;
@@ -19,6 +19,10 @@ So this does five things, and the third is the reason it exists:
   5. pushes commits an earlier call made but failed to push, even when nothing new is
      staged. Before 2026-09-25 that case printed [nothing] and exited zero, so a stage whose
      push had failed once never left the machine and every later call said all was well.
+  6. keeps a copy of what this run wrote, with its manifest, in
+     results/runs/<UTC time>_<commit>_stage<N>/. The files at the top of results/ are the
+     current version and a later run replaces them; the run directory is never overwritten,
+     so every run stays readable as it was, without digging through git history.
 
     python scripts/publish_results.py --stage 17
     python scripts/publish_results.py --stage 17 --dry-run
@@ -131,6 +135,64 @@ def code_in(commits: list[str]) -> list[str]:
     return sorted(path for path in touched if not any(path.startswith(t) for t in trees))
 
 
+RUNS = "results/runs/"
+KEPT = ("results/runs/", "results/submitted/")
+
+
+def written_by_this_run() -> list[str]:
+    """Artefact files changed or added since the last commit, outside the kept copies."""
+    out = git("status", "--porcelain", "-z", "--untracked-files=all", "--", *artefact_trees())
+    paths = []
+    entries = out.split("\0")
+    index = 0
+    while index < len(entries):
+        entry = entries[index]
+        index += 1
+        if len(entry) < 4:
+            continue
+        status, path = entry[:2], entry[3:]
+        if status[0] in "RC":          # a rename carries its old path as the next entry
+            index += 1
+        if "D" in status or path.startswith(KEPT):
+            continue
+        paths.append(path)
+    return sorted(paths)
+
+
+def run_directory(stage: str, written: list[str]) -> Path:
+    """results/runs/<UTC time>_<commit>_stage<N>, named after the commit the run recorded."""
+    from datetime import datetime, timezone
+    commit = git("rev-parse", "--short", "HEAD").strip()
+    manifest = ROOT / "results" / f"environment_stage{stage}.txt"
+    if f"results/environment_stage{stage}.txt" in written and manifest.exists():
+        for line in manifest.read_text(encoding="utf-8").splitlines():
+            key, sep, value = line.partition("=")
+            if sep and key.strip() == "commit" and value.strip():
+                commit = value.strip()
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    return ROOT / RUNS / f"{stamp}_{commit}_stage{stage}"
+
+
+def keep_run_copy(stage: str, written: list[str], dry_run: bool) -> Path | None:
+    """Copy this run's files into a directory of their own; refuse to overwrite one."""
+    import shutil
+    if not written:
+        return None
+    target = run_directory(stage, written)
+    if target.exists():
+        raise SystemExit(f"[refused] {target.relative_to(ROOT)} already exists. A run "
+                         f"directory is never overwritten; wait a second and publish again.")
+    if dry_run:
+        print(f"[dry-run] would keep {len(written)} file(s) in {target.relative_to(ROOT)}")
+        return target
+    for name in written:
+        destination = target / name
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / name, destination)
+    print(f"[kept] {len(written)} file(s) of this run in {target.relative_to(ROOT)}")
+    return target
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--stage", required=True, help="stage number, for the commit message")
@@ -178,6 +240,7 @@ def main() -> int:
               "is stale -- fix it on the development machine rather than forcing the add "
               "here.")
 
+    keep_run_copy(args.stage, written_by_this_run(), args.dry_run)
     git("add", "--", *artefact_trees())
     staged = [line for line in git("diff", "--cached", "--name-only").splitlines() if line]
     if not staged:

@@ -7,6 +7,10 @@ __pycache__/
 # macOS
 .DS_Store
 
+# Operator notes for a specific machine, kept out of the repository by design:
+# everything needed to reproduce a result belongs in README.md instead.
+run.txt
+
 # Generated data (reproducible via scripts/prepare_datasets.py)
 data/raw/
 data/BZR_MD.json
@@ -17,7 +21,7 @@ data/*_bond.json
 # source and it has to travel with the code.
 
 # Experiment outputs. The summary artefacts are tracked: every number the
-# contributions log cites lives in one of them, and a claim whose evidence is
+# study reports lives in one of them, and a claim whose evidence is
 # not in the repository cannot be checked by anyone who clones it.
 #
 # CORRECTED 2026-08-24. This rule used to exclude every per-seed run, on the
@@ -56,3 +60,6 @@ results/logs/
 # from a push any more, which is the point: the cheapest gate is the one that does not
 # have to exist.
 
+
+# Output of the small end-to-end run in README.md; a check, not an artefact.
+results/*_smoke.*

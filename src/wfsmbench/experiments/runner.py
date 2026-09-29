@@ -1,4 +1,4 @@
-"""Experiment harness (proposal section 5): run the search over a graph subset,
+"""Experiment harness: run the search over a graph subset,
 repeat across seeds, and report mean/std of the metrics.
 
 A run selects the first ``graph_limit`` graphs, builds statistics on that subset, and

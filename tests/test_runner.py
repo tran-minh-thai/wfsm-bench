@@ -1,4 +1,4 @@
-"""P8 - experiment runner: aggregation, determinism, CSV, and all pivot strategies.
+"""Experiment runner: aggregation, determinism, CSV, and all pivot strategies.
 
 Runs on the tiny sample so the tests stay fast; runtime values are not asserted.
 """

@@ -138,3 +138,22 @@ def test_diverged_with_only_artefacts_is_resolved_by_the_same_command(tmp_path: 
     pushed = subprocess.run(command, cwd=repo, shell=True, capture_output=True, text=True)
     assert pushed.returncode == 0, pushed.stdout + pushed.stderr
     assert gate(repo).returncode == 0
+
+
+def test_the_record_states_limits_and_checksums_and_takes_extra_facts(tmp_path) -> None:
+    """A manifest without data checksums or limits cannot tell two runs apart that differ
+    only there, so both are written out -- limits as "none" rather than left absent."""
+    import hashlib
+    done = subprocess.run([sys.executable, "scripts/environment.py", "--record", "stage=7",
+                           "--record", "workers=3"], cwd=ROOT, capture_output=True, text=True)
+    assert done.returncode == 0, done.stderr
+    lines = dict(line.split(" = ", 1) for line in done.stdout.splitlines() if " = " in line)
+    assert lines["memory_limit"].startswith("none") and lines["time_limit"] == "none"
+    assert lines["stage"] == "7" and lines["workers"] == "3"
+    data = sorted((ROOT / "data").glob("*.json"))
+    assert data, "no dataset file to checksum; the check would pass over nothing"
+    for path in data:
+        assert lines[f"data.{path.name}"] == hashlib.sha256(path.read_bytes()).hexdigest()
+    bad = subprocess.run([sys.executable, "scripts/environment.py", "--record", "no-equals"],
+                         cwd=ROOT, capture_output=True, text=True)
+    assert bad.returncode == 2 and "KEY=VALUE" in bad.stdout

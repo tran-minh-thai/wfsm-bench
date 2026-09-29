@@ -351,7 +351,7 @@ def optimize(hosts: list[Graph], stats: DatasetStats, params: Params, seed: int,
              initial: list[Particle] | None = None,
              known: list[Candidate] | None = None,
              max_evaluations: int | None = None) -> Result:
-    """Algorithm 1. ``initial`` overrides the edge-template seeding with given starting
+    """The discrete swarm search loop. ``initial`` overrides the edge-template seeding with given starting
     positions and ``known`` pre-loads the archive — together these let a warm-start
     strategy hand the swarm a better starting point without changing the search itself."""
     rng = np.random.default_rng(seed)

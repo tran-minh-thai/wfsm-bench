@@ -1,4 +1,4 @@
-"""P6 - graph-edit moves, diff (Delta) and apply_velocity (Phi).
+"""Graph-edit moves, diff (Delta) and apply_velocity (Phi).
 
 Label encoding: A=0, B=1, C=2; edge label 0.
 """

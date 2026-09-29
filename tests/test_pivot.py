@@ -1,4 +1,4 @@
-"""P5 - pivot scoring and selection, locked on the sample.
+"""Pivot scoring and selection, locked on the sample.
 
 Label encoding: A=0, B=1, C=2; edge label 0. Default coefficients (D3): lambda=0.25 each.
 """

@@ -1,7 +1,7 @@
-"""P1 - TUDataset loader with edge labels + edge weights.
+"""TUDataset loader with edge labels + edge weights.
 
 Two layers: a hand-made fixture that locks the parsing logic offline, and a check
-against the paper's Table 2 statistics when the real raw datasets are present.
+against the published dataset statistics when the real raw datasets are present.
 """
 
 from pathlib import Path

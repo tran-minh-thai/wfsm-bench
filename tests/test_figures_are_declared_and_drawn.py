@@ -16,7 +16,6 @@ from pathlib import Path
 
 import pytest
 
-from conftest import needs_manuscript
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "make_figures.py"
@@ -67,8 +66,7 @@ def test_the_builder_declares_the_figures_the_draft_uses() -> None:
         f"step with any artefact.")
 
 
-@needs_manuscript("figure_labels.en.json")
-def test_every_declared_figure_is_on_disk_and_not_empty() -> None:
+def test_every_declared_figure_is_on_disk_and_not_empty(drawn_figures) -> None:
     # A builder that declares nothing would report every declared figure as present.
     declared = _declared()
     assert len(declared) >= 4, (
@@ -81,8 +79,7 @@ def test_every_declared_figure_is_on_disk_and_not_empty() -> None:
         f"  run scripts/make_figures.py")
 
 
-@needs_manuscript("figure_labels.en.json")
-def test_no_image_in_the_figures_directory_is_orphaned() -> None:
+def test_no_image_in_the_figures_directory_is_orphaned(drawn_figures) -> None:
     r"""A picture nothing builds any more predates the current results and will still be read.
 
     CORRECTED 2026-09-02: glob every file, not *.png. Restricting by extension makes the check blind
@@ -178,7 +175,6 @@ def test_every_drawn_figure_is_included_by_the_draft(draft: Path) -> None:
         f"was last left in the directory, and nothing keeps them current with any artefact.")
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_the_builder_runs_and_reproduces_every_figure(tmp_path: Path) -> None:
     """A builder that has not been run since its inputs changed proves nothing about them."""
     done = subprocess.run([sys.executable, str(SCRIPT)], cwd=ROOT,
@@ -190,7 +186,7 @@ def test_the_builder_runs_and_reproduces_every_figure(tmp_path: Path) -> None:
 
 # --------------------------------------------------------- Vietnamese labels on every figure
 
-LABELS = ROOT.parent / "paper" / "figure_labels.en.json"
+LABELS = ROOT / "figures" / "labels.en.json"
 
 
 def _builders() -> dict[str, str]:
@@ -209,7 +205,6 @@ def _builders() -> dict[str, str]:
     return {name: body_text[build.__name__] for name, build in module.FIGURES}
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_every_figure_draws_its_labels_from_the_label_file() -> None:
     """A builder that never asks for labels renders in English, and nothing says so.
 
@@ -228,7 +223,6 @@ def test_every_figure_draws_its_labels_from_the_label_file() -> None:
         f"they render in whatever language their source was written in: {silent}")
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_no_label_key_is_orphaned_and_none_is_missing() -> None:
     """Both directions. An unused key is a figure someone deleted; a missing one is English."""
     import json
@@ -269,7 +263,6 @@ def _builder_on(tmp_path: Path, *rows: str):
     return module
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_the_cost_figure_refuses_a_collection_measured_at_two_bounds(tmp_path: Path) -> None:
     """Two points join into a straight line whatever the truth is.
 
@@ -289,7 +282,6 @@ def test_the_cost_figure_refuses_a_collection_measured_at_two_bounds(tmp_path: P
     assert not (tmp_path / "enumeration_cost_by_bound.pdf").exists(), "it refused and drew anyway"
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_the_cost_figure_draws_once_every_collection_has_three(tmp_path: Path) -> None:
     """The other half of the refusal: it must pass on data that earns it."""
     module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
@@ -298,7 +290,6 @@ def test_the_cost_figure_draws_once_every_collection_has_three(tmp_path: Path) -
     assert (tmp_path / "enumeration_cost_by_bound.pdf").stat().st_size > 5000
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_the_cost_figure_refuses_a_cell_two_artefacts_disagree_on(tmp_path: Path) -> None:
     """One cell, two measurements: the figure cannot pick, so it must not pick silently."""
     module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
@@ -308,7 +299,6 @@ def test_the_cost_figure_refuses_a_cell_two_artefacts_disagree_on(tmp_path: Path
     assert "measured twice" in str(refused.value), str(refused.value)
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_the_cost_figure_ignores_a_cell_with_no_enumeration_time(tmp_path: Path) -> None:
     """A gSpan-only cell carries a pool size and no seconds.
 
@@ -346,7 +336,6 @@ def _visible_literals(body_text: str) -> list[str]:
     return found
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_no_figure_prints_a_string_typed_into_the_source() -> None:
     """CORRECTED 2026-09-12: the label-file checks ask the wrong question by one step.
 
@@ -355,7 +344,7 @@ def test_no_figure_prints_a_string_typed_into_the_source() -> None:
     a Vietnamese page, for as long as the figure existed: it asked for five labels and typed
     the sixth string in place, so there was no absent key to notice and no missing call.
 
-    Measured on the draft of 2026-09-11, page 31. The question that finds it is neither of
+    Measured on a draft of 2026-09-11. The question that finds it is neither of
     those: does any word reach the canvas without passing through the label file?
 
     An f-string is allowed. Those carry data -- a collection name, a measured ratio -- and
@@ -366,12 +355,11 @@ def test_no_figure_prints_a_string_typed_into_the_source() -> None:
     typed = {name: _visible_literals(body_text) for name, body_text in builders.items()}
     typed = {name: found for name, found in typed.items() if found}
     assert not typed, (
-        "a figure prints words that never passed through paper/figure_labels.en.json, so they "
+        "a figure prints words that never passed through figures/labels.en.json, so they "
         "render in whatever language the source was written in:\n  "
         + "\n  ".join(f"{name}: {', '.join(found)}" for name, found in sorted(typed.items())))
 
 
-@needs_manuscript("figure_labels.en.json")
 def test_that_check_can_actually_fail() -> None:
     """The scan above finds nothing today, and a scan that cannot fire proves nothing."""
     assert _visible_literals('ax.annotate("ACO first", xy=(1, 1))') == [

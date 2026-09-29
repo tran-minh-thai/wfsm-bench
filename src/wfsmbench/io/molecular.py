@@ -35,7 +35,8 @@ An edge label must never be derived from the bond length. The length is already 
 and deriving the label from it would let the weight gate matching through the back door,
 which the design forbids -- weights score, they do not decide what matches what.
 
-See docs/DATASETS.md for the catalogue and the measurements behind each verdict.
+The dataset table in README.md lists the collections built this way; the measurements
+behind it are in results-invariant/dataset_profile.csv.
 """
 
 from __future__ import annotations

@@ -31,14 +31,14 @@ def dead_only(commit):
 
 
 def test_only_untraceable_stages_are_selected() -> None:
-    order, why = S.select({9: DEAD, 19: "abc1234", 20: "abc1234"}, dead_only)
-    assert order == [9], order
-    assert set(why) == {9}
+    order, why = S.select({16: DEAD, 19: "abc1234", 20: "abc1234"}, dead_only)
+    assert order == [16], order
+    assert set(why) == {16}
 
 
 def test_one_calibration_stage_pulls_in_the_other_two_and_they_go_first() -> None:
-    order, _ = S.select({3: DEAD, 9: DEAD, 1: "ok", 15: "ok"}, dead_only)
-    assert order == [1, 3, 15, 9], order
+    order, _ = S.select({3: DEAD, 16: DEAD, 1: "ok", 15: "ok"}, dead_only)
+    assert order == [1, 3, 15, 16], order
 
 
 def test_rerunning_stage_13_brings_the_determinism_check_and_puts_it_last() -> None:
@@ -100,8 +100,33 @@ def test_every_stage_the_script_can_name_exists_in_the_runner() -> None:
     runner = (ROOT / "run_experiments_windows.bat").read_text(encoding="utf-8")
     labels = {int(n) for n in re.findall(r"^:stage(\d+)\s*$", runner, re.M)}
     assert labels, "no :stageN labels found; the parse is wrong"
-    named = set(S.CALIBRATION) | set(S.CHECKS) | set(S.CHECKS.values())
+    named = set(S.CALIBRATION) | set(S.CHECKS) | {s for group in S.CHECKS.values() for s in group}
     assert named <= labels, f"stages with no label in the runner: {sorted(named - labels)}"
     on_disk = set(S.records(S.RESULTS))
     assert on_disk, "no stage records in results/; this check would compare nothing"
     assert on_disk <= labels, f"records for stages the runner lacks: {sorted(on_disk - labels)}"
+
+
+def test_a_stage_with_artefacts_but_no_manifest_is_selected(tmp_path: Path, capsys) -> None:
+    """Its log is on disk, its manifest is not: the commit it ran under cannot be named."""
+    (tmp_path / "environment_stage9.txt").write_text("commit = abc1234\n")
+    (tmp_path / "s6_methods.log").write_text("ran\n")           # written by stage 7
+    code = S.main(["--results", str(tmp_path)], reason=lambda commit: None)
+    captured = capsys.readouterr()
+    assert code == 0 and captured.out == "7\n", captured
+    assert "no environment_stage<N>.txt manifest" in captured.err
+
+
+def test_rerunning_a_compared_stage_brings_the_determinism_check(tmp_path: Path, capsys) -> None:
+    (tmp_path / "environment_stage9.txt").write_text("commit = abc1234\n")
+    (tmp_path / "qm9_methods.log").write_text("ran\n")          # written by stage 2
+    S.main(["--results", str(tmp_path)], reason=lambda commit: None)
+    assert capsys.readouterr().out == "2 14\n"
+
+
+def test_every_stage_in_the_runner_has_outputs_to_look_for() -> None:
+    """A stage with no output pattern would never be found unrecorded -- the silent case."""
+    outputs = S.stage_outputs()
+    assert len(outputs) >= 20, sorted(outputs)
+    empty = sorted(stage for stage, patterns in outputs.items() if not patterns)
+    assert not empty, f"stages whose commands write no results/ file: {empty}"

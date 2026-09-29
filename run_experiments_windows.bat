@@ -13,27 +13,27 @@ REM  takes about six and a quarter hours -- measured at 22396.7 s in stage 16 on
 REM  2026-08-21, against the two and a half hours this line used to claim -- and
 REM  they need several between them.
 REM
-REM    stage                                supports   approx
-REM    1  QM9 rho calibration               C4          15 min
-REM    2  QM9 method arm                    C8          30 min
-REM    3  Cuneiform degeneracy, sizes 4-5   C2 C3 C4    20 min
-REM    4  Cuneiform methods, size 5         C5 C8       25 min
-REM    5  anti-monotone pruning A/B         C7           1 h
-REM    6  Cuneiform landscape, all 21 cells C1           7 h
-REM    7  Cuneiform methods, size 6         C5 C8      5.5 h
-REM    8  Cuneiform size 4, loose budget    C8          10 min
-REM    9  _bond method arm, 3 collections   C8          ~2 h
-REM   10  quantum sweep on QM9              C8        ~1.7 h
-REM   11  basin structure, 5 collections    C8         ~30 m
-REM   12  alchemy method arm, flag test     C8         ~40 m
-REM   13  selector on disjoint seeds        C8        ~2.5 h
-REM   14  determinism: stage 13 vs earlier  -          ~10 s
-REM   15  calibrate rho, 4 collections      C4         ~15 m
-REM   16  Pareto selection on Cuneiform     -          ~6.5 h  not machine-dependent
-REM   17  Pareto selection, 5 collections   -        ~3.2 h    not machine-dependent
-REM   18  gSpan head to head, timed         -          ~3 h    MEASURES TIME
-REM   19  gSpan agreement, counts only      -          ~7 h    not machine-dependent
-REM   20  enumeration cost, third bound   -        ~9-11 h  MEASURES TIME
+REM    stage                                approx
+REM    1  QM9 rho calibration                15 min
+REM    2  QM9 method arm                     30 min
+REM    3  Cuneiform degeneracy, sizes 4-5    20 min
+REM    4  Cuneiform methods, size 5          25 min
+REM    5  anti-monotone pruning A/B          1 h
+REM    6  Cuneiform landscape, all 21 cells  7 h
+REM    7  Cuneiform methods, size 6          5.5 h
+REM    8  Cuneiform size 4, loose budget     10 min
+REM    9  _bond method arm, 3 collections    ~2 h
+REM   10  quantum sweep on QM9               ~1.7 h
+REM   11  basin structure, 5 collections     ~30 m
+REM   12  alchemy method arm, flag test      ~40 m
+REM   13  selector on disjoint seeds         ~2.5 h
+REM   14  determinism: stage 13 vs earlier   ~10 s
+REM   15  calibrate rho, 4 collections       ~15 m
+REM   16  Pareto selection on Cuneiform      ~6.5 h  not machine-dependent
+REM   17  Pareto selection, 5 collections    ~3.2 h    not machine-dependent
+REM   18  gSpan head to head, timed          ~3 h    MEASURES TIME
+REM   19  gSpan agreement, counts only       ~7 h    not machine-dependent
+REM   20  enumeration cost, third bound      ~9-11 h  MEASURES TIME
 REM
 REM  RHOS was extended below 0.3 on 08-18, so stages 1, 3 and 15 -- the three that
 REM  calibrate -- must all be re-run together. Running one leaves the artefacts on
@@ -47,8 +47,7 @@ REM  keeps what it finished. Re-running a stage overwrites only its own files.
 REM
 REM  Code reaches this machine by git, never by file sync. Name the branch -- a bare
 REM  `git pull` updates whichever one the machine is standing on, which is how a stage
-REM  once ran three commits behind. The work is on main since 2026-09-25; a checkout
-REM  still on the deleted per-edge-objective moves across as docs\RUN_ON_WINDOWS.md says:
+REM  once ran three commits behind. Setting up a machine is described in README.md.
 REM
 REM      git checkout main
 REM      git pull --ff-only
@@ -88,7 +87,7 @@ if "%STAGES%"=="" set STAGES=1 15 2 3 4 5 6 7 8 9 10 11 12 13 14
 
 if not exist "%PY%" (
   echo [error] no virtual environment at %PY%
-  echo         Set one up first: run_all_windows.bat, or docs\WINDOWS_STEPS.txt
+  echo         Set one up first: run_all_windows.bat, or the setup steps in README.md
   exit /b 1
 )
 
@@ -124,6 +123,7 @@ REM at 0.5 while another used its calibrated 0.6, and searched a different objec
 REM four days. A default that is correct per collection cannot be forgotten.
 
 %PY% scripts\environment.py --require-current --require-clean ^
+       --record stage=%%S --record workers=%WORKERS% ^
        --out results\environment_stage%%S.txt || goto :failed
   call :stage%%S
   REM  Publish immediately, not at the end of the suite. The measurement machine is
@@ -399,7 +399,7 @@ exit /b 0
 echo.
 echo [6] Cuneiform landscape, all 21 cells   %TIME%
 REM sum and per_edge share one enumeration per cell -- per_edge divides in the
-REM fitness, so the Evaluation is the same. This is the evidence for C1.
+REM fitness, so the Evaluation is the same. This is the evidence that the objective is size-degenerate.
 %PY% scripts\run_weight_mode.py --preset deep --supports 2,6,12,18,30,36,42 ^
      --modes sum,per_edge --landscape-only ^
      > results\landscape_sweep.log 2>&1 || goto :failed
@@ -421,7 +421,7 @@ exit /b 0
 :stage8
 echo.
 echo [8] Cuneiform size 4, loose budget   %TIME%
-REM Separates C8's two hypotheses. On QM9 the ranking reversed -- ILS first on
+REM Separates two explanations of the ranking reversal. On QM9 the ranking reversed -- ILS first on
 REM Cuneiform, sixth of seven there -- but the two runs differed in two ways at
 REM once: local-optimum density (2.1%% against 11.9%%) and budget-to-space ratio
 REM (1.2-4.8%% against 9.8-39.2%%). Two points fit any line.
@@ -717,7 +717,7 @@ echo.
 echo [15] calibrate rho on the four uncalibrated collections   !TIME!
 REM  Only Cuneiform and QM9 were ever calibrated, at 0.5 and 0.6. The other four ran
 REM  discounting at the default, which is Cuneiform's value and is right for them only
-REM  by coincidence. The contributions log says the discount is a per-collection
+REM  by coincidence. The discount is a per-collection
 REM  quantity, chosen by whether the optimum stays interior and on the same pattern as
 REM  the size bound widens, and that depends on how fast support falls with pattern
 REM  size -- a property of the data, not a constant.

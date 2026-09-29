@@ -29,16 +29,9 @@ sys.path.insert(0, str(ROOT / "src"))
 from wfsmbench.measure.ranks import mean_ranks as parse_ranks  # noqa: E402
 FIGS = RESULTS / "figures"
 
-# Axis labels, titles and legends are ENGLISH, and the draft they go into is Vietnamese. That
-# is deliberate, decided 2026-09-13: a figure drawn once in English survives the translation
-# pass, while a Vietnamese one would have to be redrawn from the artefacts and re-checked at
-# exactly the point where nobody wants to be re-checking figures. The caption under each
-# figure stays in the draft and stays Vietnamese; only what is inside the picture is here.
-#
-# The words still live beside the manuscript rather than in this file, for the reason they
-# always did: this file is published source and stays ASCII, and the labels are prose that
-# the manuscript side edits.
-LABELS_PATH = ROOT.parent / "paper" / "figure_labels.en.json"
+# Every word drawn inside a figure comes from one label file in this repository, so a clone
+# can redraw every figure and the words can be changed without touching the drawing code.
+LABELS_PATH = ROOT / "figures" / "labels.en.json"
 
 
 def labels(figure: str) -> dict:

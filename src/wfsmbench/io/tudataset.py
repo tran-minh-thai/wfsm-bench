@@ -4,7 +4,7 @@ Handles the labeled, edge-weighted datasets used in the study (BZR_MD, Cuneiform
 Edge weights follow decision D7 (docs/DesignDecisions.md): each edge's raw "distance"
 is the ``*_edge_attributes.txt`` value (1-D) or the L2 norm of the attribute vector
 (multi-D), then min-max scaled per dataset to ``[WEIGHT_MIN, WEIGHT_MAX]``. For BZR_MD
-this reproduces the paper's Table 2 exactly.
+this reproduces the published dataset statistics exactly (mean weight 1.519271).
 
 Raw text format (1-indexed), all row-aligned with ``*_A.txt``::
 

@@ -13,8 +13,9 @@ import yaml
 
 # The fitness normalization anchor this study fixes, in pattern edges. Every experiment
 # script uses this one value, so a fitness printed by one script means the same thing as a
-# fitness printed by another and the tables can be read side by side. It covers the largest
-# maximum pattern size any preset in scripts/ runs (7, in run_full_scale's "full" preset).
+# fitness printed by another and the tables can be read side by side. It is at least the
+# largest maximum pattern size any stage runs (6 edges); it was set to 7 for a preset that
+# has since been removed, and is kept at 7 because every recorded fitness uses it.
 #
 # Raising it re-scales every reported fitness, so it is a decision about the study as a
 # whole, not a knob to turn per run. Raise it only to admit a larger pattern size, and then

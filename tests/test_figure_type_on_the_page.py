@@ -188,9 +188,8 @@ def test_every_figure_has_a_declared_print_width() -> None:
 
 
 @pytest.mark.parametrize("path,printed", _drawn(), ids=lambda value: getattr(value, "name", ""))
-def test_figure_type_meets_the_journal_rules(path: Path, printed: float) -> None:
-    if not path.exists():
-        pytest.skip(f"{path.name} is not drawn; run scripts/make_figures.py")
+def test_figure_type_meets_the_journal_rules(path: Path, printed: float, drawn_figures) -> None:
+    assert path.exists(), f"{path.name} was not drawn by scripts/make_figures.py"
     width, runs = text_runs(path)
     problems = page_report(path, printed)
     # The denominator, so a pass over zero strings cannot read as a pass.

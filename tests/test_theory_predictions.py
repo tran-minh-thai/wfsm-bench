@@ -1,11 +1,12 @@
-"""Every statement in docs/THEORY.md, recomputed from the artefacts.
+"""Every prediction the theory makes about the results, recomputed from the artefacts.
 
 A proof is an argument; these are the measurements that would refute one. Each check prints
 its denominator, because "no violations" over zero comparable cases is not a pass.
 
 The predictions are computed here from the definitions, not read from a column someone
-already wrote -- V3 in particular derives the per-edge outcome from sum-mode data alone, so
-agreeing with the per-edge artefact is a real test and not a restatement.
+already wrote -- the frontier prediction in particular derives the per-edge outcome from
+sum-mode data alone, so agreeing with the per-edge artefact is a real test and not a
+restatement.
 """
 from __future__ import annotations
 
@@ -43,10 +44,10 @@ def test_v1_the_no_clipping_hypothesis_holds() -> None:
     worst_w = max(float(r["a_hat"]) * float(r["s_hat"]) for r in rows)
     assert worst_a < 1.0, f"a_hat reaches {worst_a}; norm() clips and the exact factorisation lapses"
     assert worst_w < 1.0, f"normalised WSUP reaches {worst_w}; norm() clips"
-    print(f"\n[V1] {len(rows)} rows; largest a_hat {worst_a:.4f}, largest WSUP {worst_w:.4f}")
+    print(f"\n[no clipping] {len(rows)} rows; largest a_hat {worst_a:.4f}, largest WSUP {worst_w:.4f}")
 
 
-# ---------------------------------------------------------------- V2
+# ---------------------------------------------- optimal size is monotone in gamma
 
 
 def gamma_series() -> dict[tuple, list[tuple[float, int, int]]]:
@@ -65,12 +66,12 @@ def test_v2_the_argmax_is_non_increasing_in_gamma() -> None:
                 violations += 1
                 print(f"  gamma {g1}->{g2} at {key}: edges {e1}->{e2}, size {v1+e1}->{v2+e2}")
     assert steps >= 100, f"only {steps} gamma steps available; the check would be thin"
-    print(f"\n[V2] {steps} steps over {len(series)} series, "
+    print(f"\n[monotone in gamma] {steps} steps over {len(series)} series, "
           f"{len({k[0] for k in series})} collections")
     assert violations == 0, f"{violations} of {steps} steps move the argmax upward"
 
 
-# ---------------------------------------------------------------- V3
+# ---------------------------------------------- the frontier predicts the optimum
 
 
 def predicted_argmax(series: list[dict], mode: str) -> int:
@@ -92,11 +93,11 @@ def test_v3_the_frontier_argmax_predicts_the_measured_optimum(mode: str) -> None
     wrong = [(k, predicted_argmax(series[k], mode), measured[k])
              for k in sorted(comparable)
              if predicted_argmax(series[k], mode) != measured[k]]
-    print(f"\n[V3/{mode}] {len(comparable)} configurations compared")
+    print(f"\n[frontier prediction/{mode}] {len(comparable)} configurations compared")
     assert not wrong, f"{len(wrong)} of {len(comparable)} predictions wrong: {wrong[:4]}"
 
 
-# ---------------------------------------------------------------- V4
+# ---------------------------------------------- where the selectors land on the front
 
 
 def pareto_rows() -> list[dict]:
@@ -129,7 +130,7 @@ def test_v4_only_the_scalarisation_reaches_the_top_of_the_front() -> None:
         scope = "interior" if levels >= 3 else "two-level"
         total[(scope, r["selector"])] += 1
         top[(scope, r["selector"])] += int(r["picked_edges"] == r["front_max_edges"])
-    print(f"\n[V4] {cells} cells over {len({r['dataset'] for r in rows})} collections; "
+    print(f"\n[front maximum] {cells} cells over {len({r['dataset'] for r in rows})} collections; "
           f"at the front maximum: " +
           ", ".join(f"{s}/{scope} {top[(scope, s)]}/{total[(scope, s)]}"
                     for scope, s in sorted(total)))
@@ -152,7 +153,7 @@ def test_v4_only_the_scalarisation_reaches_the_top_of_the_front() -> None:
     )
 
 
-# ---------------------------------------------------------------- V5
+# ---------------------------------------------- the regret bound of the race
 
 
 def selector_cells() -> dict:
@@ -199,7 +200,7 @@ def test_v5_the_racing_bound_holds() -> None:
     terms = [t for t in (racing_terms(c) for c in selector_cells().values()) if t]
     assert len(terms) >= 8, f"only {len(terms)} usable cells; the check would be thin"
     breaches = [(e, d, r) for e, d, r, _ in terms if r > e + d + 1e-12]
-    print(f"\n[V5] {len(terms)} cells; mean bound "
+    print(f"\n[racing bound] {len(terms)} cells; mean bound "
           f"{sum(e + d for e, d, _, _ in terms) / len(terms):.4f}, "
           f"mean realised {sum(r for _, _, r, _ in terms) / len(terms):.6f}")
     assert not breaches, f"{len(breaches)} cells exceed the bound: {breaches[:3]}"
@@ -214,7 +215,7 @@ def test_v5b_the_top_is_a_plateau_which_is_why_the_bound_is_loose() -> None:
     """
     terms = [t for t in (racing_terms(c) for c in selector_cells().values()) if t]
     transfer = [t for *_, t in terms]
-    print(f"\n[V5b] transfer loss over {len(transfer)} cells: "
+    print(f"\n[plateau] transfer loss over {len(transfer)} cells: "
           f"mean {sum(transfer)/len(transfer):.5f}, max {max(transfer):.5f}")
     assert max(transfer) < 0.01, (
         f"the largest transfer loss is {max(transfer):.4f}; the plateau explanation for the "
@@ -238,7 +239,7 @@ def test_v5c_the_loss_lives_entirely_in_the_sharp_cells() -> None:
              if r["top"] == "sharp" and r["regret_race"]]
     plateau = [float(r["regret_race"]) for r in rows
                if r["top"] == "plateau" and r["regret_race"]]
-    print(f"\n[V5c] {len(sharp)} sharp cells, {len(plateau)} plateau cells")
+    print(f"\n[sharp and plateau cells] {len(sharp)} sharp cells, {len(plateau)} plateau cells")
     assert len(sharp) >= 20 and len(plateau) >= 10, (
         f"only {len(sharp)} sharp and {len(plateau)} plateau cells; the contrast needs both"
     )
@@ -269,7 +270,7 @@ def test_v5d_the_worst_losses_come_from_the_fixable_term() -> None:
     estimation = [float(r["regret_race"]) for r in lost if r["estimated_right"] == "0"]
     transfer = [float(r["regret_race"]) for r in lost if r["estimated_right"] == "1"]
     assert estimation and transfer, "both failure modes must occur for the split to mean anything"
-    print(f"\n[V5d] {len(lost)} losses: estimation {len(estimation)} (worst "
+    print(f"\n[fixable term] {len(lost)} losses: estimation {len(estimation)} (worst "
           f"{max(estimation):.3f}%), transfer {len(transfer)} (worst {max(transfer):.3f}%)")
     assert max(estimation) > max(transfer), (
         f"estimation error peaks at {max(estimation):.3f}% and transfer failure at "
@@ -300,7 +301,7 @@ def test_v5e_more_race_seeds_reaches_the_transfer_floor_and_stops() -> None:
     mean_small = sum(small) / len(small)
     mean_large = sum(large) / len(large)
     mean_floor = sum(floor) / len(floor)
-    print(f"\n[V5e] n=2 {mean_small:.3f}%  n=10 {mean_large:.3f}%  floor {mean_floor:.3f}%")
+    print(f"\n[race size] n=2 {mean_small:.3f}%  n=10 {mean_large:.3f}%  floor {mean_floor:.3f}%")
     assert mean_large < mean_small, "more race seeds did not help at all"
     assert mean_large >= mean_floor - 1e-9, (
         f"mean regret {mean_large:.4f} is below the transfer floor {mean_floor:.4f}; "
@@ -321,7 +322,7 @@ def test_v5f_the_large_losses_are_transfer_not_estimation() -> None:
         estimation.append(float(r["regret_n10"]) - float(r["transfer_only"]))
         transfer.append(float(r["transfer_only"]))
     assert len(estimation) >= 40
-    print(f"\n[V5f] estimation share: max {max(estimation):.3f}%, "
+    print(f"\n[transfer and estimation] estimation share: max {max(estimation):.3f}%, "
           f"{sum(1 for e in estimation if e > 1.0)} cells over 1%; "
           f"transfer: max {max(transfer):.3f}%, "
           f"{sum(1 for t in transfer if t > 1.0)} cells over 1%")

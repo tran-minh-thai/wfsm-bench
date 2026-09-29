@@ -4,8 +4,8 @@ Two converters, because TUDataset ships two shapes of molecular data and only on
 is usable as it stands:
 
   io.tudataset  reads a collection that already carries edge attributes. Cuneiform is the
-                only one that also has node labels, edge labels and sparse graphs -- see
-                docs/DATASETS.md. BZR_MD is fetched too, as the degenerate-case control it
+                only one that also has node labels, edge labels and sparse graphs (see
+                the dataset table in README.md). BZR_MD is fetched too, as the degenerate-case control it
                 turned out to be: its graphs are complete, at E/N 10.6.
 
   io.molecular  rebuilds a plain molecular collection into a weighted sparse graph, taking
@@ -15,8 +15,8 @@ is usable as it stands:
 QM9 has 129433 graphs, far more than any experiment here needs, so its JSON is capped;
 raise QM9_LIMIT to take more.
 
-This script builds the SEVEN TUDataset collections and no others. The eighth collection the
-paper profiles, pdb_contact, is NOT built here, and 2026-09-08 established that it cannot be:
+This script builds the SEVEN TUDataset collections and no others. The eighth collection
+profiled, pdb_contact, is NOT built here, and 2026-09-08 established that it cannot be:
 data/raw/ holds only the TUDataset extractions, so the deposited protein structures that
 src/wfsmbench/io/protein.py turns into contact graphs are not on any machine any more. The
 built file is therefore the only surviving source, and it is tracked in data/ rather than

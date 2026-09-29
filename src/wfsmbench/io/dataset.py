@@ -1,7 +1,7 @@
 """Minimal reader for the project's own dataset JSON (the sample format).
 
-This is the lightweight loader used from P0 onward. The TUDataset conversion
-(edge labels + edge weights for BZR_MD / Cuneiform) is added in P1 and produces the
+This is the lightweight loader. The TUDataset conversion (io.tudataset, edge labels
+and edge weights for BZR_MD / Cuneiform) produces the
 same JSON schema this reader consumes.
 
 Schema::

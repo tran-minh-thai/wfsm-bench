@@ -72,10 +72,10 @@ SUPPORT_FRACTIONS = (1 / 30, 0.10, 0.20, 0.30, 0.50, 0.60, 0.70)
 # same cell names, and costs about four times as much.
 STUDY_GRAPH_LIMIT = 60
 
-# Two size columns on purpose. The objective vector negates |V| + |E|, but section 3 counts
-# in edges, and the two disagree: a four-edge pattern is size 9 as a tree and size 8 as a
+# Two size columns on purpose. The objective vector negates |V| + |E|, but the size-degeneracy
+# analysis counts in edges, and the two disagree: a four-edge pattern is size 9 as a tree and size 8 as a
 # cycle, so a pick at the edge bound can look interior on |V| + |E|. Both are recorded, and
-# the edge columns are the ones comparable with section 3.
+# the edge columns are the ones comparable with that analysis.
 HEADER = ("dataset,graph_limit,size_bound,support_fraction,min_support,"
           "pool_size,front_size,front_sizes,front_min_size,front_max_size,"
           "front_edge_range,front_min_edges,front_max_edges,"
@@ -116,8 +116,8 @@ def rows_for(cell_pool, params: Params, dataset: str, graph_limit: int, size_bou
         return []
 
     # Keep the candidates, not only their objective vectors: F has to be read off the
-    # candidate against the study anchors, and the pattern's edge count is what section 3
-    # counts in. One representative per distinct objective vector, chosen deterministically.
+    # candidate against the study anchors, and the pattern's edge count is what the size-degeneracy
+    # analysis counts in. One representative per distinct objective vector, chosen deterministically.
     members: list = []
     seen: set[tuple[float, ...]] = set()
     for candidate, point in sorted(zip(pool, points), key=lambda cp: cp[1], reverse=True):

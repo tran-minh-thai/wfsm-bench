@@ -117,7 +117,7 @@ def test_the_representation_cannot_hold_a_parallel_edge() -> None:
     """
     graph = Graph.of({0: 1, 1: 2}, [(0, 1, 5, 1.0), (0, 1, 7, 2.0)])
     assert graph.num_edges() == 1, (
-        "two edges between one pair survived; the model is now a multigraph and section 2 "
-        "of the manuscript should say so"
+        "two edges between one pair survived; the model is now a multigraph and its "
+        "written description should say so"
     )
     assert graph.edge_label(0, 1) == 7, "the later edge should win, as a dict assignment does"

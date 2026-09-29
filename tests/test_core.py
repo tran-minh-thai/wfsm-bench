@@ -1,4 +1,4 @@
-"""P0 - core types and canonical signature, locked on the sample dataset.
+"""Core types and canonical signature, locked on the sample dataset.
 
 Label encoding: A=0, B=1, C=2; edge label 0.
 """

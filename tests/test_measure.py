@@ -1,4 +1,4 @@
-"""P3 - weight measures (W, ATW, WSUP) and fitness F, locked on the sample.
+"""Weight measures (W, ATW, WSUP) and fitness F, locked on the sample.
 
 ATW here is this project's definition (mean over embeddings of the summed matched edge
 weights), which differs from other WFSM measures. Ground truth is hand-computed in
@@ -19,7 +19,7 @@ from wfsmbench.preprocess import build_statistics
 SAMPLE = Path(__file__).resolve().parents[1] / "data" / "sample" / "illustrative.json"
 GROUND_TRUTH = Path(__file__).resolve().parents[1] / "data" / "sample" / "ground_truth.json"
 
-# Embeddings that the matcher (P4) will later produce for the two anchor patterns.
+# Embeddings that the matcher produces for the two anchor patterns.
 P1_EMBEDDINGS = {0: [[0.8]], 1: [[0.6]], 2: [[1.0]]}      # single edge A-B
 P2_EMBEDDINGS = {0: [[0.7, 0.5]], 1: [[0.6, 0.6]]}        # path A-B-C, per-edge weights
 

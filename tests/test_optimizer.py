@@ -1,4 +1,4 @@
-"""P7 - discrete PSO operators and the full search loop (Algorithm 1).
+"""Discrete PSO operators and the full search loop.
 
 Label encoding: A=0, B=1, C=2; edge label 0.
 """

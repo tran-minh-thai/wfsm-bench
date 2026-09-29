@@ -18,8 +18,13 @@ Without knowing the versions, those two cases are indistinguishable, and a compa
 cannot tell "our bug" from "different numpy" answers nothing. Hence this file, written beside
 every run.
 
+Besides versions and the commit, the record carries a SHA-256 of every prepared dataset in
+data/, and states the memory and time limits explicitly -- "none" is written out, because a
+missing line cannot be told apart from a limit nobody recorded. A runner adds its own facts
+(stage, worker count) with --record.
+
     python scripts/environment.py                      # print
-    python scripts/environment.py --out results/environment_xps.txt
+    python scripts/environment.py --out results/environment_xps.txt --record stage=17
 """
 
 from __future__ import annotations
@@ -122,7 +127,29 @@ def fingerprint() -> dict[str, str]:
             capture_output=True, text=True, timeout=10).stdout.strip() or "unknown"
     except Exception:
         values["commit"] = "unknown"
+    # Python has no heap flag and no run here carries a wall-clock limit; both are stated,
+    # not omitted. A runner that does impose one overrides it with --record.
+    values["memory_limit"] = "none (Python, no heap flag; each worker is its own process)"
+    values["time_limit"] = "none"
+    values.update(data_checksums())
     return values
+
+
+def data_checksums() -> dict[str, str]:
+    """SHA-256 of every prepared dataset file, keyed as data.<file name>.
+
+    Two runs on the same commit can still disagree if the data were rebuilt from a different
+    download; the checksum is what tells those cases apart.
+    """
+    import hashlib
+    sums = {}
+    for path in sorted((ROOT / "data").glob("*.json")):
+        digest = hashlib.sha256()
+        with path.open("rb") as handle:
+            for block in iter(lambda: handle.read(1 << 20), b""):
+                digest.update(block)
+        sums[f"data.{path.name}"] = digest.hexdigest()
+    return sums
 
 
 def uncommitted() -> list[str]:
@@ -257,7 +284,16 @@ def main(argv: list[str]) -> int:
                          "run this before a stage, so a stale or edited checkout is "
                          "refused rather than recorded under a hash that does not "
                          "describe it")
+    ap.add_argument("--record", action="append", default=[], metavar="KEY=VALUE",
+                    help="add or override one line of the record, e.g. stage=17 or workers=12")
     args = ap.parse_args(argv)
+    extra = {}
+    for item in args.record:
+        key, sep, value = item.partition("=")
+        if not sep or not key.strip():
+            print(f"[refused] --record expects KEY=VALUE, got {item!r}")
+            return 2
+        extra[key.strip()] = value.strip()
     upstream = None
     if args.require_current:
         verdict, detail = behind_remote()
@@ -289,6 +325,7 @@ def main(argv: list[str]) -> int:
     values = fingerprint()
     if upstream is not None:
         values["upstream"] = upstream
+    values.update(extra)
     text = "\n".join(f"{key} = {value}" for key, value in values.items()) + "\n"
     if args.out:
         args.out.parent.mkdir(parents=True, exist_ok=True)

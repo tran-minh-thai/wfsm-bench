@@ -1,4 +1,4 @@
-"""P2 - dataset statistics and frequent edge templates, locked on the sample.
+"""Dataset statistics and frequent edge templates, locked on the sample.
 
 Label encoding: A=0, B=1, C=2; edge label 0.
 """

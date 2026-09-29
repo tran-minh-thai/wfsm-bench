@@ -1,5 +1,5 @@
-"""P4 - subgraph matching (VF2 monomorphism). Closes the loop: real matcher output
-fed to the P3 measure must reproduce the sample ground truth.
+"""Subgraph matching (VF2 monomorphism). Closes the loop: real matcher output
+fed to the weight measures must reproduce the sample ground truth.
 
 Label encoding: A=0, B=1, C=2; edge label 0.
 """

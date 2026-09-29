@@ -287,3 +287,82 @@ def test_no_origin_is_reported_as_unverified(scratch: Path) -> None:
     done = publish(scratch, "--stage", "9", "--dry-run")
     assert done.returncode == 0, done.stderr
     assert "[unverified]" in done.stdout, done.stdout
+
+
+def test_each_publish_keeps_its_run_in_a_directory_of_its_own(tmp_path: Path) -> None:
+    """The top of results/ is replaced by the next run; the run directory never is.
+
+    Two publishes of the same stage, the second with a changed value: both runs must stay
+    readable as they were, each beside the manifest that names its commit.
+    """
+    repo, remote = _pushed_repo(tmp_path)
+    (repo / "results" / "environment_stage17.txt").write_text("commit = abc1234\n")
+    (repo / "results" / "pareto_size_X.csv").write_text("dataset,pool\nX,359\n")
+    first = publish(repo, "--stage", "17")
+    assert first.returncode == 0, first.stderr
+    runs = sorted((repo / "results" / "runs").iterdir())
+    assert len(runs) == 1 and runs[0].name.endswith("_abc1234_stage17"), runs
+    kept = runs[0] / "results" / "pareto_size_X.csv"
+    assert kept.read_text() == "dataset,pool\nX,359\n"
+    assert (runs[0] / "results" / "environment_stage17.txt").exists(), "manifest not kept"
+
+    import time
+    time.sleep(1.1)                       # run directories are named to the second
+    (repo / "results" / "environment_stage17.txt").write_text("commit = def5678\n")
+    (repo / "results" / "pareto_size_X.csv").write_text("dataset,pool\nX,360\n")
+    second = publish(repo, "--stage", "17")
+    assert second.returncode == 0, second.stderr
+    runs = sorted((repo / "results" / "runs").iterdir())
+    assert len(runs) == 2, runs
+    assert kept.read_text() == "dataset,pool\nX,359\n", "the first run was overwritten"
+    assert (runs[1] / "results" / "pareto_size_X.csv").read_text() == "dataset,pool\nX,360\n"
+    # the second copy holds only what the second run changed, never the earlier copy
+    assert not (runs[1] / "results" / "runs").exists()
+    assert "results/runs/" in _remote_files(remote), "the run directory never reached the remote"
+
+
+def test_a_run_directory_is_never_overwritten(scratch: Path) -> None:
+    """Same stage, same commit, same second: the second copy is refused, not merged in."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("publish", scratch / "scripts" / "publish_results.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    (scratch / "results" / "out.csv").write_text("a\n1\n")
+    written = module.written_by_this_run()
+    assert written == ["results/out.csv"], written
+    target = module.run_directory("5", written)
+    target.mkdir(parents=True)
+    module.run_directory = lambda stage, names: target
+    with pytest.raises(SystemExit, match="never overwritten"):
+        module.keep_run_copy("5", written, dry_run=False)
+
+
+FREEZE = ROOT / "scripts" / "freeze_submitted.py"
+
+
+def test_freezing_a_submission_copies_every_artefact_once_and_refuses_twice(scratch: Path) -> None:
+    (scratch / "scripts" / "freeze_submitted.py").write_text(FREEZE.read_text())
+    (scratch / "results" / "table.csv").write_text("a\n1\n")
+    (scratch / "results" / "runs" / "old").mkdir(parents=True)
+    (scratch / "results" / "runs" / "old" / "x.csv").write_text("kept copy\n")
+    git(scratch, "add", "-A"); git(scratch, "commit", "-qm", "results")
+    freeze = lambda: subprocess.run([sys.executable, "scripts/freeze_submitted.py", "--label", "sub"],
+                                    cwd=scratch, capture_output=True, text=True)
+    done = freeze()
+    assert done.returncode == 0, done.stdout + done.stderr
+    frozen = list((scratch / "results" / "submitted").iterdir())
+    assert len(frozen) == 1
+    copied = sorted(str(p.relative_to(frozen[0])) for p in frozen[0].rglob("*") if p.is_file())
+    assert copied == ["results/.keep", "results/table.csv"], copied   # runs/ is not copied again
+    again = freeze()
+    assert again.returncode == 1, again.stdout
+    assert "uncommitted" in again.stdout or "already exists" in again.stdout
+
+
+def test_freezing_refuses_an_edited_tree(scratch: Path) -> None:
+    (scratch / "scripts" / "freeze_submitted.py").write_text(FREEZE.read_text())
+    git(scratch, "add", "-A"); git(scratch, "commit", "-qm", "freeze tool")
+    (scratch / "src" / "a.py").write_text("x = 2\n")
+    done = subprocess.run([sys.executable, "scripts/freeze_submitted.py", "--label", "sub"],
+                          cwd=scratch, capture_output=True, text=True)
+    assert done.returncode == 1 and "uncommitted" in done.stdout, done.stdout
