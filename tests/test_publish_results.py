@@ -352,7 +352,9 @@ def test_freezing_a_submission_copies_every_artefact_once_and_refuses_twice(scra
     assert done.returncode == 0, done.stdout + done.stderr
     frozen = list((scratch / "results" / "submitted").iterdir())
     assert len(frozen) == 1
-    copied = sorted(str(p.relative_to(frozen[0])) for p in frozen[0].rglob("*") if p.is_file())
+    # as_posix: on Windows str() gives a backslash path, and the comparison below is about
+    # which files were copied, not about the separator.
+    copied = sorted(p.relative_to(frozen[0]).as_posix() for p in frozen[0].rglob("*") if p.is_file())
     assert copied == ["results/.keep", "results/table.csv"], copied   # runs/ is not copied again
     again = freeze()
     assert again.returncode == 1, again.stdout
