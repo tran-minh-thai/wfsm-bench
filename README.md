@@ -52,6 +52,7 @@ results-invariant/    artefacts that are counts or set comparisons, machine-inde
 docs/DesignDecisions.md  every modelling choice left open by the method description
 run_experiments_windows.bat  the stage driver (the one definition of every stage)
 run_all_windows.bat   set up a Windows machine and run stages, publishing each one
+COMMIT_MAP.tsv        old commit -> new commit, for records written before 2026-09-29
 ```
 
 ## Requirements
@@ -128,9 +129,9 @@ rebuilt data can be told apart from a run on the original files.
 python -m pytest -q
 ```
 
-A few checks skip on a clone: they compare the figure list with the manuscript, which is not
-part of this repository. Some dataset checks run only once `scripts/prepare_datasets.py` has
-been run.
+Some checks skip on a clone: those that compare the figures and tables with the manuscript,
+which is not part of this repository, and those that read the raw downloads in `data/raw/`,
+which exist only after `scripts/prepare_datasets.py` has been run.
 
 ## A small end-to-end run (about four minutes)
 
@@ -453,6 +454,10 @@ limit and time limit (both "none": Python has no heap flag and no run is time-li
 SHA-256 of every dataset file; the stage number and worker count. `python
 scripts/environment.py` prints the same record for the current machine. A result without a
 record is not used.
+
+The history of `main` was rewritten on 2026-09-29, which changed every commit hash. A record
+written before then names an old hash; `COMMIT_MAP.tsv` gives the commit holding the same code
+today, and `python scripts/commit_map.py <hash>` looks one up.
 
 ## Parameters
 

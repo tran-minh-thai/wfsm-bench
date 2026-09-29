@@ -1,0 +1,71 @@
+# old_commit	new_commit	subject -- the history of main was rewritten on 2026-09-29; a commit recorded beside an artefact before then is found here
+9317bc405dfb5625d7f71eb9e4d2acb88ac73a73	f00d5a2819b7e819e7fe903e2b1113024c46ea60	Weighted frequent subgraph mining as optimisation: objective, selector, and benchmark
+46f76d66a5f8d57c978fa6dbc498c00510f6b4f5	200c7319b8c25a4873f3b8f49cf672b263a17bd2	Declare the provenance the history compression destroyed
+3422bfafaa7ab91cd143bec45ddaf7c94224d88f	031a91a47e62b7cd9b122d5b2a1b546f6b8173e4	Move the paper's material out of the published repository
+76cd43ae879487c80e49fae8160405cefc1da458	77305c3759eec1ebb166e6e62e26db8b4b1dfbea	Translate the design decisions, and move the one that was never about code
+d049256367cef3030235a37a36cfa1ffefd1d81f	9ea589a845715baa02e0249c5a52545f68e9d487	Point the figure check at the LaTeX manuscript and its generated file
+ef7c47e3c76f268714657a2626a9f648ba85811d	0ef59254c4b633087b989a9aaf849f0336b59e4d	Widen two scans to the claims they stand behind
+f9e43234ceb6bf74d1d5079cb184f72d8adf225f	99ae3ffe24068ab6b1a4ba06f7ec91563ba093c7	Four more checks that could not have failed
+1ae87d14785ec8aa2b0ba581506e5625d9a18dca	78d9e0fae5568ca32b8a22f92a9700ce5d5bfd9f	Record a verdict for every scope flag, and make the audit ask only what is new
+f8cd7b5cd54ad8a8846cbad115f1dc42f5e0210d	0a92b48d88eca2b93a7764d507e9bc96428af6c8	Correct the date on this month's scope-flag work
+74eecc34dd2635eed425448e2caae21e35f24449	70f76014c965fe9b56a8f012fe7590a50ef3c7b7	One figure rendered in English because its builder never asked for labels
+1b98d460dd40672ee75712f7d3b0dbb2eea8b967	26c7fa2a70d52aeec90bd4663c75df9fac379b83	Two new figures, and one of them was misaligned on its first draft
+0f88269dcd4b985a68aa9c0eabcb3fc06a4d8ce0	3286ce3ceb35dc0d9f3e5eda320fc44bca71ab18	Write the agreement artefact after every bound, not once at the end
+d442af30c510a37f162d95c75fb8ea4ab8d24e9d	a3c6cac01d0ea776e83a5811ff4a356d8d704906	Widen the gSpan cross-check from four cells to twenty
+48821034da464bb64c729e868c1c9c77821ceac6	363ffe5630d59a61213ff08893140d7daf7fd6a2	Cuneiform at bounds 4 and 5 closes the sweep at twenty-one cells
+a3a9bc7a3b3ada34c2336c0847c4b0b03154dbaa	9990e90172fc6f60bac4d025a2f978190ffebb4d	Carry over the cells a counts-only run does not recompute
+a7f7c58536556689b551897dd8462bed1a60d72c	64a3639969cdf72fc49c8db01d3854168926e2e7	Add the agreement sweep as a stage, and stop the Windows guide naming dead scripts
+9527d3f15f9f442427502311c23d3acf0a78411b	54f20ec2e53604a4dc6df1262532457aa1bda862	Compare the data collection by collection, and let the eighth one travel
+ea0406b68ddba20a4f7e625c73ffc13ee8d5bc42	acfea24ce5e59c6b0da37098409122ccda1fed4e	Stage 19 closes the last agreement cell, and the publisher stops calling artefacts code
+75c8d86bda4eafb8a321b8dadc709cd812d451cf	ad0d89e850c8aefe15652d767176340137fbdd98	Carry over timed cells, ask the real question about figures, and add the third bound
+063c6c4d2aa463280c8fc44ed091be45e363680f	f32695781bfcb9da6579eca586673d42d9941769	Add stage 20 artefacts
+e979546b3a31a497b38c5e1773ebd9af24e92ddf	ebff84106ea52b5d35899416663470e4b20f643c	Add stage 20 gSpan
+6deb05b10812b349cf72e0f4d7917803b098df77	db3b9f5da4ab6ddf5604303faae06a86510966b0	Draw the enumeration cost, and take the last English word off a Vietnamese figure
+a20487914c4800d8d3f5fab4a554e79dcd464d17	2f77ffcc234987f206f2ccf3c4be237c6056337e	Give the selector tables a dispersion, and compute it once for both renderings
+32cd8443855f26fe00aac47f64f78baceedb8681	cd4cb5757950ee5f60a283dc1e182f208beb02b3	Let the two dense figures survive a photocopier, and ask every method what it maximises
+13a6c98b6c30cce9d116452e373dcfd7749585bb	bc9e57906b3a01b4df447f8cdb1fc5d78f09c9ed	A dark rim on every marker, because shape alone was not a second channel
+2c7ba68710e4ae1d6344e329797e9cfd35c8b1ed	8ef8d268b92099b1fe3f60cca2ad02cbd630a5dd	Stop naming the winning method beside its mark; the legend already says it
+c36c98f27d1cea4761855432bbc4176b31a7130d	1958c3f1bae3f2399a6abd4340e6154a7c14c2f4	Place the basin labels against the marks, and set the scale before measuring
+6c20992fab097e86ea5004df06d8b3c7592d7e74	103cd0f5c6a77cb0c3a759c463d40d5a2acb3742	The note explaining an empty row is text, so it takes the colour of text
+7748fa75a4c0c5c495568a87d159d824b02c56c5	87fc8fa9dc2017b874e310b76ac028f73eb3caee	Draw the figures in English, as vector PDF, and at the size the page will print
+177c4a2b45baee5af3864d63710ff6bee577f122	ba7d5bb72ac7af15fc2d20b06d95432e2248cf4b	Size three figures from the printed panel, not from the canvas
+e4c08274c6af5a73456dfb846e853ff194f10519	e27db09fda9a10e92d55a11a4e4537cbaf38a1ba	Name every identifier in English, and a test after what it checks
+8c02b56022269376d8107eded04a1725797458f4	f6412ac82b2cf27d1b4d3fd46b9624e169b80ad1	Close two blind spots in the figure-inclusion check, and re-examine its verdicts
+78e8f20b4b575702000cd35cd2ff9a18edeb627b	dddd2e16e2e6731c3be318f3c3f423b2b1c8353d	Regenerate the check-scope work list from a clean tree
+af6452c5b283c909c91dbf22206574b3ddeef2f0	cc468b894e474e89a65d611bfff82be946eeabbb	Point the Windows runner and guides at main, and move old checkouts across
+12a6d6d7a2b965f4bfda6e4670beec767252259d	a1f774a3b18e6ba7650547de525cee42895859b9	End the Windows run by checking what reached GitHub, not by asking for files
+042868ed00633382cb021a4a397f3d71a1cf0fa2	9b9d95ee3052bf22e341809a81a7225fa755ce4d	Push commits an earlier publish left behind, and stop printing a test count
+70b267a684e5595670a65a2a254abad7e30c04da	2057f504bfeb349a2748894db7ea5f52f2bc9bad	Regenerate the check-scope work list after three publisher tests were added
+e8f6bdf42e8ebe95e1a157791a6f0a3bd385556b	94a99fd90dd581d019e4c436b2e430956303af32	Let the Windows runner take stage numbers, and say to pull before starting it
+836c4d46377405e89f522e462107a9693ca17309	038df36d8ce753ec8784365db837fb8665c78862	Re-run every untraceable stage with one command, from a computed set
+bfd777c17bfded6d42b4a741bd031a073af4f79d	1168cf2878c181859af3d78c2975de267c87f8db	Regenerate the check-scope work list after the re-run selector's tests were added
+748cb2436e0ef3b144815d82515b783253ccc058	1c0f3de54a5e8467313d8bcfb3b0264d56d2e800	Tell a refused checkout its actual fix, and stop blocking a stranded publish
+e894406ea49e66148f2adb71a082f53547928aff	86736341ef6cf6a1d00caabe8b0ded47f8e3e4e1	Regenerate the check-scope work list after the gate tests were added
+5a1b2f064fe9dce843ac80ad779ecbd7d2c3f7a0	3c50d295ab8b4a891ce98832149c11b2e5fe32f5	Pin the scratch remotes to main, and clear old step logs before a run
+bccfb394d24551b4235414f7f3f6975d09f2d5a3	69b3866f06954a3fc9b9fe941518264d9d7d3771	Add stage 14 artefacts
+149cc94408057dbc66a935d083abc6468eb7b37c	dc07e63d05cde48ed2095f3a62e03711d416f728	Excuse a pre-compression record by what it is, not by a list of names
+19a4e7dca55dff30cc932edea7031a88b1540ce9	feb08dfa6844566a42fac8a9f6a912d6825b18de	Judge a pre-compression record by reachability, not by whether the object exists
+3eadf4d95debd74d66fbfff9d24ff6f51c43e206	cdf50b6f2a8cbce08a8d54f38ab1a9f7e343260d	Add stage 1 artefacts
+8cc34ff2fa1e6c31f7ee95544693ac5e81313399	9f213a3ca4ae483dc4aca3d12884844ddcc3e0e8	Add stage 3 artefacts
+a89cb6c1955081223daf457f8d7d24e18052792f	cdc99fc64ab09d90883e6b135e968de6dc6e11e8	Add stage 15 artefacts
+9c808130781269eca25d44123dcb7d79e551eaa3	fc7287ab5f0fcceffdde254763182841838c4f42	Add stage 9 artefacts
+39a401a01d8d479717963762df263592f728e433	ac6e6f7d975561e0692408ef5de78daaf19e8e09	Add stage 10 artefacts
+f55073eb81b815c356eb2a87fa2fabd632e3e277	091e79d388528440fe405a0872a454d95bc7711d	Add stage 11 artefacts
+79091319d56715403ededf201003147a0e6c4ef6	0465360124d82584be736068b7496652a780a460	Add stage 12 artefacts
+61e5b6b48ff1e1f099710f9355f1a004a524b140	997d1a22f6689040a145c9f4ea452d47248a486c	Add stage 13 artefacts
+ef167e5fead270c5d180511e309b010b81b1358c	ff6e9e9d5e154076d00289faace49a0e249e013e	Add stage 14 artefacts
+eae5d438c2b16bda3de47eeb5b1c8b1a41be457e	74156bab5d93b611a685bd827718e22dc476cef9	Restore the selector's entry point, and record which files its table comes from
+65caf9810e8a360a237081131d4bc45d998f083a	2af27841a3d8998c60e411121fb8501cebac49f6	Regenerate the check-scope work list after the selector tests were added
+adb60f9ea65ec9753714dc4ae3aa1ed9277622cc	ee62105c68f6ad64bd8e19279c7d894e17baa287	Say why a collection has no calibrated rho, not only that it has none
+6a1bb51963cfd9bc7c7057af91cd6c3cb23f748f	7747d5e8d8481e2c2227772c4786920002155946	Regenerate the check-scope work list after the calibration report tests were added
+298d3296924d348f60d5aa4b0731b090e31024ea	8e2cbed4aa8a90b8b4b79ab5ab92c7a78c35d03a	List a calibrated collection even when its data is not on this machine
+37902ef12c968147b05ff751c3ae513a2d91e409	c776afcacc9c2b0ade9e76c7ced05a9ef585321e	Regenerate the check-scope work list after the second calibration report test
+66ab4c13670b780ba1d6540ce3ddbeef406cdb65	f0fcb79c771b0ef8ceea22dfba3a66ab13095ac9	Add stage 16 artefacts
+e6139fa9399488355adbcef7a2d49d3c74b583b4	1175705c733217c9867aa12fbd3932f1a8dea2ed	Add stage 13 artefacts
+15ddfe7ceefe664761bf4418d6d56775752992c0	43717d75a931644881735c5216feda21243aad36	Add stage 15 artefacts
+bb6e07968edabd02b4e3dd56a940f626139db0e9	e9384bcf56adfe09296135d54bfda9fb4973f1bb	Add stage 17 artefacts
+1c4d35798060b8928f94ba0de24e5dc47b81562f	cb8bb55a40f7e5560abb819734ab78b3697cba19	Add stage 18 artefacts
+942b308c3bb7001edb8cd49623d803224f9f59b8	d44b9731653d97bcecff48589fdcaa9b64c97a1c	Run the _bond Pareto stage at bounds 3 to 6, and scope the front-maximum check
+d01bfb29248eac8b212d256ecad7a77e6d2df261	04a41de2ea64299b3500dc24c327caa61d4541c1	Add stage 17 artefacts
+f4e2d0691a0bf07d0a2c8dbe1e16b32b9dd5318b	807a03b4cb55307b0c6047123afd8ec46b6cd338	Figures: Times New Roman, text fitted to 9-10pt on the page, no overlapping strings
+80c75a35f6a4064ccc337f6547369f3fb3c2f8b0	5f957d9152014e70c543326c7fc1ba6c68831190	Prepare the repository for publication: license, README, run records, run copies

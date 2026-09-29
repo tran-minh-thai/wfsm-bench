@@ -62,9 +62,17 @@ def unchanged_since_compression(path: Path, repo: Path = ROOT) -> bool:
 
 
 def recorded_commit(path: Path) -> str | None:
+    """The commit a record names, translated through COMMIT_MAP.tsv when it predates the
+    2026-09-29 rewrite of main (scripts/commit_map.py)."""
     # newline="" plus an explicit strip: the CR is real content here, not a parsing detail.
     found = PATTERN.search(path.read_text(encoding="utf-8", errors="replace"))
-    return found.group(1).strip() if found else None
+    if not found:
+        return None
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("commit_map", ROOT / "scripts" / "commit_map.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.resolve(found.group(1).strip())
 
 
 def git_ok(*args: str, repo: Path = ROOT) -> bool:
@@ -160,3 +168,22 @@ def test_the_excuse_does_not_depend_on_which_old_objects_a_machine_still_holds(
     # A record rewritten with a dead commit is not excused either, so the strict check fails.
     gone.write_bytes(b"node = Y\r\ncommit = deadbee\r\n")
     assert not excused(gone, "deadbee", repo)
+
+
+
+def test_a_rewritten_commit_resolves_through_the_map(tmp_path: Path) -> None:
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("commit_map", ROOT / "scripts" / "commit_map.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    table = tmp_path / "COMMIT_MAP.tsv"
+    table.write_text("# old\tnew\tsubject\n" + "a" * 40 + "\t" + "b" * 40 + "\tone\n"
+                     + "a" * 7 + "c" * 33 + "\t" + "d" * 40 + "\ttwo\n")
+    assert module.resolve("a" * 8, table) == "b" * 40
+    assert module.resolve("1234567", table) == "1234567"          # not listed: unchanged
+    with pytest.raises(ValueError):
+        module.resolve("a" * 7, table)                             # ambiguous: refused
+    mapped = module.load()
+    assert len(mapped) >= 70, f"COMMIT_MAP.tsv lists {len(mapped)} commits"
+    for new in list(mapped.values())[:: max(1, len(mapped) // 10)]:
+        assert git_ok("merge-base", "--is-ancestor", new, "HEAD"), f"{new} is not on this branch"

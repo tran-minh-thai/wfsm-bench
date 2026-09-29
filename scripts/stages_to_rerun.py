@@ -91,12 +91,22 @@ def records(results: Path) -> dict[int, str | None]:
     return out
 
 
+def _commit_map():
+    """scripts/commit_map.py, which maps commits recorded before the 2026-09-29 rewrite."""
+    spec = importlib.util.spec_from_file_location(
+        "commit_map", Path(__file__).resolve().parent / "commit_map.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
 def untraceable_reason(commit: str | None) -> str | None:
     """None when the commit is in the history of HEAD; otherwise why it is not."""
     if commit == UNRECORDED:
         return "its artefacts are present but it has no environment_stage<N>.txt manifest"
     if not commit:
         return "record names no commit"
+    commit = _commit_map().resolve(commit)
     known = subprocess.run(["git", "cat-file", "-e", f"{commit}^{{commit}}"], cwd=ROOT,
                            capture_output=True)
     if known.returncode != 0:
