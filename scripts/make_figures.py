@@ -84,6 +84,21 @@ NO_DATE_METADATA = {"CreationDate": None}
 matplotlib.rcParams["lines.markeredgecolor"] = "#1A1A1A"
 matplotlib.rcParams["lines.markeredgewidth"] = 0.7
 
+# Times New Roman, embedded as TrueType (fonttype 42 above). Elsevier's artwork instructions
+# accept Times among a short list of families and require every font embedded, and the
+# manuscript body is set in the same face (Liberation Serif, its metric twin, where that is
+# installed). DejaVu Sans -- matplotlib's default, and what every figure used before
+# 2026-09-29 -- is on neither list. matplotlib falls back to DejaVu without a word when a
+# family is missing, so the family is checked before drawing (require_font) rather than trusted.
+FIGURE_FONT = "Times New Roman"
+matplotlib.rcParams["font.family"] = FIGURE_FONT
+# Text is measured on the raster canvas -- to place labels and to refuse overlaps -- and the
+# canvas hints glyphs to its pixel grid. At 100 dpi that made every string about 5% narrower
+# than the same string in the saved PDF (measured 2026-09-29: 159.8pt against 168.2pt of ink),
+# so a 3pt gap on the canvas was a 7pt overlap on the page. Unhinted, the measured width is
+# within 1% of the ink in the PDF. The output is vector, so nothing drawn changes.
+matplotlib.rcParams["text.hinting"] = "no_hinting"
+
 # Nemenyi critical difference for seven methods over eighty blocks. Drawn on the sweep
 # so a reader can see at a glance that nothing moves by a distinguishable amount.
 CD = 1.007
@@ -125,31 +140,129 @@ def style(ax) -> None:
     ax.set_axisbelow(True)
 
 
-# The draft's text column, measured from the one figure that is neither shrunk nor stretched:
-# ball coverage is drawn 6.4in wide, asked for at \linewidth, and its 10pt label arrives at
-# 10.13pt -- so the column is 6.48in. A figure asked for at 0.86\linewidth prints at 5.57in.
+# The manuscript's text column: \linewidth of manuscript.tex, measured by building it on
+# 2026-09-29 -- 468.33pt, 6.4804in. The earlier figure of 6.48in had been inferred from how
+# one figure printed and agrees with the measurement.
 COLUMN_WIDTH_IN = 6.48
 
+# Every string on the printed page lies in this range, in points: the size of the
+# manuscript's table text (\footnotesize, measured at 10pt) at the top, and nothing below 9.
+# Before 2026-09-29 sizes were chosen per figure, and three figures were never scaled at all:
+# the basin labels, drawn at 7pt and printed at 0.86 of a 7.2in canvas, reached the page at
+# about 5.4pt -- below Elsevier's 7pt floor for ordinary text.
+PRINTED_PT = (9.0, 10.0)
 
-def _scale_text_for_print(fig, printed_width_in: float, rect=None) -> None:
-    """Scale every string in the figure by the inverse of the shrink the draft will apply.
+# The share of the text column each figure is included at -- the width= of its
+# \includegraphics in the manuscript. The text sizes are fitted to it, so a figure included
+# at another width prints at another size; tests/test_figure_type_on_the_page.py reads the
+# drawn files against this table.
+PRINTED_FRACTION = {"rank_transfer_by_collection.pdf": 1.0,
+                    "enumeration_cost_by_bound.pdf": 1.0,
+                    "ball_coverage_by_depth.pdf": 1.0,
+                    "front_position_vs_bound.pdf": 0.86,
+                    "regret_vs_race_size.pdf": 0.86,
+                    "quantum_sweep.pdf": 0.86,
+                    "basin_vs_aco.pdf": 0.86}
 
-    Called before saving, so the numbers the builders pass stay readable as what the PAGE
-    receives. Not applied to figures already printing at their nominal size: scaling their
-    text would be a change with no reader on the other end of it.
 
-    The layout is then re-run with the rectangle the builder used. Without that the figure
-    keeps a layout computed for the smaller type -- measured on the first build of this
-    change, the front-position figure's axis label ran straight across its own tick numbers,
-    because room had been reserved for 4.9pt text and 8pt text was put into it.
+def printed_width_in(path: Path) -> float:
+    return PRINTED_FRACTION[path.name] * COLUMN_WIDTH_IN
+
+
+def require_font() -> None:
+    """Refuse to draw when the figure font is not installed, instead of drawing in DejaVu."""
+    from matplotlib import font_manager
+    try:
+        font_manager.findfont(font_manager.FontProperties(family=FIGURE_FONT),
+                              fallback_to_default=False)
+    except ValueError:
+        raise SystemExit(f"[fail] the font {FIGURE_FONT!r} is not installed. matplotlib would "
+                         f"draw every figure in DejaVu Sans instead, which the journal's "
+                         f"artwork instructions do not accept; install it and run again.")
+
+
+def _saved_width_in(fig, tight: bool) -> float:
+    """The width the saved PDF will have: the tight bounding box plus its padding, or the
+    canvas when the figure is saved without cropping."""
+    if not tight:
+        return fig.get_size_inches()[0]
+    fig.canvas.draw()
+    box = fig.get_tightbbox(fig.canvas.get_renderer())
+    return box.width + 2 * matplotlib.rcParams["savefig.pad_inches"]
+
+
+def _refuse_overlapping_text(fig) -> None:
+    """Stop when two strings of the laid-out figure cover each other.
+
+    Every size check can pass on a figure whose labels are printed across one another --
+    enlarging the type to the printed range is exactly what makes that happen -- and it is
+    only seen by opening the file. This measures it instead, on the final layout.
     """
     import matplotlib.text
-    print_ratio = printed_width_in / fig.get_size_inches()[0]
-    if print_ratio >= 0.95:
-        return
+    fig.canvas.draw()
+    renderer = fig.canvas.get_renderer()
+    # Tick labels are kept by matplotlib for ticks outside the view limits and simply not
+    # drawn; their stale positions would report clashes nobody can see. Only the ticks the
+    # axis draws are measured.
+    all_tick_labels, drawn_tick_labels = set(), set()
+    for ax in fig.axes:
+        for axis in (ax.xaxis, ax.yaxis):
+            for tick in axis.get_major_ticks() + axis.get_minor_ticks():
+                all_tick_labels.update((id(tick.label1), id(tick.label2)))
+            for tick in axis._update_ticks():
+                drawn_tick_labels.update((id(tick.label1), id(tick.label2)))
+    boxes = []
     for text_artist in fig.findobj(matplotlib.text.Text):
-        text_artist.set_fontsize(text_artist.get_fontsize() / print_ratio)
-    fig.tight_layout() if rect is None else fig.tight_layout(rect=rect)
+        if id(text_artist) in all_tick_labels and id(text_artist) not in drawn_tick_labels:
+            continue
+        if text_artist.get_visible() and text_artist.get_text().strip():
+            box = text_artist.get_window_extent(renderer)
+            if box.width > 0 and box.height > 0:
+                boxes.append((text_artist.get_text(), box))
+    # Not merely disjoint: two strings closer than a point read as touching on the page.
+    gap = 1.0 * fig.dpi / 72.0
+    boxes = [(label, box.padded(gap / 2)) for label, box in boxes]
+    clashes = [(a, b) for i, (a, box_a) in enumerate(boxes) for b, box_b in boxes[i + 1:]
+               if box_a.overlaps(box_b)]
+    if clashes:
+        raise SystemExit(f"[fail] {fig.get_label() or 'a figure'}: {len(clashes)} pair(s) of "
+                         f"strings overlap on the laid-out figure, first "
+                         f"{clashes[0][0]!r} / {clashes[0][1]!r}")
+
+
+def _fit_text_to_print(fig, printed_width_in: float, rect=None, tight: bool = True,
+                       **layout) -> None:
+    """Size every string so that it reaches the page between PRINTED_PT[0] and PRINTED_PT[1].
+
+    The ratio is taken against the width of the file that will be SAVED, not the canvas: the
+    figures are saved with a tight bounding box, which crops or extends the canvas, and the
+    typesetter scales the saved width to the width the manuscript asks for. Resizing the text
+    moves that bounding box, so the fit is repeated until it holds. The layout is re-run with
+    the rectangle the builder used each time; without that the figure keeps room reserved for
+    the old type size, which once put an axis label across its own tick numbers.
+    """
+    import matplotlib.text
+    low, high = PRINTED_PT
+    for _ in range(8):
+        fig.tight_layout(**layout) if rect is None else fig.tight_layout(rect=rect, **layout)
+        ratio = printed_width_in / _saved_width_in(fig, tight)
+        out_of_range = 0
+        for text_artist in fig.findobj(matplotlib.text.Text):
+            if not text_artist.get_text().strip():
+                continue
+            printed = text_artist.get_fontsize() * ratio
+            if low <= printed <= high:
+                continue
+            out_of_range += 1
+            # A hundredth of a point inside each end: the saved width is measured from the
+            # drawn canvas and the file's own box differs from it in the last digits, which
+            # once put a label at 10.01pt.
+            text_artist.set_fontsize(min(max(printed, low + 0.01), high - 0.01) / ratio)
+        if not out_of_range:
+            _refuse_overlapping_text(fig)
+            return
+    raise SystemExit(f"[fail] the text of {fig.get_label() or 'a figure'} did not settle "
+                     f"inside {low}-{high}pt on the page after eight passes")
 
 
 def figure_quantum(path: Path) -> None:
@@ -182,7 +295,7 @@ def figure_quantum(path: Path) -> None:
     ax.legend(frameon=False, fontsize=10, ncol=4, loc="upper center",
               bbox_to_anchor=(0.5, -0.16))
     style(ax)
-    fig.tight_layout()
+    _fit_text_to_print(fig, printed_width_in(path))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
@@ -207,81 +320,133 @@ def figure_basins(path: Path) -> None:
     if not points:
         raise SystemExit("[fail] no basin rows could be paired with a ranking.")
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.6))
+    # Drawn at the width it prints at, so that marks, labels and gaps measured on the canvas
+    # are the ones on the page up to the small crop of the tight bounding box.
+    MARK_AREA = 70                                 # scatter size, pt^2
+    fig, ax = plt.subplots(figsize=(printed_width_in(path), printed_width_in(path) * 0.7))
     text = labels("luu-vuc-va-dan-kien")
     for dominates, colour, label in ((True, "#D55E00", text["legend_dominates"]),
                                      (False, "#0072B2", text["legend_not"])):
         group = [p for p in points if p[2] is dominates]
-        ax.scatter([p[0] for p in group], [p[1] for p in group], s=70,
+        ax.scatter([p[0] for p in group], [p[1] for p in group], s=MARK_AREA,
                    color=colour, label=label, zorder=3,
                    edgecolor="white", linewidth=0.8)
-    # Where each label goes is decided against the marks, not by alternating sides. The
-    # alternating version put every label to the RIGHT and only varied up or down, so a point
-    # with a neighbour just right of it had its name written across that neighbour: measured
-    # on the drawn figure, 2 of 13 marks carried label pixels inside them.
-    LABEL_FONTSIZE, LABEL_LINE_HEIGHT, MARK_RADIUS = 7, 7, 13.0   # fontsize, line height, mark radius in px
     # The scale is set HERE, before anything reads a display coordinate. It used to be set
     # further down, after this placement had already measured the figure on a linear x axis
     # -- a layout that never reached the page, so every clearance test was answering about a
     # different picture.
     ax.set_xscale("log")
-    fig.canvas.draw()                        # transData is only valid once laid out
-    mark_positions = [ax.transData.transform((b, r)) for b, r, *_ in sorted(points)]
-    placed_boxes = []
-    for index, (basin, rank, _flag, dataset, mode) in enumerate(sorted(points)):
-        label_text = f"{dataset.replace('_bond', '').replace('_full', '')}·{mode[:4]}"
-        # Width from the string: no renderer measurement is needed for a monospaced-enough
-        # estimate at this size, and over-estimating is the safe direction for a clearance
-        # test.
-        box_width = 0.62 * LABEL_FONTSIZE * len(label_text) * fig.dpi / 72.0
-        box_height = LABEL_LINE_HEIGHT * fig.dpi / 72.0
-        x, y = mark_positions[index]
-        chosen_offset = None
-        # The offset clears the mark's own radius: starting closer put the first letter
-        # inside the very mark the label names.
-        offset_px = MARK_RADIUS + 3
-        for dx, dy, ha in ((offset_px, 3, "left"), (offset_px, -3 - box_height, "left"),
-                           (-offset_px - box_width, 3, "right"), (-offset_px - box_width, -3 - box_height, "right")):
-            label_box = (x + dx, y + dy, x + dx + box_width, y + dy + box_height)
-            # Every mark EXCEPT this label's own: sitting beside its own point is the
-            # arrangement, not a collision, and testing against it rejected all four corners.
-            hits_mark = any(not (label_box[2] < mx - MARK_RADIUS or label_box[0] > mx + MARK_RADIUS
-                              or label_box[3] < my - MARK_RADIUS or label_box[1] > my + MARK_RADIUS)
-                         for j, (mx, my) in enumerate(mark_positions) if j != index)
-            hits_label = any(not (label_box[2] < o[0] or label_box[0] > o[2]
-                              or label_box[3] < o[1] or label_box[1] > o[3]) for o in placed_boxes)
-            if not (hits_mark or hits_label):
-                chosen_offset = (dx, dy, ha, label_box)
-                break
-        if chosen_offset is None:
-            # Nothing clear: keep the old placement rather than drop the label. A name in a
-            # crowded corner is still readable; a missing name is a point nobody can identify.
-            chosen_offset = (MARK_RADIUS + 3, 3 if index % 2 == 0 else -3 - box_height, "left", None)
-        dx, dy, ha, label_box = chosen_offset
-        if label_box is not None:
-            placed_boxes.append(label_box)
-        ax.annotate(label_text, (basin, rank), fontsize=LABEL_FONTSIZE, color="#444444",
-                    xytext=(dx * 72.0 / fig.dpi, dy * 72.0 / fig.dpi),
-                    textcoords="offset points", ha="left", va="bottom")
+    # Room at both ends for a name beside the outermost points. With matplotlib's default
+    # margin the leftmost and rightmost names could only go inward, onto their neighbours.
+    # The right end stops at 100: the axis is a share of the pool, and an axis running to
+    # 280% invites a reader to ask what lives there.
+    shares = [p[0] for p in points]
+    ax.set_xlim(min(shares) / 4, min(max(shares) * 4, 100.0))
     ax.axhline(1.0, color="#999999", linewidth=0.8, linestyle=":")
     # The one string on this canvas that was still English in the printed draft: every
     # other word here came from the label file and this one was typed in place.
-    ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0), fontsize=8,
-                color="#555555",
-                va="bottom", ha="right")
+    rank_one = ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0),
+                           color="#555555", va="bottom", ha="right")
+    legend = ax.legend(frameon=False, loc="upper left")
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
     # The title states the half that holds without exception. The converse -- a
     # non-dominant optimum meaning ACO wins -- holds in six of eight, so claiming the
     # figure shows basin structure "tracking" the ranking would overstate it.
-    ax.set_title(text["title"],
-                 loc="left")
-    ax.legend(frameon=False, fontsize=8, loc="upper left")
+    ax.set_title(text["title"], loc="left")
     style(ax)
-    fig.tight_layout()
+    # Laid out and sized BEFORE the point names are placed, and the names are then kept out
+    # of the layout: placing them first and laying out afterwards moved every mark, and on
+    # the 2026-09-29 drawing two names cleared at placement were printed across each other.
+    _fit_text_to_print(fig, printed_width_in(path))
+    ratio = printed_width_in(path) / _saved_width_in(fig, tight=True)
+    LABEL_FONTSIZE = (PRINTED_PT[0] + 0.1) / ratio
+    renderer = fig.canvas.get_renderer()
+
+    # Where each label goes is decided against the marks, not by alternating sides. The
+    # alternating version put every label to the RIGHT and only varied up or down, so a point
+    # with a neighbour just right of it had its name written across that neighbour: measured
+    # on the drawn figure, 2 of 13 marks carried label pixels inside them.
+    px_per_pt = fig.dpi / 72.0
+    MARK_RADIUS = (MARK_AREA ** 0.5 / 2 + 0.8) * px_per_pt     # drawn radius with its edge
+    # Two labels that merely do not overlap can still read as one phrase ("BZR·sum QM9·disc"
+    # on the 2026-09-29 drawing), so neighbours keep this many pixels between them.
+    LABEL_GAP = 3 * px_per_pt
+    obstacles = [tuple(artist.get_window_extent(renderer).extents) for artist in (legend, rank_one)]
+    mark_positions = [ax.transData.transform((b, r)) for b, r, *_ in sorted(points)]
+    axes_box = ax.get_window_extent(renderer)
+    ordered = sorted(points)
+
+    def name_of(point) -> str:
+        dataset, mode = point[3], point[4]
+        return f"{dataset.replace('_bond', '').replace('_full', '')}·{mode[:4]}"
+
+    def candidate_boxes(index: int) -> list[tuple[float, float, tuple]]:
+        # Measured, not estimated: the estimate (0.62 em a character) was sized for DejaVu
+        # Sans and overstates Times by a third, which rejected positions that were clear.
+        probe = ax.text(0, 0, name_of(ordered[index]), fontsize=LABEL_FONTSIZE)
+        probe_box = probe.get_window_extent(renderer)
+        probe.remove()
+        w, h = probe_box.width, probe_box.height
+        x, y = mark_positions[index]
+        # The offset clears the mark's own radius: starting closer put the first letter
+        # inside the very mark the label names.
+        off = MARK_RADIUS + 2 * px_per_pt
+        offsets = [(off, 2), (off, -2 - h), (-off - w, 2), (-off - w, -2 - h),
+                   (-w / 2, MARK_RADIUS + 2), (-w / 2, -MARK_RADIUS - 2 - h),
+                   (off, h + 4), (off, -2 * h - 4), (-off - w, h + 4), (-off - w, -2 * h - 4)]
+        return [(dx, dy, (x + dx, y + dy, x + dx + w, y + dy + h)) for dx, dy in offsets]
+
+    def hits_marks(index: int, box) -> int:
+        # Every mark EXCEPT this label's own: sitting beside its own point is the
+        # arrangement, not a collision, and testing against it rejected all four corners.
+        return sum(not (box[2] < mx - MARK_RADIUS or box[0] > mx + MARK_RADIUS
+                        or box[3] < my - MARK_RADIUS or box[1] > my + MARK_RADIUS)
+                   for j, (mx, my) in enumerate(mark_positions) if j != index)
+
+    def leaves_axes(box) -> bool:
+        # Inside the axes: the leftmost label, placed to the left of its point, was
+        # written across the y axis and its tick labels.
+        return (box[0] < axes_box.x0 or box[2] > axes_box.x1
+                or box[1] < axes_box.y0 or box[3] > axes_box.y1)
+
+    # The most constrained names are placed first. In the order of the x axis the rightmost
+    # name, hemmed in by the axis end, came last and found its few free positions already
+    # taken by its neighbours' names.
+    freedom = {index: sum(not leaves_axes(box) and not hits_marks(index, box)
+                          for _dx, _dy, box in candidate_boxes(index))
+               for index in range(len(ordered))}
+    placed_boxes = []
+    for index in sorted(range(len(ordered)), key=lambda i: (freedom[i], i)):
+        basin, rank = ordered[index][0], ordered[index][1]
+        label_text = name_of(ordered[index])
+        scored = []
+        for order, (dx, dy, label_box) in enumerate(candidate_boxes(index)):
+            # Across as well as along: the overlap test that runs on the finished figure wants
+            # a point between any two strings, and a name placed flush under another passed
+            # this test and failed that one.
+            hits_label = sum(not (label_box[2] + LABEL_GAP < o[0] or label_box[0] - LABEL_GAP > o[2]
+                                  or label_box[3] + px_per_pt < o[1] or label_box[1] - px_per_pt > o[3])
+                             for o in placed_boxes + obstacles)
+            scored.append((1000 * leaves_axes(label_box) + 10 * hits_label
+                           + hits_marks(index, label_box), order, dx, dy, label_box))
+        # The first clear position in the order above; when none is clear, the one that
+        # collides least, and it is SAID -- a label printed over another is a figure fault
+        # nobody sees until the page is read. Before 2026-09-29 the fallback was a fixed
+        # corner, which on the printed-size drawing put two names across each other.
+        score, _order, dx, dy, label_box = min(scored)
+        if score:
+            print(f"[warn] basin label {label_text!r} has no clear position (score {score})")
+        placed_boxes.append(label_box)
+        name = ax.annotate(label_text, (basin, rank), fontsize=LABEL_FONTSIZE, color="#444444",
+                           xytext=(dx / px_per_pt, dy / px_per_pt),
+                           textcoords="offset points", ha="left", va="bottom")
+        name.set_in_layout(False)
+    # The names are inside the axes, so the layout and the saved width do not move; the
+    # sizes and the overlap test are run again on the finished figure.
+    _fit_text_to_print(fig, printed_width_in(path))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
-
 
 SELECTOR_ORDER = ["weighted", "ideal", "maxmin"]
 SELECTOR_COLOUR = {"weighted": "#D55E00", "ideal": "#0072B2", "maxmin": "#009E73"}
@@ -349,17 +514,21 @@ def figure_front_position(path: Path) -> None:
     for spare in flat[len(names):]:
         spare.set_visible(False)
 
-    flat[0].annotate(text["top_line"], xy=(bounds[0], 1.0), fontsize=7.5, color="#555555",
-                     va="bottom", ha="left")
-    flat[0].annotate(text["bottom_line"], xy=(bounds[0], 0.0), fontsize=7.5, color="#555555",
-                     va="top", ha="left")
+    # The two reference lines are named where they END, right of the top-right panel. Named
+    # inside the first panel, at the printed size, "front maximum" sat on that panel's own
+    # points at the first bound and "front floor" hung below the axis across the tick marks.
+    last_in_row = flat[min(columns, len(names)) - 1]
+    for key, level in (("top_line", 1.0), ("bottom_line", 0.0)):
+        last_in_row.annotate(text[key], xy=(1.0, level), xycoords=("axes fraction", "data"),
+                             xytext=(4, 0), textcoords="offset points", color="#555555",
+                             va="center", ha="left", annotation_clip=False)
     fig.supxlabel(text["xlabel"], fontsize=9)
     fig.supylabel(text["ylabel"], fontsize=9)
     fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
     fig.legend(frameon=False, fontsize=9, ncol=3, loc="lower center",
                bbox_to_anchor=(0.5, -0.05))
     fig.tight_layout(rect=(0.02, 0.06, 1, 0.95))
-    _scale_text_for_print(fig, 0.86 * COLUMN_WIDTH_IN, rect=(0.02, 0.06, 1, 0.95))
+    _fit_text_to_print(fig, printed_width_in(path), rect=(0.02, 0.06, 1, 0.95))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
@@ -391,7 +560,7 @@ def figure_race_size(path: Path) -> None:
     # three lines of its own tick labels, which is not an axes box, and the legend and the
     # truncation note were then drawn into a space that no longer existed. The height is set
     # from the PRINTED box the panels need, not from a canvas nobody sees.
-    print_scale = 0.86 * COLUMN_WIDTH_IN / 10.4
+    print_scale = printed_width_in(path) / 10.4
     fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15) / print_scale))
 
     # Left: the mean total regret against the mean floor. Averaging is linear, so the gap
@@ -446,7 +615,10 @@ def figure_race_size(path: Path) -> None:
                     # A pale plate keeps it legible where it crosses a curve without hiding
                     # the curve: the reader can still see the line run under the words.
                     bbox=dict(boxstyle="square,pad=0.15", facecolor="white",
-                              edgecolor="none", alpha=0.7))
+                              edgecolor="none", alpha=0.7),
+                    # Above the curves (drawn at 4), or the plate is painted underneath them
+                    # and the lines run across the letters at full strength.
+                    zorder=5)
         ax.set_xticks(sizes)
         ax.set_xlabel(text["xlabel"], fontsize=9)
         style(ax)
@@ -460,7 +632,7 @@ def figure_race_size(path: Path) -> None:
                loc="lower center", bbox_to_anchor=(0.5, -0.01))
     fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
     fig.tight_layout(rect=(0, 0.10, 1, 0.94))
-    _scale_text_for_print(fig, 0.86 * COLUMN_WIDTH_IN, rect=(0, 0.10, 1, 0.94))
+    _fit_text_to_print(fig, printed_width_in(path), rect=(0, 0.10, 1, 0.94))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
@@ -525,7 +697,7 @@ def figure_ball_coverage(path: Path) -> None:
     ax.grid(axis="y", lw=0.4, color="#DDDDDD", zorder=0)
     for edge in ("top", "right"):
         ax.spines[edge].set_visible(False)
-    figure.tight_layout()
+    _fit_text_to_print(figure, printed_width_in(path), tight=False)
     figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA)
     plt.close(figure)
 
@@ -583,7 +755,7 @@ def figure_rank_transfer(path: Path) -> None:
     # inches -- 0.30in against a 10pt label, which is a line and a half -- the fixed furniture
     # (both titles, the axis label, the legend, the critical-distance strip) is added in the
     # same units, and only then is the canvas height the quotient of the two.
-    print_scale = COLUMN_WIDTH_IN / 9.6
+    print_scale = printed_width_in(path) / 9.6
     height_in = (0.30 * len(cols) + 1.55) / print_scale
     figure, axes = plt.subplots(1, len(modes), figsize=(9.6, height_in),
                                 sharex=True, sharey=True)
@@ -646,7 +818,7 @@ def figure_rank_transfer(path: Path) -> None:
                   loc="lower center", bbox_to_anchor=(0.5, -0.02))
     figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
     figure.tight_layout(rect=(0, 0.06, 1, 0.94))
-    _scale_text_for_print(figure, COLUMN_WIDTH_IN, rect=(0, 0.06, 1, 0.94))
+    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.06, 1, 0.94))
     figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(figure)
 
@@ -717,7 +889,7 @@ def figure_enumeration_cost(path: Path) -> None:
     # ran into the right panel's, and the left panel's y label into the suptitle. The height
     # is chosen so the printed panels are as tall as they are wide is not the point -- the
     # point is that it is chosen in printed inches at all.
-    print_scale = COLUMN_WIDTH_IN / 10.0
+    print_scale = printed_width_in(path) / 10.0
     figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05) / print_scale),
                                sharex=True)
     colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
@@ -755,7 +927,7 @@ def figure_enumeration_cost(path: Path) -> None:
     # the right panel's y label, and tight_layout's default gutter was measured for the type
     # size before the scaling pass, not after it.
     figure.tight_layout(rect=(0, 0.11, 1, 0.94), w_pad=2.4)
-    _scale_text_for_print(figure, COLUMN_WIDTH_IN, rect=(0, 0.11, 1, 0.94))
+    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.11, 1, 0.94), w_pad=2.4)
     figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(figure)
 
@@ -770,6 +942,10 @@ FIGURES = [("rank_transfer_by_collection.pdf", figure_rank_transfer),
 
 
 def main() -> int:
+    require_font()
+    if set(PRINTED_FRACTION) != {name for name, _ in FIGURES}:
+        raise SystemExit(f"[fail] PRINTED_FRACTION and FIGURES name different figures: "
+                         f"{sorted(set(PRINTED_FRACTION) ^ {name for name, _ in FIGURES})}")
     FIGS.mkdir(parents=True, exist_ok=True)
     for name, _build in FIGURES:
         # Deleted before drawing, not overwritten after: a build that fails halfway must

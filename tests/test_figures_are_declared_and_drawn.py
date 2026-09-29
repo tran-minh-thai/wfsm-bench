@@ -283,10 +283,10 @@ def test_the_cost_figure_refuses_a_collection_measured_at_two_bounds(tmp_path: P
                     _o("Beta", 4, 100, "10.0"), _o("Beta", 5, 300, "60.0"),
                     _o("Beta", 6, 900, "400.0"))
     with pytest.raises(SystemExit) as refused:
-        module.figure_enumeration_cost(tmp_path / "cost.png")
+        module.figure_enumeration_cost(tmp_path / "enumeration_cost_by_bound.pdf")
     assert "Alpha (2)" in str(refused.value), str(refused.value)
     assert "Beta" not in str(refused.value), "the collection with three bounds is not at fault"
-    assert not (tmp_path / "cost.png").exists(), "it refused and drew anyway"
+    assert not (tmp_path / "enumeration_cost_by_bound.pdf").exists(), "it refused and drew anyway"
 
 
 @needs_manuscript("figure_labels.en.json")
@@ -294,8 +294,8 @@ def test_the_cost_figure_draws_once_every_collection_has_three(tmp_path: Path) -
     """The other half of the refusal: it must pass on data that earns it."""
     module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
                     _o("Alpha", 6, 900, "400.0"))
-    module.figure_enumeration_cost(tmp_path / "cost.png")
-    assert (tmp_path / "cost.png").stat().st_size > 5000
+    module.figure_enumeration_cost(tmp_path / "enumeration_cost_by_bound.pdf")
+    assert (tmp_path / "enumeration_cost_by_bound.pdf").stat().st_size > 5000
 
 
 @needs_manuscript("figure_labels.en.json")
@@ -304,7 +304,7 @@ def test_the_cost_figure_refuses_a_cell_two_artefacts_disagree_on(tmp_path: Path
     module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
                     _o("Alpha", 6, 900, "400.0"), _o("Alpha", 6, 900, "700.0"))
     with pytest.raises(SystemExit) as refused:
-        module.figure_enumeration_cost(tmp_path / "cost.png")
+        module.figure_enumeration_cost(tmp_path / "enumeration_cost_by_bound.pdf")
     assert "measured twice" in str(refused.value), str(refused.value)
 
 
