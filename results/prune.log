@@ -1,11 +1,11 @@
 
 === Cuneiform  n=60  seeds=20  workers=8 ===
   thresholds: 50%->30
-  size 6  supp  30 (50%) [sum]: enumerated 4318 patterns [1912s]
+  size 6  supp  30 (50%) [sum]: enumerated 4318 patterns [11783s]
       [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.29, 155 local optima (bound 1385, templates 22), 0.02 levels
           best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990|5:0.0932|6:0.0975
   560 search runs to do
-  finished in 948s
+  finished in 1181s
 
   size 6 supp 30 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    29.85%/01/01    43.62%/00/00    30.15%/01/01     7.79%/09/09    15.35%/03/03     3.03%/09/09    43.41%/00/00
