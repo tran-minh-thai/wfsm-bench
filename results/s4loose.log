@@ -1,14 +1,15 @@
+  Cuneiform: rho = 0.5 (calibrated)
 
 === Cuneiform  n=60  seeds=20  workers=8 ===
   thresholds: 3%->2
-  size 4  supp   2 (3%) [sum]: enumerated 712 patterns [27s]
+  size 4  supp   2 (3%) [sum]: enumerated 712 patterns [25s]
       [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.32, 118 local optima (bound 201, templates 24), 0.29 levels
           best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
-  size 4  supp   2 (3%) [discounted]: enumerated 712 patterns [28s]
+  size 4  supp   2 (3%) [discounted]: enumerated 712 patterns [23s]
       [discounted] optimum 0.3169 at 3e (INTERIOR), threshold slack, rho=+0.15, 63 local optima (bound 201, templates 24), 0.34 levels
           best F by edge count: 1:0.2239|2:0.2890|3:0.3169|4:0.3056
   1120 search runs to do
-  finished in 1024s
+  finished in 7891s
 
   size 4 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
        60    13.75%/06/06    49.37%/00/00    24.31%/00/00     6.00%/04/04     4.47%/08/08     5.11%/09/09    27.30%/01/01

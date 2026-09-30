@@ -1,0 +1,27 @@
+  Cuneiform: rho = 0.5 (calibrated)
+
+=== Cuneiform  n=60  seeds=20  workers=8 ===
+  thresholds: 3%->2
+  size 4  supp   2 (3%) [sum]: enumerated 712 patterns [25s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.32, 118 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+  size 4  supp   2 (3%) [discounted]: enumerated 712 patterns [23s]
+      [discounted] optimum 0.3169 at 3e (INTERIOR), threshold slack, rho=+0.15, 63 local optima (bound 201, templates 24), 0.34 levels
+          best F by edge count: 1:0.2239|2:0.2890|3:0.3169|4:0.3056
+  1120 search runs to do
+  finished in 7891s
+
+  size 4 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    13.75%/06/06    49.37%/00/00    24.31%/00/00     6.00%/04/04     4.47%/08/08     5.11%/09/09    27.30%/01/01
+      120     2.48%/13/13    14.08%/00/00     2.08%/11/11     1.54%/11/11     0.37%/13/13     2.96%/12/12    21.97%/01/01
+      180     0.26%/15/15     1.45%/10/10     0.21%/16/16     0.26%/15/15     0.31%/14/14     2.21%/14/14    16.21%/02/02
+      240     0.21%/16/16     0.16%/17/17     0.21%/16/16     0.10%/18/18     0.31%/14/14     0.84%/16/16    14.16%/02/02
+
+  size 4 supp 2 [discounted]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60     3.95%/04/04    18.21%/00/00    11.80%/01/01     2.59%/07/07     2.19%/13/13     0.08%/18/18     9.84%/01/01
+      120     0.23%/14/14     3.84%/07/07     0.93%/11/11     0.79%/15/15     0.04%/19/19     0.00%/20/20     6.82%/01/01
+      180     0.23%/14/14     0.45%/16/16     0.12%/17/17     0.00%/20/20     0.04%/19/19     0.00%/20/20     4.91%/01/01
+      240     0.19%/15/15     0.08%/18/18     0.08%/18/18     0.00%/20/20     0.04%/19/19     0.00%/20/20     4.07%/02/02
+
+[done] results\weight_mode_landscape_s4loose.csv
+[done] results\weight_mode_methods_s4loose.csv
