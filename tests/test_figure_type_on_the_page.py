@@ -29,7 +29,6 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "make_figures.py"
-FIGS = ROOT / "results" / "figures"
 ACCEPTED_FAMILY = "TimesNewRoman"
 # The journal's floor for sub- and superscripts is 6pt; matplotlib sets them at 0.7 of the
 # base size, and the base is at least 9pt, so 0.7 * 9 is what a correct figure produces.
@@ -177,9 +176,9 @@ def page_report(path: Path, printed_width_in: float) -> list[str]:
 
 
 # ---------------------------------------------------------------- the checks
-def _drawn() -> list[tuple[Path, float]]:
+def _drawn() -> list[tuple[str, float]]:
     module = _builder()
-    return [(FIGS / name, module.printed_width_in(FIGS / name)) for name, _ in module.FIGURES]
+    return [(name, module.printed_width_in(Path(name))) for name, _ in module.FIGURES]
 
 
 def test_every_figure_has_a_declared_print_width() -> None:
@@ -187,9 +186,10 @@ def test_every_figure_has_a_declared_print_width() -> None:
     assert set(module.PRINTED_FRACTION) == {name for name, _ in module.FIGURES}
 
 
-@pytest.mark.parametrize("path,printed", _drawn(), ids=lambda value: getattr(value, "name", ""))
-def test_figure_type_meets_the_journal_rules(path: Path, printed: float, drawn_figures) -> None:
-    assert path.exists(), f"{path.name} was not drawn by scripts/make_figures.py"
+@pytest.mark.parametrize("name,printed", _drawn(), ids=lambda value: value if isinstance(value, str) else "")
+def test_figure_type_meets_the_journal_rules(name: str, printed: float, drawn_figures) -> None:
+    path = drawn_figures / name
+    assert path.exists(), f"{name} was not drawn by scripts/make_figures.py"
     width, runs = text_runs(path)
     problems = page_report(path, printed)
     # The denominator, so a pass over zero strings cannot read as a pass.

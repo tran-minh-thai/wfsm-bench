@@ -157,3 +157,60 @@ def test_the_record_states_limits_and_checksums_and_takes_extra_facts(tmp_path) 
     bad = subprocess.run([sys.executable, "scripts/environment.py", "--record", "no-equals"],
                          cwd=ROOT, capture_output=True, text=True)
     assert bad.returncode == 2 and "KEY=VALUE" in bad.stdout
+
+
+def clean_gate(repo: Path) -> subprocess.CompletedProcess:
+    return subprocess.run([sys.executable, "scripts/environment.py", "--require-clean"],
+                          cwd=repo, capture_output=True, text=True)
+
+
+def test_a_stage_does_not_start_on_top_of_a_stopped_stage(tmp_path: Path) -> None:
+    """A stage stopped by hand leaves its record and part of its output. The next stage must
+    not start, or its publish commits those files under its own name (2026-09-30)."""
+    repo, _ = _setup(tmp_path)
+    (repo / "results" / "weight_mode_runs_s6.csv").write_text("half\n")      # tracked, then edited
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "earlier stage")
+    (repo / "results" / "weight_mode_runs_s6.csv").write_text("half, and then stopped\n")
+    (repo / "results" / "environment_stage7.txt").write_text("commit = abc1234\n")  # untracked
+    done = clean_gate(repo)
+    assert done.returncode == 1, done.stdout
+    assert "results/weight_mode_runs_s6.csv" in done.stdout
+    assert "results/environment_stage7.txt" in done.stdout
+    assert "publish_results.py --stage" in done.stdout          # the stage that finished
+    assert "git restore --worktree --staged -- results/" in done.stdout   # the stage that stopped
+    assert "git clean -f -- results/" in done.stdout
+
+
+def test_deliberately_ignored_files_do_not_block_a_stage(tmp_path: Path) -> None:
+    repo, _ = _setup(tmp_path)
+    (repo / ".gitignore").write_text("results/logs/\nresults/figures/\n")
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "ignore rules")
+    (repo / "results" / "logs").mkdir()
+    (repo / "results" / "logs" / "03_tests.log").write_text("passed\n")
+    (repo / "results" / "figures").mkdir()
+    (repo / "results" / "figures" / "a.pdf").write_text("%PDF\n")
+    done = clean_gate(repo)
+    assert done.returncode == 0, done.stdout
+
+
+def test_a_clean_checkout_passes_the_gate(tmp_path: Path) -> None:
+    repo, _ = _setup(tmp_path)
+    done = clean_gate(repo)
+    assert done.returncode == 0, done.stdout
+
+
+def test_the_gate_names_every_kind_of_change_under_the_trees(tmp_path: Path) -> None:
+    """Deleted and renamed files are changes too; a parser that reads only one status letter
+    would let them through."""
+    import importlib.util
+    repo, _ = _setup(tmp_path)
+    (repo / "results" / "old.csv").write_text("a\n")
+    (repo / "results" / "gone.csv").write_text("b\n")
+    git(repo, "add", "-A"); git(repo, "commit", "-qm", "two files")
+    git(repo, "mv", "results/old.csv", "results/new.csv")
+    (repo / "results" / "gone.csv").unlink()
+    spec = importlib.util.spec_from_file_location("env", repo / "scripts" / "environment.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    found = module.unpublished_artefacts(repo)
+    assert found == ["results/gone.csv", "results/new.csv"], found

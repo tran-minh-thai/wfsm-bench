@@ -934,23 +934,28 @@ FIGURES = [("rank_transfer_by_collection.pdf", figure_rank_transfer),
            ("basin_vs_aco.pdf", figure_basins)]
 
 
-def main() -> int:
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+    ap = argparse.ArgumentParser(description="Draw every figure from the tracked artefacts.")
+    ap.add_argument("--out", type=Path, default=FIGS,
+                    help="directory to write the figures to (default: results/figures)")
+    out = ap.parse_args(argv).out
     require_font()
     if set(PRINTED_FRACTION) != {name for name, _ in FIGURES}:
         raise SystemExit(f"[fail] PRINTED_FRACTION and FIGURES name different figures: "
                          f"{sorted(set(PRINTED_FRACTION) ^ {name for name, _ in FIGURES})}")
-    FIGS.mkdir(parents=True, exist_ok=True)
+    out.mkdir(parents=True, exist_ok=True)
     for name, _build in FIGURES:
         # Deleted before drawing, not overwritten after: a build that fails halfway must
         # not leave the previous run's picture behind wearing today's date.
-        (FIGS / name).unlink(missing_ok=True)
+        (out / name).unlink(missing_ok=True)
     for name, build in FIGURES:
-        build(FIGS / name)
-        print(f"[done] {(FIGS / name).relative_to(ROOT)}")
+        build(out / name)
+        print(f"[done] {(out / name).as_posix()}")
     # Every file, not only one extension. The figures moved from PNG to PDF on 2026-09-13, and
     # a scan that looked for PNGs would have reported the directory clean while seven stale
     # rasters sat in it -- which is the exact failure this note exists to report.
-    stale = sorted(p.name for p in FIGS.iterdir()
+    stale = sorted(p.name for p in out.iterdir()
                    if p.is_file() and not p.name.startswith(".")
                    and p.name not in {n for n, _ in FIGURES})
     if stale:

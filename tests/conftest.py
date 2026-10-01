@@ -14,25 +14,47 @@ ROOT = Path(__file__).resolve().parents[1]
 PAPER = ROOT.parent / "paper"
 
 
-@pytest.fixture(scope="session")
-def drawn_figures() -> Path:
-    """The figures directory, drawn once from the tracked results if any figure is missing.
+def result_tree_state(root: Path = ROOT) -> dict[str, tuple[int, int]]:
+    """{path: (size, modification time)} for every file under the result trees, ignored ones
+    included: the publisher on the measurement machine reports new files there."""
+    state = {}
+    for tree in sorted(p for p in root.iterdir() if p.is_dir() and p.name.startswith("results")):
+        for path in tree.rglob("*"):
+            if path.is_file():
+                info = path.stat()
+                state[path.relative_to(root).as_posix()] = (info.st_size, info.st_mtime_ns)
+    return state
 
-    results/figures/ is not tracked, so a fresh clone has no figures; the checks that read the
-    drawn files draw them first instead of skipping.
+
+@pytest.fixture(scope="session", autouse=True)
+def result_trees_untouched():
+    """The test suite must leave the result trees exactly as it found them.
+
+    A test that writes there is invisible on the development machine and noisy on the
+    measurement machine, where the suite runs right before each stage and the publisher then
+    reports every file it finds. It happened on 2026-09-29 with the figures.
     """
-    import importlib.util
+    before = result_tree_state()
+    yield
+    after = result_tree_state()
+    changed = sorted(name for name in set(before) | set(after) if before.get(name) != after.get(name))
+    assert not changed, (f"the test run wrote {len(changed)} file(s) under the result trees: "
+                         f"{changed[:10]}")
+
+
+@pytest.fixture(scope="session")
+def drawn_figures(tmp_path_factory) -> Path:
+    """A directory holding every figure, drawn once per test session from the tracked results.
+
+    Drawn into a temporary directory, not results/figures/: a test run must not write into the
+    result trees, where the measurement machine's publisher reports every new untracked file.
+    """
     import subprocess
     import sys
-    script = ROOT / "scripts" / "make_figures.py"
-    spec = importlib.util.spec_from_file_location("make_figures_for_tests", script)
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    figures = ROOT / "results" / "figures"
-    if not all((figures / name).exists() for name, _ in module.FIGURES):
-        done = subprocess.run([sys.executable, str(script)], cwd=ROOT,
-                              capture_output=True, text=True)
-        assert done.returncode == 0, f"the figure builder failed\n{done.stdout}{done.stderr}"
+    figures = tmp_path_factory.mktemp("figures")
+    done = subprocess.run([sys.executable, str(ROOT / "scripts" / "make_figures.py"),
+                           "--out", str(figures)], cwd=ROOT, capture_output=True, text=True)
+    assert done.returncode == 0, f"the figure builder failed\n{done.stdout}{done.stderr}"
     return figures
 
 

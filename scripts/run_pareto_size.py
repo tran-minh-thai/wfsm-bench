@@ -238,4 +238,6 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    from keep_awake import keep_awake      # Windows: no sleep while the stage runs
+    keep_awake()
     raise SystemExit(main())

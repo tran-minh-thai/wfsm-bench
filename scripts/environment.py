@@ -171,6 +171,57 @@ def uncommitted() -> list[str]:
     return [line[3:].strip() for line in completed.stdout.splitlines() if line.strip()]
 
 
+def unpublished_artefacts(root: Path = ROOT) -> list[str] | None:
+    """Files under the result trees that differ from the last commit; None if git cannot tell.
+
+    Untracked files count and deliberately ignored ones do not. Between stages the publisher
+    commits everything, so anything here was left by a stage that was stopped part-way or did
+    not publish. Starting the next stage on top of it would commit those files under the next
+    stage's name: on 2026-09-30 a stage was stopped by hand after writing its record and part
+    of its output, and the next publish would have carried both.
+    """
+    import subprocess
+    trees = sorted(f"{p.name}/" for p in root.iterdir() if p.is_dir() and p.name.startswith("results"))
+    if not trees:
+        return []
+    try:
+        completed = subprocess.run(
+            ["git", "-C", str(root), "status", "--porcelain", "-z", "--untracked-files=all",
+             "--", *trees], capture_output=True, text=True, timeout=30)
+    except Exception:
+        return None
+    if completed.returncode != 0:
+        return None
+    paths, entries, index = [], completed.stdout.split("\0"), 0
+    while index < len(entries):
+        entry = entries[index]
+        index += 1
+        if len(entry) < 4:
+            continue
+        if entry[0] in "RC":                  # a rename carries its old path as the next entry
+            index += 1
+        paths.append(entry[3:])
+    return sorted(paths)
+
+
+def leftover_advice(paths: list[str], root: Path = ROOT) -> list[str]:
+    trees = " ".join(sorted(f"{p.name}/" for p in root.iterdir()
+                            if p.is_dir() and p.name.startswith("results")))
+    lines = [f"[refused] {len(paths)} file(s) under the result trees differ from the last commit:"]
+    lines += [f"    {name}" for name in paths[:10]]
+    if len(paths) > 10:
+        lines.append(f"    ... and {len(paths) - 10} more")
+    lines += [
+        "Starting a stage now would publish them under that stage's commit. Decide what they are:",
+        "  a stage that finished but did not publish -- publish it, with its own stage number:",
+        f'    "{sys.executable}" scripts/publish_results.py --stage <its number>',
+        "  a stage that was stopped part-way -- discard what it left, then run it again:",
+        f"    git restore --worktree --staged -- {trees}",
+        f"    git clean -f -- {trees}",
+    ]
+    return lines
+
+
 def git(*arguments: str, timeout: int = 60) -> tuple[int, str]:
     import subprocess
     try:
@@ -280,10 +331,11 @@ def main(argv: list[str]) -> int:
                          "diverged from its upstream branch; a network failure is "
                          "reported as unverified, never as passed")
     ap.add_argument("--require-clean", action="store_true",
-                    help="exit non-zero if src/ or scripts/ carry uncommitted changes; "
-                         "run this before a stage, so a stale or edited checkout is "
-                         "refused rather than recorded under a hash that does not "
-                         "describe it")
+                    help="exit non-zero if src/ or scripts/ carry uncommitted changes, or "
+                         "if the result trees hold files the last commit does not; run "
+                         "this before a stage, so a stale or edited checkout is refused "
+                         "rather than recorded under a hash that does not describe it, "
+                         "and an interrupted stage's output is not published by the next")
     ap.add_argument("--record", action="append", default=[], metavar="KEY=VALUE",
                     help="add or override one line of the record, e.g. stage=17 or workers=12")
     args = ap.parse_args(argv)
@@ -321,6 +373,16 @@ def main(argv: list[str]) -> int:
             print("The commit hash written beside this run would not describe the code "
                   "that ran. Commit and push from the development machine, then pull "
                   "here, then run.")
+            return 1
+        leftover = unpublished_artefacts()
+        if leftover is None:
+            print("[refused] git could not report the state of the result trees, so files left "
+                  "by an interrupted stage cannot be ruled out. Run `git status -- results` "
+                  "here and fix what it reports.")
+            return 1
+        if leftover:
+            for line in leftover_advice(leftover):
+                print(line)
             return 1
     values = fingerprint()
     if upstream is not None:
