@@ -26,6 +26,29 @@ def result_tree_state(root: Path = ROOT) -> dict[str, tuple[int, int]]:
     return state
 
 
+def driver_test_logs(root: Path = ROOT) -> set[str]:
+    """The files the stage drivers redirect a test run's own output into.
+
+    run_all_windows.bat runs the suite as `pytest > results\\logs\\03_tests.log`, so that file
+    grows during the very run being checked. Read from the drivers, not listed here, so a
+    renamed log is followed. The Windows run of 2026-10-01 failed on exactly this file.
+    """
+    import re
+    targets = set()
+    for driver in sorted(root.glob("*.bat")):
+        for line in driver.read_text(encoding="utf-8", errors="replace").splitlines():
+            if "-m pytest" in line and not line.lstrip().upper().startswith("REM"):
+                for target in re.findall(r">>?\s*\"?([^\s>\"]+)", line):
+                    if target not in ("&1", "nul", "NUL"):
+                        targets.add(target.replace("\\", "/"))
+    return targets
+
+
+def changed_result_files(before: dict, after: dict, allowed: set[str]) -> list[str]:
+    return sorted(name for name in set(before) | set(after)
+                  if before.get(name) != after.get(name) and name not in allowed)
+
+
 @pytest.fixture(scope="session", autouse=True)
 def result_trees_untouched():
     """The test suite must leave the result trees exactly as it found them.
@@ -36,8 +59,7 @@ def result_trees_untouched():
     """
     before = result_tree_state()
     yield
-    after = result_tree_state()
-    changed = sorted(name for name in set(before) | set(after) if before.get(name) != after.get(name))
+    changed = changed_result_files(before, result_tree_state(), driver_test_logs())
     assert not changed, (f"the test run wrote {len(changed)} file(s) under the result trees: "
                          f"{changed[:10]}")
 
