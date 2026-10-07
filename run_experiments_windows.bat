@@ -19,8 +19,8 @@ REM    2  QM9 method arm                     30 min
 REM    3  Cuneiform degeneracy, sizes 4-5    20 min
 REM    4  Cuneiform methods, size 5          25 min
 REM    5  anti-monotone pruning A/B          1 h
-REM    6  Cuneiform landscape, all 21 cells  7 h
-REM    7  Cuneiform methods, size 6          5.5 h
+REM    6  Cuneiform landscape, all 21 cells  16 h   measured 2026-08-25, landscape_sweep.log
+REM    7  Cuneiform methods, size 6          12.6 h measured 2026-08-25, s6_methods.log
 REM    8  Cuneiform size 4, loose budget     10 min
 REM    9  _bond method arm, 3 collections    ~2 h
 REM   10  quantum sweep on QM9               ~1.7 h
@@ -398,6 +398,7 @@ exit /b 0
 :stage6
 echo.
 echo [6] Cuneiform landscape, all 21 cells   %TIME%
+echo     about 16 hours. Progress every 10 minutes below; full log: results\landscape_sweep.log
 REM sum and per_edge share one enumeration per cell -- per_edge divides in the
 REM fitness, so the Evaluation is the same. This is the evidence that the objective is size-degenerate.
 %PY% scripts\run_weight_mode.py --preset deep --supports 2,6,12,18,30,36,42 ^
@@ -409,6 +410,7 @@ exit /b 0
 :stage7
 echo.
 echo [7] Cuneiform methods, size 6   %TIME%
+echo     about 12.6 hours. Progress every 10 minutes below; full log: results\s6_methods.log
 call :modes_for Cuneiform
 %PY% scripts\run_weight_mode.py --preset deep --sizes 6 --supports 2 ^
      --modes !MODES! --seeds 20 --workers %WORKERS% ^

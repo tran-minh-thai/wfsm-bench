@@ -279,7 +279,69 @@ def spearman(xs: list[float], ys: list[float]) -> float:
     return float(((rx - rx.mean()) * (ry - ry.mean())).mean() / (sx * sy))
 
 
-def enumerate_pool(subset, stats, params: Params):
+HEARTBEAT_SECONDS = 600
+_UNOPENED = object()
+_CONSOLE = _UNOPENED
+
+
+def _console():
+    """The terminal this process runs in, or None when it has none.
+
+    The stage driver sends a script's output to a log file, so the window the operator watches
+    shows nothing for the whole stage -- about twelve hours for the size-6 stage, measured on
+    2026-08-25 -- and on 2026-10-02 a run was stopped by hand because the window looked hung.
+    Progress lines also go straight to the terminal so that window shows the run is alive.
+    Opened once, on the first progress line.
+    """
+    global _CONSOLE
+    if _CONSOLE is _UNOPENED:
+        _CONSOLE = None
+        if not sys.stdout.isatty():        # otherwise stdout already is the terminal
+            try:
+                _CONSOLE = open("CONOUT$" if sys.platform.startswith("win") else "/dev/tty",
+                                "w", encoding="ascii", errors="replace")
+            except OSError:
+                pass
+    return _CONSOLE
+
+
+class Heartbeat:
+    """A progress line every ``interval`` seconds while one enumeration runs.
+
+    Written to stdout, which the driver sends to the stage log, and to the terminal when there
+    is one. It reads the clock once per expanded pattern and prints nothing for an enumeration
+    shorter than the interval, so short cells and the tests see no difference.
+    """
+
+    def __init__(self, label: str, interval: float | None = None,
+                 clock=time.monotonic, streams=None) -> None:
+        self.label, self.clock = label, clock
+        self.interval = HEARTBEAT_SECONDS if interval is None else interval
+        self.started = clock()
+        self.due = self.started + self.interval
+        self.streams = streams
+        self.lines = 0
+
+    def _targets(self) -> list:
+        if self.streams is None:
+            console = _console()
+            self.streams = [sys.stdout] + ([console] if console is not None else [])
+        return self.streams
+
+    def __call__(self, expanded: int, found: int) -> None:
+        now = self.clock()
+        if now < self.due:
+            return
+        self.due = now + self.interval
+        self.lines += 1
+        line = (f"  [progress] {self.label}: {found} frequent patterns found, {expanded} "
+                f"expanded, {found - expanded} waiting, {(now - self.started) / 60:.0f} min "
+                f"elapsed, {time.strftime('%H:%M:%S')}")
+        for stream in self._targets():
+            print(line, file=stream, flush=True)
+
+
+def enumerate_pool(subset, stats, params: Params, label: str = "enumeration"):
     """The frequent pattern space at this size bound and support threshold.
 
     The space does not depend on the weight mode: membership is decided by support and the
@@ -290,7 +352,7 @@ def enumerate_pool(subset, stats, params: Params):
     identical patterns, identical evaluations, nothing differing but the objective. The
     threshold does change the space, so it cannot share an enumeration the same way.
     """
-    return mine_exhaustive(subset, stats, params).pool
+    return mine_exhaustive(subset, stats, params, progress=Heartbeat(label)).pool
 
 
 def landscape(pool, stats, params: Params, tolerance: float = 1e-12) -> dict:
@@ -558,17 +620,18 @@ def main(argv: list[str]) -> int:
                     # Enumerated once per *aggregation*, not once per mode. "sum" and
                     # "per_edge" share an Evaluation -- per_edge does its division later, in
                     # the fitness -- so one enumeration serves both, and on the size-6 cells
-                    # that is two and a half hours not spent twice. "discounted" changes W(e)
-                    # itself, so its ATW is a mean of discounted sums and its Evaluation is a
+                    # that is about six hours not spent twice (21983 s at support 2 on
+                    # 2026-08-25). "discounted" changes W(e) itself, so its ATW is a mean of discounted sums and its Evaluation is a
                     # different object; scoring a pool built under one aggregation against
                     # another's anchors would be wrong, so it gets its own.
                     for aggregation, group in group_by_aggregation(modes, rho).items():
                         params = params_for(size, budgets[0], group[0], support,
                                             args.prune, rho, args.quantum)
-                        started = time.perf_counter()
-                        pool = enumerate_pool(subset, stats, params)
-                        elapsed = time.perf_counter() - started
                         shared = "/".join(group)
+                        started = time.perf_counter()
+                        pool = enumerate_pool(subset, stats, params,
+                                              f"size {size} supp {support} [{shared}]")
+                        elapsed = time.perf_counter() - started
                         if not pool:
                             print(f"  size {size}  supp {support:>3} ({fraction:.0%}) "
                                   f"[{shared}]: pool empty -- nothing is frequent at this "

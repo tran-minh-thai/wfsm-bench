@@ -14,6 +14,8 @@ enumeration finite and focused while still reaching every frequent pattern.
 
 from __future__ import annotations
 
+from typing import Callable
+
 from ..config import Params
 from ..core.graph import Graph
 from ..core.signature import canonical_signature
@@ -23,7 +25,14 @@ from ..pso.optimizer import Result
 from ._common import Archive, as_particle, evaluate, extensions, seed_particles
 
 
-def mine_exhaustive(hosts: list[Graph], stats: DatasetStats, params: Params) -> Result:
+def mine_exhaustive(hosts: list[Graph], stats: DatasetStats, params: Params,
+                    progress: Callable[[int, int], None] | None = None) -> Result:
+    """Every frequent pattern within the size bounds, scored, with the exact Top-K.
+
+    ``progress``, when given, is called after each pattern is expanded with the number expanded
+    so far and the number of frequent patterns found so far. It only observes: what is
+    enumerated and in which order does not depend on it.
+    """
     frequent = set(stats.frequent_edge_templates(params.min_support))
     archive = Archive(params)
     seen: set[str] = set()
@@ -51,5 +60,7 @@ def mine_exhaustive(hosts: list[Graph], stats: DatasetStats, params: Params) -> 
         index += 1
         for child in extensions(pattern, frequent):
             consider(child)
+        if progress is not None:
+            progress(index, len(queue))
 
     return archive.result()

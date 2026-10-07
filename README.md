@@ -181,8 +181,8 @@ on its own.
 | 3 | size degeneracy on Cuneiform, sizes 4 and 5, and its rho calibration | 20 min | no |
 | 4 | search methods on Cuneiform, size 5 | 25 min | seeds only |
 | 5 | anti-monotone pruning on and off, size 6 | 1 h | seeds only |
-| 6 | the landscape of all 21 Cuneiform cells, both weight modes | 7 h | no |
-| 7 | search methods on Cuneiform, size 6 | 5.5 h | seeds only |
+| 6 | the landscape of all 21 Cuneiform cells, both weight modes | 16 h | no |
+| 7 | search methods on Cuneiform, size 6 | 12.6 h | seeds only |
 | 8 | search methods on Cuneiform, size 4, looser budget | 10 min | seeds only |
 | 9 | search methods on BZR_bond, COX2_bond, DHFR_bond | 2 h | seeds only |
 | 10 | plateau structure forced by rounding the objective, QM9_bond | 1.7 h | seeds only |
