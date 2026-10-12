@@ -1,4 +1,5 @@
-weight_mode_runs_s6.csv: 2 modes, 4 budgets, 7 methods, 20 seeds
+[awake] Windows will not sleep on its own while this script runs.
+weight_mode_runs_s6.csv: dataset Cuneiform, 2 modes, 4 budgets, 7 methods, 20 seeds
 
 === sum ===
 Friedman over 80 blocks (budget x seed): chi2 = 241.2, p = 3.14e-49

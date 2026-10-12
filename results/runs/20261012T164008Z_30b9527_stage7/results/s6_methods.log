@@ -1,0 +1,150 @@
+[awake] Windows will not sleep on its own while this script runs.
+  Cuneiform: rho = 0.5 (calibrated)
+
+=== Cuneiform  n=60  seeds=20  workers=8 ===
+  thresholds: 3%->2
+  [progress] size 6 supp 2 [sum]: 4910 frequent patterns found, 721 expanded, 4189 waiting, 66 min elapsed, 09:38:50
+  [progress] size 6 supp 2 [sum]: 15378 frequent patterns found, 2036 expanded, 13342 waiting, 76 min elapsed, 09:48:50
+  [progress] size 6 supp 2 [sum]: 16097 frequent patterns found, 2140 expanded, 13957 waiting, 157 min elapsed, 11:10:11
+  [progress] size 6 supp 2 [sum]: 17498 frequent patterns found, 2382 expanded, 15116 waiting, 177 min elapsed, 11:30:30
+  [progress] size 6 supp 2 [sum]: 17705 frequent patterns found, 2415 expanded, 15290 waiting, 188 min elapsed, 11:41:43
+  [progress] size 6 supp 2 [sum]: 21270 frequent patterns found, 3455 expanded, 17815 waiting, 198 min elapsed, 11:51:43
+  [progress] size 6 supp 2 [sum]: 21621 frequent patterns found, 3717 expanded, 17904 waiting, 212 min elapsed, 12:05:32
+  [progress] size 6 supp 2 [sum]: 21736 frequent patterns found, 3984 expanded, 17752 waiting, 230 min elapsed, 12:22:55
+  [progress] size 6 supp 2 [sum]: 22442 frequent patterns found, 4205 expanded, 18237 waiting, 268 min elapsed, 13:01:21
+  [progress] size 6 supp 2 [sum]: 22605 frequent patterns found, 4252 expanded, 18353 waiting, 351 min elapsed, 14:24:28
+  [progress] size 6 supp 2 [sum]: 22721 frequent patterns found, 4310 expanded, 18411 waiting, 387 min elapsed, 15:00:09
+  [progress] size 6 supp 2 [sum]: 22759 frequent patterns found, 4364 expanded, 18395 waiting, 401 min elapsed, 15:14:42
+  [progress] size 6 supp 2 [sum]: 22836 frequent patterns found, 4461 expanded, 18375 waiting, 468 min elapsed, 16:21:02
+  [progress] size 6 supp 2 [sum]: 22903 frequent patterns found, 4516 expanded, 18387 waiting, 583 min elapsed, 18:15:55
+  [progress] size 6 supp 2 [sum]: 25627 frequent patterns found, 5652 expanded, 19975 waiting, 593 min elapsed, 18:25:55
+  [progress] size 6 supp 2 [sum]: 25885 frequent patterns found, 5874 expanded, 20011 waiting, 647 min elapsed, 19:20:14
+  [progress] size 6 supp 2 [sum]: 27414 frequent patterns found, 7137 expanded, 20277 waiting, 657 min elapsed, 19:30:14
+  [progress] size 6 supp 2 [sum]: 27510 frequent patterns found, 7335 expanded, 20175 waiting, 708 min elapsed, 20:21:37
+  [progress] size 6 supp 2 [sum]: 30901 frequent patterns found, 8587 expanded, 22314 waiting, 718 min elapsed, 20:31:38
+  [progress] size 6 supp 2 [sum]: 30996 frequent patterns found, 8685 expanded, 22311 waiting, 741 min elapsed, 20:54:21
+  [progress] size 6 supp 2 [sum]: 31613 frequent patterns found, 9295 expanded, 22318 waiting, 866 min elapsed, 22:59:44
+  [progress] size 6 supp 2 [sum]: 31613 frequent patterns found, 9297 expanded, 22316 waiting, 1372 min elapsed, 07:25:04
+  [progress] size 6 supp 2 [sum]: 32805 frequent patterns found, 10398 expanded, 22407 waiting, 1382 min elapsed, 07:35:05
+  [progress] size 6 supp 2 [sum]: 34219 frequent patterns found, 11603 expanded, 22616 waiting, 1409 min elapsed, 08:01:55
+  [progress] size 6 supp 2 [sum]: 34268 frequent patterns found, 11641 expanded, 22627 waiting, 1498 min elapsed, 09:31:43
+  [progress] size 6 supp 2 [sum]: 35165 frequent patterns found, 12834 expanded, 22331 waiting, 1508 min elapsed, 09:41:44
+  [progress] size 6 supp 2 [sum]: 35216 frequent patterns found, 12979 expanded, 22237 waiting, 1530 min elapsed, 10:02:58
+  [progress] size 6 supp 2 [sum]: 36854 frequent patterns found, 14138 expanded, 22716 waiting, 1540 min elapsed, 10:12:58
+  [progress] size 6 supp 2 [sum]: 36953 frequent patterns found, 14234 expanded, 22719 waiting, 1592 min elapsed, 11:05:05
+  [progress] size 6 supp 2 [sum]: 37676 frequent patterns found, 15428 expanded, 22248 waiting, 1602 min elapsed, 11:15:06
+  [progress] size 6 supp 2 [sum]: 37718 frequent patterns found, 15531 expanded, 22187 waiting, 1742 min elapsed, 13:35:07
+  [progress] size 6 supp 2 [sum]: 38558 frequent patterns found, 16643 expanded, 21915 waiting, 1752 min elapsed, 13:45:07
+  [progress] size 6 supp 2 [sum]: 38875 frequent patterns found, 16783 expanded, 22092 waiting, 1844 min elapsed, 15:17:16
+  [progress] size 6 supp 2 [sum]: 40431 frequent patterns found, 17882 expanded, 22549 waiting, 1854 min elapsed, 15:27:16
+  [progress] size 6 supp 2 [sum]: 40637 frequent patterns found, 18189 expanded, 22448 waiting, 1922 min elapsed, 16:35:35
+  [progress] size 6 supp 2 [sum]: 41927 frequent patterns found, 19361 expanded, 22566 waiting, 1932 min elapsed, 16:45:35
+  [progress] size 6 supp 2 [sum]: 42341 frequent patterns found, 19998 expanded, 22343 waiting, 1952 min elapsed, 17:05:17
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 21152 expanded, 21371 waiting, 1962 min elapsed, 17:15:17
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 21238 expanded, 21285 waiting, 2037 min elapsed, 18:30:06
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 22485 expanded, 20038 waiting, 2047 min elapsed, 18:40:06
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 22613 expanded, 19910 waiting, 2135 min elapsed, 20:07:59
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 23777 expanded, 18746 waiting, 2145 min elapsed, 20:17:59
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 23894 expanded, 18629 waiting, 2217 min elapsed, 21:29:49
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 25123 expanded, 17400 waiting, 2227 min elapsed, 21:39:50
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 25854 expanded, 16669 waiting, 2577 min elapsed, 03:29:58
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 25855 expanded, 16668 waiting, 2792 min elapsed, 07:05:04
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 27060 expanded, 15463 waiting, 2802 min elapsed, 07:15:04
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 27798 expanded, 14725 waiting, 2817 min elapsed, 07:30:08
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 29087 expanded, 13436 waiting, 2827 min elapsed, 07:40:08
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 29209 expanded, 13314 waiting, 2849 min elapsed, 08:01:58
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 30417 expanded, 12106 waiting, 2859 min elapsed, 08:11:58
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 30504 expanded, 12019 waiting, 2895 min elapsed, 08:47:49
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 31658 expanded, 10865 waiting, 2905 min elapsed, 08:57:49
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 31688 expanded, 10835 waiting, 2978 min elapsed, 10:10:53
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 32831 expanded, 9692 waiting, 2988 min elapsed, 10:20:53
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 32835 expanded, 9688 waiting, 3008 min elapsed, 10:41:39
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 34068 expanded, 8455 waiting, 3018 min elapsed, 10:51:39
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 34390 expanded, 8133 waiting, 3200 min elapsed, 13:53:17
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 35552 expanded, 6971 waiting, 3210 min elapsed, 14:03:17
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 35615 expanded, 6908 waiting, 3261 min elapsed, 14:54:19
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 36875 expanded, 5648 waiting, 3271 min elapsed, 15:04:19
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 36937 expanded, 5586 waiting, 3305 min elapsed, 15:37:51
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 38104 expanded, 4419 waiting, 3315 min elapsed, 15:47:52
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 38214 expanded, 4309 waiting, 3335 min elapsed, 16:07:59
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 39476 expanded, 3047 waiting, 3345 min elapsed, 16:18:00
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 39525 expanded, 2998 waiting, 3425 min elapsed, 17:38:34
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 40729 expanded, 1794 waiting, 3435 min elapsed, 17:48:34
+  [progress] size 6 supp 2 [sum]: 42523 frequent patterns found, 42009 expanded, 514 waiting, 3445 min elapsed, 17:58:34
+  size 6  supp   2 (3%) [sum]: enumerated 42523 patterns [206954s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.27, 3233 local optima (bound 22165, templates 24), 0.06 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+  [progress] size 6 supp 2 [discounted]: 8214 frequent patterns found, 1114 expanded, 7100 waiting, 32 min elapsed, 19:15:31
+  [progress] size 6 supp 2 [discounted]: 17430 frequent patterns found, 2373 expanded, 15057 waiting, 42 min elapsed, 19:25:31
+  [progress] size 6 supp 2 [discounted]: 17811 frequent patterns found, 2425 expanded, 15386 waiting, 79 min elapsed, 20:02:51
+  [progress] size 6 supp 2 [discounted]: 21577 frequent patterns found, 3613 expanded, 17964 waiting, 89 min elapsed, 20:12:51
+  [progress] size 6 supp 2 [discounted]: 23227 frequent patterns found, 4668 expanded, 18559 waiting, 99 min elapsed, 20:22:51
+  [progress] size 6 supp 2 [discounted]: 25676 frequent patterns found, 5672 expanded, 20004 waiting, 109 min elapsed, 20:32:51
+  [progress] size 6 supp 2 [discounted]: 26797 frequent patterns found, 6891 expanded, 19906 waiting, 119 min elapsed, 20:42:52
+  [progress] size 6 supp 2 [discounted]: 28418 frequent patterns found, 8180 expanded, 20238 waiting, 176 min elapsed, 21:39:08
+  [progress] size 6 supp 2 [discounted]: 31640 frequent patterns found, 9322 expanded, 22318 waiting, 186 min elapsed, 21:49:08
+  [progress] size 6 supp 2 [discounted]: 32682 frequent patterns found, 10339 expanded, 22343 waiting, 199 min elapsed, 22:02:36
+  [progress] size 6 supp 2 [discounted]: 34261 frequent patterns found, 11628 expanded, 22633 waiting, 209 min elapsed, 22:12:36
+  [progress] size 6 supp 2 [discounted]: 34277 frequent patterns found, 11652 expanded, 22625 waiting, 533 min elapsed, 03:36:05
+  [progress] size 6 supp 2 [discounted]: 34277 frequent patterns found, 11653 expanded, 22624 waiting, 699 min elapsed, 06:22:12
+  [progress] size 6 supp 2 [discounted]: 35169 frequent patterns found, 12849 expanded, 22320 waiting, 709 min elapsed, 06:32:12
+  [progress] size 6 supp 2 [discounted]: 35855 frequent patterns found, 13802 expanded, 22053 waiting, 719 min elapsed, 06:42:13
+  [progress] size 6 supp 2 [discounted]: 37352 frequent patterns found, 14612 expanded, 22740 waiting, 786 min elapsed, 07:49:09
+  [progress] size 6 supp 2 [discounted]: 38125 frequent patterns found, 15816 expanded, 22309 waiting, 796 min elapsed, 07:59:09
+  [progress] size 6 supp 2 [discounted]: 38135 frequent patterns found, 15858 expanded, 22277 waiting, 815 min elapsed, 08:18:01
+  [progress] size 6 supp 2 [discounted]: 39082 frequent patterns found, 17023 expanded, 22059 waiting, 825 min elapsed, 08:28:01
+  [progress] size 6 supp 2 [discounted]: 39536 frequent patterns found, 17510 expanded, 22026 waiting, 879 min elapsed, 09:22:04
+  [progress] size 6 supp 2 [discounted]: 40992 frequent patterns found, 18610 expanded, 22382 waiting, 889 min elapsed, 09:32:04
+  [progress] size 6 supp 2 [discounted]: 42102 frequent patterns found, 19696 expanded, 22406 waiting, 955 min elapsed, 10:38:17
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 20830 expanded, 21693 waiting, 965 min elapsed, 10:48:17
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 20867 expanded, 21656 waiting, 1044 min elapsed, 12:07:59
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 22141 expanded, 20382 waiting, 1054 min elapsed, 12:17:59
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 22185 expanded, 20338 waiting, 1137 min elapsed, 13:40:47
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 23341 expanded, 19182 waiting, 1147 min elapsed, 13:50:47
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 24212 expanded, 18311 waiting, 1157 min elapsed, 14:00:47
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 25336 expanded, 17187 waiting, 1167 min elapsed, 14:10:47
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 25503 expanded, 17020 waiting, 1224 min elapsed, 15:07:45
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 26664 expanded, 15859 waiting, 1234 min elapsed, 15:17:45
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 26755 expanded, 15768 waiting, 1412 min elapsed, 18:15:56
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 27899 expanded, 14624 waiting, 1422 min elapsed, 18:25:57
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 28491 expanded, 14032 waiting, 1533 min elapsed, 20:16:06
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 29771 expanded, 12752 waiting, 1543 min elapsed, 20:26:06
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 30440 expanded, 12083 waiting, 1628 min elapsed, 21:51:36
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 31619 expanded, 10904 waiting, 1638 min elapsed, 22:01:37
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 31684 expanded, 10839 waiting, 1657 min elapsed, 22:20:40
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 32860 expanded, 9663 waiting, 1667 min elapsed, 22:30:40
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 32883 expanded, 9640 waiting, 1711 min elapsed, 23:14:38
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 34148 expanded, 8375 waiting, 1721 min elapsed, 23:24:38
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 34207 expanded, 8316 waiting, 2082 min elapsed, 05:25:32
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 35372 expanded, 7151 waiting, 2092 min elapsed, 05:35:32
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 35388 expanded, 7135 waiting, 2113 min elapsed, 05:56:55
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 36692 expanded, 5831 waiting, 2123 min elapsed, 06:06:55
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 36886 expanded, 5637 waiting, 2833 min elapsed, 17:56:06
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 38066 expanded, 4457 waiting, 2843 min elapsed, 18:06:07
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 38099 expanded, 4424 waiting, 2895 min elapsed, 18:58:54
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 39376 expanded, 3147 waiting, 2905 min elapsed, 19:08:54
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 39773 expanded, 2750 waiting, 2966 min elapsed, 20:09:24
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 41046 expanded, 1477 waiting, 2976 min elapsed, 20:19:25
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 41112 expanded, 1411 waiting, 3033 min elapsed, 21:16:40
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 42430 expanded, 93 waiting, 3043 min elapsed, 21:26:40
+  [progress] size 6 supp 2 [discounted]: 42523 frequent patterns found, 42478 expanded, 45 waiting, 3073 min elapsed, 21:56:44
+  size 6  supp   2 (3%) [discounted]: enumerated 42523 patterns [184411s]
+      [discounted] optimum 0.3169 at 3e (INTERIOR), threshold slack, rho=-0.04, 22 local optima (bound 22165, templates 24), 0.21 levels
+          best F by edge count: 1:0.2239|2:0.2890|3:0.3169|4:0.3056|5:0.3123|6:0.3057
+  1120 search runs to do
+  finished in 1201s
+
+  size 6 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    39.37%/00/00    63.64%/00/00    51.38%/00/00    40.99%/00/00    36.60%/01/01    29.72%/05/05    56.17%/00/00
+      120    18.18%/01/01    40.85%/00/00    26.28%/00/00    33.70%/00/00    16.10%/02/02    12.87%/08/08    51.10%/00/00
+      180    11.81%/01/01    31.04%/00/00    13.38%/03/03    29.91%/00/00    11.53%/02/02    10.88%/08/08    45.50%/00/00
+      240    10.12%/02/02    22.34%/00/00     9.82%/03/03    26.62%/00/00    10.32%/03/03     6.98%/12/12    43.81%/00/00
+
+  size 6 supp 2 [discounted]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60     7.22%/04/04    18.54%/00/00    12.91%/01/01     6.84%/03/03     9.05%/01/01     1.96%/10/10    19.54%/00/00
+      120     1.34%/09/09     5.32%/02/02     1.70%/12/12     4.43%/04/04     3.83%/01/01     0.33%/14/14    15.78%/00/00
+      180     0.45%/10/10     1.69%/09/09     0.19%/15/15     2.91%/06/06     3.09%/01/01     0.19%/16/16    10.98%/01/01
+      240     0.27%/13/13     0.33%/17/17     0.08%/18/18     2.44%/08/08     2.23%/02/02     0.19%/16/16    10.72%/01/01
+
+[done] results\weight_mode_landscape_s6.csv
+[done] results\weight_mode_methods_s6.csv
