@@ -1,0 +1,196 @@
+[awake] Windows will not sleep on its own while this script runs.
+
+=== Cuneiform  n=60  seeds=5  workers=11 ===
+  thresholds: 3%->2, 10%->6, 20%->12, 30%->18, 50%->30, 60%->36, 70%->42
+  size 4  supp   2 (3%) [sum/per_edge]: enumerated 712 patterns [24s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.32, 118 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.10, 11 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp   6 (10%) [sum/per_edge]: enumerated 712 patterns [24s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.32, 118 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.10, 11 local optima (bound 201, templates 24), 0.29 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp  12 (20%) [sum/per_edge]: enumerated 649 patterns [22s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.33, 95 local optima (bound 172, templates 24), 0.25 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.08, 11 local optima (bound 172, templates 24), 0.26 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp  18 (30%) [sum/per_edge]: enumerated 542 patterns [21s]
+      [     sum] optimum 0.1213 at 4e (at the bound), threshold slack, rho=+0.27, 71 local optima (bound 127, templates 24), 0.18 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.13, 11 local optima (bound 127, templates 24), 0.18 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723
+  size 4  supp  30 (50%) [sum/per_edge]: enumerated 365 patterns [14s]
+      [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.20, 56 local optima (bound 81, templates 22), 0.11 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.23, 11 local optima (bound 81, templates 22), 0.12 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2332
+  size 4  supp  36 (60%) [sum/per_edge]: enumerated 239 patterns [9s]
+      [     sum] optimum 0.0463 at 4e (at the bound), threshold slack, rho=+0.22, 47 local optima (bound 57, templates 20), 0.08 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.45, 11 local optima (bound 57, templates 20), 0.08 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410
+  size 4  supp  42 (70%) [sum/per_edge]: enumerated 199 patterns [7s]
+      [     sum] optimum 0.0463 at 4e (at the bound), threshold slack, rho=+0.28, 46 local optima (bound 51, templates 19), 0.08 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.57, 13 local optima (bound 51, templates 19), 0.08 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410
+  size 5  supp   2 (3%) [sum/per_edge]: enumerated 4991 patterns [453s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.33, 560 local optima (bound 2032, templates 24), 0.16 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.14, 11 local optima (bound 2032, templates 24), 0.16 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp   6 (10%) [sum/per_edge]: enumerated 4551 patterns [419s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.35, 413 local optima (bound 1750, templates 24), 0.14 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.12, 11 local optima (bound 1750, templates 24), 0.14 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp  12 (20%) [sum/per_edge]: enumerated 3549 patterns [348s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.38, 216 local optima (bound 1224, templates 24), 0.10 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.11, 11 local optima (bound 1224, templates 24), 0.10 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp  18 (30%) [sum/per_edge]: enumerated 2420 patterns [256s]
+      [     sum] optimum 0.1540 at 5e (at the bound), threshold slack, rho=+0.33, 161 local optima (bound 720, templates 24), 0.07 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.15, 11 local optima (bound 720, templates 24), 0.07 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517
+  size 5  supp  30 (50%) [sum/per_edge]: enumerated 1230 patterns [124s]
+      [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.34, 116 local optima (bound 315, templates 22), 0.05 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990|5:0.0932
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.18, 11 local optima (bound 315, templates 22), 0.05 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2332|5:0.1705
+  size 5  supp  36 (60%) [sum/per_edge]: enumerated 525 patterns [50s]
+      [     sum] optimum 0.0463 at 4e (INTERIOR), threshold slack, rho=+0.47, 68 local optima (bound 114, templates 20), 0.05 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.23, 11 local optima (bound 114, templates 20), 0.05 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021
+  size 5  supp  42 (70%) [sum/per_edge]: enumerated 351 patterns [35s]
+      [     sum] optimum 0.0463 at 4e (INTERIOR), threshold slack, rho=+0.60, 55 local optima (bound 66, templates 19), 0.06 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.04, 13 local optima (bound 66, templates 19), 0.06 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021
+  [progress] size 6 supp 2 [sum/per_edge]: 12520 frequent patterns found, 1631 expanded, 10889 waiting, 10 min elapsed, 08:54:06
+  [progress] size 6 supp 2 [sum/per_edge]: 19826 frequent patterns found, 2776 expanded, 17050 waiting, 20 min elapsed, 09:04:06
+  [progress] size 6 supp 2 [sum/per_edge]: 21735 frequent patterns found, 3981 expanded, 17754 waiting, 30 min elapsed, 09:14:07
+  [progress] size 6 supp 2 [sum/per_edge]: 24712 frequent patterns found, 5115 expanded, 19597 waiting, 40 min elapsed, 09:24:07
+  [progress] size 6 supp 2 [sum/per_edge]: 26235 frequent patterns found, 6308 expanded, 19927 waiting, 50 min elapsed, 09:34:07
+  [progress] size 6 supp 2 [sum/per_edge]: 27918 frequent patterns found, 7583 expanded, 20335 waiting, 60 min elapsed, 09:44:08
+  [progress] size 6 supp 2 [sum/per_edge]: 31091 frequent patterns found, 8801 expanded, 22290 waiting, 70 min elapsed, 09:54:08
+  [progress] size 6 supp 2 [sum/per_edge]: 32479 frequent patterns found, 9964 expanded, 22515 waiting, 80 min elapsed, 10:04:08
+  [progress] size 6 supp 2 [sum/per_edge]: 33639 frequent patterns found, 11271 expanded, 22368 waiting, 90 min elapsed, 10:14:08
+  [progress] size 6 supp 2 [sum/per_edge]: 34886 frequent patterns found, 12476 expanded, 22410 waiting, 100 min elapsed, 10:24:09
+  [progress] size 6 supp 2 [sum/per_edge]: 35816 frequent patterns found, 13693 expanded, 22123 waiting, 110 min elapsed, 10:34:09
+  [progress] size 6 supp 2 [sum/per_edge]: 37458 frequent patterns found, 14762 expanded, 22696 waiting, 120 min elapsed, 10:44:09
+  [progress] size 6 supp 2 [sum/per_edge]: 38193 frequent patterns found, 15968 expanded, 22225 waiting, 130 min elapsed, 10:54:09
+  [progress] size 6 supp 2 [sum/per_edge]: 39137 frequent patterns found, 17167 expanded, 21970 waiting, 140 min elapsed, 11:04:10
+  [progress] size 6 supp 2 [sum/per_edge]: 40670 frequent patterns found, 18255 expanded, 22415 waiting, 150 min elapsed, 11:14:10
+  [progress] size 6 supp 2 [sum/per_edge]: 41951 frequent patterns found, 19435 expanded, 22516 waiting, 160 min elapsed, 11:24:10
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 20544 expanded, 21979 waiting, 170 min elapsed, 11:34:11
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 21808 expanded, 20715 waiting, 180 min elapsed, 11:44:11
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 23015 expanded, 19508 waiting, 190 min elapsed, 11:54:11
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 24172 expanded, 18351 waiting, 200 min elapsed, 12:04:12
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 25323 expanded, 17200 waiting, 210 min elapsed, 12:14:12
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 26440 expanded, 16083 waiting, 220 min elapsed, 12:24:12
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 27598 expanded, 14925 waiting, 230 min elapsed, 12:34:13
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 28832 expanded, 13691 waiting, 240 min elapsed, 12:44:13
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 30079 expanded, 12444 waiting, 250 min elapsed, 12:54:13
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 31244 expanded, 11279 waiting, 260 min elapsed, 13:04:13
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 32389 expanded, 10134 waiting, 270 min elapsed, 13:14:13
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 33652 expanded, 8871 waiting, 280 min elapsed, 13:24:14
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 34843 expanded, 7680 waiting, 290 min elapsed, 13:34:14
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 36052 expanded, 6471 waiting, 300 min elapsed, 13:44:15
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 37211 expanded, 5312 waiting, 310 min elapsed, 13:54:15
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 38379 expanded, 4144 waiting, 320 min elapsed, 14:04:15
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 39630 expanded, 2893 waiting, 330 min elapsed, 14:14:16
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 40823 expanded, 1700 waiting, 340 min elapsed, 14:24:16
+  [progress] size 6 supp 2 [sum/per_edge]: 42523 frequent patterns found, 42086 expanded, 437 waiting, 350 min elapsed, 14:34:16
+  size 6  supp   2 (3%) [sum/per_edge]: enumerated 42523 patterns [21197s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.27, 3233 local optima (bound 22165, templates 24), 0.06 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.19, 11 local optima (bound 22165, templates 24), 0.06 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  [progress] size 6 supp 6 [sum/per_edge]: 9965 frequent patterns found, 1552 expanded, 8413 waiting, 10 min elapsed, 15:17:06
+  [progress] size 6 supp 6 [sum/per_edge]: 16360 frequent patterns found, 2663 expanded, 13697 waiting, 20 min elapsed, 15:27:06
+  [progress] size 6 supp 6 [sum/per_edge]: 18167 frequent patterns found, 3854 expanded, 14313 waiting, 30 min elapsed, 15:37:07
+  [progress] size 6 supp 6 [sum/per_edge]: 19645 frequent patterns found, 5031 expanded, 14614 waiting, 40 min elapsed, 15:47:07
+  [progress] size 6 supp 6 [sum/per_edge]: 20975 frequent patterns found, 6366 expanded, 14609 waiting, 50 min elapsed, 15:57:07
+  [progress] size 6 supp 6 [sum/per_edge]: 23467 frequent patterns found, 7474 expanded, 15993 waiting, 60 min elapsed, 16:07:07
+  [progress] size 6 supp 6 [sum/per_edge]: 24389 frequent patterns found, 8788 expanded, 15601 waiting, 70 min elapsed, 16:17:07
+  [progress] size 6 supp 6 [sum/per_edge]: 25627 frequent patterns found, 9992 expanded, 15635 waiting, 80 min elapsed, 16:27:07
+  [progress] size 6 supp 6 [sum/per_edge]: 27130 frequent patterns found, 11143 expanded, 15987 waiting, 90 min elapsed, 16:37:08
+  [progress] size 6 supp 6 [sum/per_edge]: 27843 frequent patterns found, 12347 expanded, 15496 waiting, 100 min elapsed, 16:47:08
+  [progress] size 6 supp 6 [sum/per_edge]: 28858 frequent patterns found, 13476 expanded, 15382 waiting, 110 min elapsed, 16:57:08
+  [progress] size 6 supp 6 [sum/per_edge]: 30106 frequent patterns found, 14609 expanded, 15497 waiting, 120 min elapsed, 17:07:08
+  [progress] size 6 supp 6 [sum/per_edge]: 31352 frequent patterns found, 15813 expanded, 15539 waiting, 130 min elapsed, 17:17:09
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 16961 expanded, 14933 waiting, 140 min elapsed, 17:27:09
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 18305 expanded, 13589 waiting, 150 min elapsed, 17:37:09
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 19603 expanded, 12291 waiting, 160 min elapsed, 17:47:09
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 20940 expanded, 10954 waiting, 170 min elapsed, 17:57:09
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 22287 expanded, 9607 waiting, 180 min elapsed, 18:07:10
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 23483 expanded, 8411 waiting, 190 min elapsed, 18:17:10
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 24765 expanded, 7129 waiting, 200 min elapsed, 18:27:10
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 25982 expanded, 5912 waiting, 210 min elapsed, 18:37:10
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 27280 expanded, 4614 waiting, 220 min elapsed, 18:47:11
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 28499 expanded, 3395 waiting, 230 min elapsed, 18:57:11
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 29825 expanded, 2069 waiting, 240 min elapsed, 19:07:11
+  [progress] size 6 supp 6 [sum/per_edge]: 31894 frequent patterns found, 31139 expanded, 755 waiting, 250 min elapsed, 19:17:12
+  size 6  supp   6 (10%) [sum/per_edge]: enumerated 31894 patterns [15350s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.30, 1375 local optima (bound 15150, templates 24), 0.05 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.16, 11 local optima (bound 15150, templates 24), 0.05 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  [progress] size 6 supp 12 [sum/per_edge]: 7856 frequent patterns found, 1454 expanded, 6402 waiting, 10 min elapsed, 19:54:30
+  [progress] size 6 supp 12 [sum/per_edge]: 12063 frequent patterns found, 2582 expanded, 9481 waiting, 20 min elapsed, 20:04:30
+  [progress] size 6 supp 12 [sum/per_edge]: 13397 frequent patterns found, 3843 expanded, 9554 waiting, 30 min elapsed, 20:14:30
+  [progress] size 6 supp 12 [sum/per_edge]: 15152 frequent patterns found, 5099 expanded, 10053 waiting, 40 min elapsed, 20:24:30
+  [progress] size 6 supp 12 [sum/per_edge]: 15966 frequent patterns found, 6435 expanded, 9531 waiting, 50 min elapsed, 20:34:31
+  [progress] size 6 supp 12 [sum/per_edge]: 17224 frequent patterns found, 7597 expanded, 9627 waiting, 60 min elapsed, 20:44:31
+  [progress] size 6 supp 12 [sum/per_edge]: 17884 frequent patterns found, 8749 expanded, 9135 waiting, 70 min elapsed, 20:54:31
+  [progress] size 6 supp 12 [sum/per_edge]: 18749 frequent patterns found, 9911 expanded, 8838 waiting, 80 min elapsed, 21:04:32
+  [progress] size 6 supp 12 [sum/per_edge]: 19710 frequent patterns found, 11130 expanded, 8580 waiting, 90 min elapsed, 21:14:32
+  [progress] size 6 supp 12 [sum/per_edge]: 20064 frequent patterns found, 12341 expanded, 7723 waiting, 100 min elapsed, 21:24:32
+  [progress] size 6 supp 12 [sum/per_edge]: 20064 frequent patterns found, 13710 expanded, 6354 waiting, 110 min elapsed, 21:34:32
+  [progress] size 6 supp 12 [sum/per_edge]: 20064 frequent patterns found, 15058 expanded, 5006 waiting, 120 min elapsed, 21:44:33
+  [progress] size 6 supp 12 [sum/per_edge]: 20064 frequent patterns found, 16394 expanded, 3670 waiting, 130 min elapsed, 21:54:33
+  [progress] size 6 supp 12 [sum/per_edge]: 20064 frequent patterns found, 17731 expanded, 2333 waiting, 140 min elapsed, 22:04:33
+  [progress] size 6 supp 12 [sum/per_edge]: 20064 frequent patterns found, 19094 expanded, 970 waiting, 150 min elapsed, 22:14:34
+  size 6  supp  12 (20%) [sum/per_edge]: enumerated 20064 patterns [9423s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.31, 502 local optima (bound 8393, templates 24), 0.03 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.20, 11 local optima (bound 8393, templates 24), 0.03 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  [progress] size 6 supp 18 [sum/per_edge]: 5729 frequent patterns found, 1320 expanded, 4409 waiting, 10 min elapsed, 22:45:32
+  [progress] size 6 supp 18 [sum/per_edge]: 7967 frequent patterns found, 2571 expanded, 5396 waiting, 20 min elapsed, 22:55:33
+  [progress] size 6 supp 18 [sum/per_edge]: 8896 frequent patterns found, 3892 expanded, 5004 waiting, 30 min elapsed, 23:05:33
+  [progress] size 6 supp 18 [sum/per_edge]: 9760 frequent patterns found, 5092 expanded, 4668 waiting, 40 min elapsed, 23:15:33
+  [progress] size 6 supp 18 [sum/per_edge]: 10632 frequent patterns found, 6360 expanded, 4272 waiting, 50 min elapsed, 23:25:34
+  [progress] size 6 supp 18 [sum/per_edge]: 10954 frequent patterns found, 7637 expanded, 3317 waiting, 60 min elapsed, 23:35:34
+  [progress] size 6 supp 18 [sum/per_edge]: 10954 frequent patterns found, 9021 expanded, 1933 waiting, 70 min elapsed, 23:45:34
+  [progress] size 6 supp 18 [sum/per_edge]: 10954 frequent patterns found, 10460 expanded, 494 waiting, 80 min elapsed, 23:55:35
+  size 6  supp  18 (30%) [sum/per_edge]: enumerated 10954 patterns [5003s]
+      [     sum] optimum 0.1722 at 6e (at the bound), threshold slack, rho=+0.28, 376 local optima (bound 4019, templates 24), 0.03 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.1213|5:0.1540|6:0.1722
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.24, 11 local optima (bound 4019, templates 24), 0.03 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2723|5:0.2517|6:0.2176
+  [progress] size 6 supp 30 [sum/per_edge]: 3478 frequent patterns found, 1572 expanded, 1906 waiting, 10 min elapsed, 00:16:33
+  [progress] size 6 supp 30 [sum/per_edge]: 4318 frequent patterns found, 2984 expanded, 1334 waiting, 20 min elapsed, 00:26:33
+  size 6  supp  30 (50%) [sum/per_edge]: enumerated 4318 patterns [1697s]
+      [     sum] optimum 0.1047 at 3e (INTERIOR), threshold slack, rho=+0.29, 155 local optima (bound 1385, templates 22), 0.02 levels
+          best F by edge count: 1:0.0420|2:0.0737|3:0.1047|4:0.0990|5:0.0932|6:0.0975
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.35, 11 local optima (bound 1385, templates 22), 0.02 levels
+          best F by edge count: 1:0.4738|2:0.3828|3:0.3242|4:0.2332|5:0.1705|6:0.1321
+  size 6  supp  36 (60%) [sum/per_edge]: enumerated 1194 patterns [369s]
+      [     sum] optimum 0.0525 at 6e (at the bound), threshold slack, rho=+0.40, 53 local optima (bound 315, templates 20), 0.03 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444|6:0.0525
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.53, 11 local optima (bound 315, templates 20), 0.03 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021|6:0.0795
+  size 6  supp  42 (70%) [sum/per_edge]: enumerated 687 patterns [188s]
+      [     sum] optimum 0.0525 at 6e (at the bound), threshold slack, rho=+0.65, 40 local optima (bound 159, templates 19), 0.04 levels
+          best F by edge count: 1:0.0420|2:0.0401|3:0.0382|4:0.0463|5:0.0444|6:0.0525
+      [per_edge] optimum 0.4738 at 1e (at the floor), threshold slack, rho=-0.29, 13 local optima (bound 159, templates 19), 0.04 levels
+          best F by edge count: 1:0.4738|2:0.2652|3:0.1824|4:0.1410|5:0.1021|6:0.0795
+
+[done] results\weight_mode_landscape.csv
