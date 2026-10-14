@@ -1,5 +1,6 @@
 
 === selQM9_bond vs qm9 ===
+[awake] Windows will not sleep on its own while this script runs.
 comparing _selQM9_bond against _qm9
 
   weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
@@ -10,6 +11,7 @@ comparing _selQM9_bond against _qm9
 [ok] identical -- these numbers depend on the commit, not on the machine.
 
 === selBZR_bond vs BZRbond ===
+[awake] Windows will not sleep on its own while this script runs.
 comparing _selBZR_bond against _BZRbond
 
   weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
@@ -20,6 +22,7 @@ comparing _selBZR_bond against _BZRbond
 [ok] identical -- these numbers depend on the commit, not on the machine.
 
 === selCOX2_bond vs COX2bond ===
+[awake] Windows will not sleep on its own while this script runs.
 comparing _selCOX2_bond against _COX2bond
 
   weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
@@ -30,6 +33,7 @@ comparing _selCOX2_bond against _COX2bond
 [ok] identical -- these numbers depend on the commit, not on the machine.
 
 === selDHFR_bond vs DHFRbond ===
+[awake] Windows will not sleep on its own while this script runs.
 comparing _selDHFR_bond against _DHFRbond
 
   weight_mode_runs         280 rows compared, 0 disagree   (differing bytes)
@@ -40,6 +44,7 @@ comparing _selDHFR_bond against _DHFRbond
 [ok] identical -- these numbers depend on the commit, not on the machine.
 
 === selalchemy_full_bond vs alch ===
+[awake] Windows will not sleep on its own while this script runs.
 comparing _selalchemy_full_bond against _alch
 
   weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
@@ -50,6 +55,7 @@ comparing _selalchemy_full_bond against _alch
 [ok] identical -- these numbers depend on the commit, not on the machine.
 
 === selCuneiform vs s5 ===
+[awake] Windows will not sleep on its own while this script runs.
 comparing _selCuneiform against _s5
 
   weight_mode_runs         560 rows compared, 0 disagree   (differing bytes)
