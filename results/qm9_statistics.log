@@ -1,3 +1,4 @@
+[awake] Windows will not sleep on its own while this script runs.
 weight_mode_runs_qm9.csv: dataset QM9_bond, 2 modes, 4 budgets, 7 methods, 20 seeds
 
 === sum ===

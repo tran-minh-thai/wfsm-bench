@@ -1,0 +1,28 @@
+[awake] Windows will not sleep on its own while this script runs.
+  QM9_bond: rho = 0.6 (calibrated)
+
+=== QM9_bond  n=200  seeds=20  workers=8 ===
+  thresholds: 1%->2
+  size 5  supp   2 (1%) [sum]: enumerated 613 patterns [346s]
+      [     sum] optimum 0.2564 at 5e (at the bound), threshold slack, rho=+0.58, 182 local optima (bound 46, templates 17), 1.00 levels
+          best F by edge count: 1:0.1329|2:0.2116|3:0.2310|4:0.2500|5:0.2564
+  size 5  supp   2 (1%) [discounted]: enumerated 613 patterns [342s]
+      [discounted] optimum 0.5717 at 3e (INTERIOR), threshold slack, rho=+0.44, 73 local optima (bound 46, templates 17), 1.00 levels
+          best F by edge count: 1:0.4392|2:0.5550|3:0.5717|4:0.5714|5:0.3792
+  1120 search runs to do
+  finished in 1241s
+
+  size 5 supp 2 [sum]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60    11.64%/00/00    26.83%/00/00    16.62%/00/00     1.96%/15/15    37.32%/00/00    44.89%/00/00    45.23%/00/00
+      120     9.80%/00/00    19.43%/00/00     9.59%/00/00     0.00%/20/20    27.62%/01/01    31.04%/00/00    35.57%/00/00
+      180     9.80%/00/00    15.07%/00/00     9.59%/00/00     0.00%/20/20    20.44%/01/01    18.83%/00/00    33.89%/00/00
+      240     9.80%/00/00    11.55%/00/00     9.59%/00/00     0.00%/20/20    16.20%/03/03    12.53%/00/00    31.72%/00/00
+
+  size 5 supp 2 [discounted]             pso           clpso      multiswarm             aco         genetic    local_search          random
+       60     2.49%/03/03     8.00%/00/00     3.84%/03/03     0.29%/18/18    28.84%/02/02    31.07%/00/00    29.38%/00/00
+      120     0.73%/15/15     2.83%/03/03     1.17%/12/12     0.00%/20/20    17.15%/09/09    12.49%/04/04    18.78%/00/00
+      180     0.00%/20/20     1.61%/09/09     0.15%/19/19     0.00%/20/20    14.93%/12/12     7.41%/06/06    16.91%/00/00
+      240     0.00%/20/20     0.44%/17/17     0.00%/20/20     0.00%/20/20    10.69%/13/13     1.76%/08/08    15.04%/00/00
+
+[done] results\weight_mode_landscape_qm9.csv
+[done] results\weight_mode_methods_qm9.csv
