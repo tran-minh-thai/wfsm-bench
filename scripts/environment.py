@@ -136,20 +136,28 @@ def fingerprint() -> dict[str, str]:
 
 
 def data_checksums() -> dict[str, str]:
-    """SHA-256 of every prepared dataset file, keyed as data.<file name>.
+    """SHA-256 of every prepared dataset file, keyed as data_lf.<file name>.
 
     Two runs on the same commit can still disagree if the data were rebuilt from a different
     download; the checksum is what tells those cases apart.
+
+    The hash is taken with line endings normalised to LF, so the same dataset gives the same
+    value on Windows and macOS. Until 2026-10-16 the converters wrote the JSON in text mode,
+    which gives CRLF on Windows, and the records then hashed the raw bytes under the key
+    data.<file name>: the same data had one hash on the measurement machine and another on
+    the development machine. Those older records keep their key; the new key says the hash
+    is of the normalised content, so the two are never compared as if they were one measure.
     """
-    import hashlib
     sums = {}
     for path in sorted((ROOT / "data").glob("*.json")):
-        digest = hashlib.sha256()
-        with path.open("rb") as handle:
-            for block in iter(lambda: handle.read(1 << 20), b""):
-                digest.update(block)
-        sums[f"data.{path.name}"] = digest.hexdigest()
+        sums[f"data_lf.{path.name}"] = content_hash(path.read_bytes())
     return sums
+
+
+def content_hash(raw: bytes) -> str:
+    """SHA-256 of a text file's bytes with CRLF turned into LF."""
+    import hashlib
+    return hashlib.sha256(raw.replace(b"\r\n", b"\n")).hexdigest()
 
 
 def uncommitted() -> list[str]:

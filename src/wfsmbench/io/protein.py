@@ -205,5 +205,5 @@ def convert_and_save(pdb_dir: str | Path, out_path: str | Path,
     data = convert(pdb_dir, limit, grouped)
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(data), encoding="utf-8")
+    out.write_text(json.dumps(data), encoding="utf-8", newline="\n")
     return out

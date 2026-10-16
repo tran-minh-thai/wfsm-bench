@@ -458,13 +458,19 @@ Every stage writes `results/environment_stage<N>.txt` before it runs, with:
 the commit and whether the working tree was clean; the upstream state; Python, numpy, networkx,
 scipy, matplotlib and pyyaml versions; the machine name, CPU, core count and memory; the memory
 limit and time limit (both "none": Python has no heap flag and no run is time-limited); the
-SHA-256 of every dataset file; the stage number and worker count. `python
+SHA-256 of every dataset file, taken with line endings normalised to LF so that it is the same
+on every system (key `data_lf.<file>`); the stage number and worker count. `python
 scripts/environment.py` prints the same record for the current machine. A result without a
 record is not used.
 
 The history of `main` was rewritten on 2026-09-29, which changed every commit hash. A record
 written before then names an old hash; `COMMIT_MAP.tsv` gives the commit holding the same code
 today, and `python scripts/commit_map.py <hash>` looks one up.
+
+Records written before 2026-10-16 carry the key `data.<file>` instead: the SHA-256 of the raw
+bytes. The converters then wrote CRLF on Windows, so for those records the hash is of the CRLF
+form of the file. To check one against a file built elsewhere, convert its line endings to CRLF
+first; the content is the same.
 
 ## Parameters
 

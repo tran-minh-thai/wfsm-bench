@@ -153,7 +153,8 @@ def test_the_record_states_limits_and_checksums_and_takes_extra_facts(tmp_path) 
     data = sorted((ROOT / "data").glob("*.json"))
     assert data, "no dataset file to checksum; the check would pass over nothing"
     for path in data:
-        assert lines[f"data.{path.name}"] == hashlib.sha256(path.read_bytes()).hexdigest()
+        normalised = path.read_bytes().replace(b"\r\n", b"\n")
+        assert lines[f"data_lf.{path.name}"] == hashlib.sha256(normalised).hexdigest()
     bad = subprocess.run([sys.executable, "scripts/environment.py", "--record", "no-equals"],
                          cwd=ROOT, capture_output=True, text=True)
     assert bad.returncode == 2 and "KEY=VALUE" in bad.stdout

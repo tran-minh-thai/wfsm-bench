@@ -202,7 +202,8 @@ def convert_and_save(raw_dir: str | Path, name: str, out_path: str | Path,
                      limit: int | None = None) -> Path:
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(convert(raw_dir, name, limit), indent=2), encoding="utf-8")
+    out.write_text(json.dumps(convert(raw_dir, name, limit), indent=2), encoding="utf-8",
+                   newline="\n")
     return out
 
 

@@ -112,7 +112,7 @@ def convert_and_save(raw_dir: str | Path, name: str, out_path: str | Path) -> Pa
     data = convert(raw_dir, name)
     out = Path(out_path)
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(data, indent=2), encoding="utf-8")
+    out.write_text(json.dumps(data, indent=2), encoding="utf-8", newline="\n")
     return out
 
 
