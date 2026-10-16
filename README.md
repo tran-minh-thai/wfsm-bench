@@ -59,10 +59,17 @@ COMMIT_MAP.tsv        old commit -> new commit, for records written before 2026-
 
 - Python 3.11 or newer. The recorded runs used Python 3.12.10 on Windows (AMD64); the
   development machine uses Python 3.14 on macOS (arm64).
-- The packages in `requirements.txt`: `networkx`, `numpy`, `scipy`, `pyyaml`, `matplotlib`,
-  `pytest`. The recorded runs used numpy 2.5.1, networkx 3.6.1, scipy 1.18.0, matplotlib
-  3.11.1 and pyyaml 6.0.3. Search results depend on the numpy and networkx versions (numpy
-  gives no bit-stream guarantee across releases); exhaustive results do not.
+- The packages in `requirements.txt`, pinned to exact versions: networkx 3.7, numpy 2.5.3,
+  scipy 1.18.1, matplotlib 3.11.2, pyyaml 6.0.3, and pytest for the tests. Search results
+  depend on the numpy and networkx versions (numpy gives no bit-stream guarantee across
+  releases); exhaustive results do not.
+- The recorded runs used two library sets, both on Python 3.12.10. Stages 2, 4, 5, 6, 7, 8
+  and 14 used the pinned set above; the other stages used numpy 2.5.1, networkx 3.6.1,
+  scipy 1.18.0 and matplotlib 3.11.1. Each stage's set is in its
+  `results/environment_stage<N>.txt`. Where the same cells were run under both sets the
+  outputs are identical: stage 14 compares 3080 seeded runs, 1120 of them across the two
+  sets, with no disagreement, and the stage 5 to 8 search and landscape files re-run under
+  the pinned set match the earlier ones byte for byte.
 - Redrawing figures needs the Times New Roman font; the builder stops if it is missing.
 - No GPU. The work is CPU-bound subgraph matching, spread over worker processes.
 
@@ -537,10 +544,26 @@ the calibration artefacts; `results/rho_summary.txt` lists the values.
 - The fitness normalisers are anchored on a fixed size (`STUDY_SIZE_REFERENCE`), never on the
   search bound, so the same pattern scores the same under every bound.
 - Matching uses node and edge labels only; edge weights enter the fitness, never the matching.
+- The size bound K limits both counts: a pattern is admitted only if it has at most K vertices
+  and at most K edges (`max_nodes = max_edges = K` in every run). A K-edge tree has K + 1
+  vertices and is therefore outside the bound; at K = 4 on the first 60 Cuneiform graphs the
+  pool holds 712 patterns, against 2959 under an edge-only bound.
+- The non-dominated front is reported as a set of distinct objective vectors, one pattern
+  per vector (`scripts/run_pareto_size.py`). Patterns that tie on all three objectives are
+  counted once.
 - Tables are generated from the artefacts by `scripts/make_tables.py`, never typed by hand.
 - Run scripts from a file, not an interactive prompt: worker processes re-import the main
   module.
 
-## License
+## Provenance and licences
 
-MIT; see [LICENSE](LICENSE).
+| item | origin | licence |
+|---|---|---|
+| code in `src/`, `scripts/`, `tests/`, the two `.bat` drivers | written by the authors | MIT, see [LICENSE](LICENSE) |
+| `src/wfsmbench/baselines/gspan.py` | written by the authors from the published algorithm (Yan and Han, ICDM 2002); departures listed in its docstring | MIT |
+| subgraph matching | VF2 from networkx, used as a dependency, not copied | networkx: BSD-3-Clause |
+| other dependencies | numpy, scipy, matplotlib, pyyaml, pytest, installed from PyPI, not redistributed | their own licences (numpy and scipy BSD-3-Clause, matplotlib PSF-based, pyyaml and pytest MIT) |
+| TUDataset collections | downloaded by `scripts/prepare_datasets.py`, not redistributed | the terms of the TUDataset collection and of each original source; cite Morris et al., *TUDataset: A collection of benchmark datasets for learning with graphs*, ICML 2020 Workshop on Graph Representation Learning and Beyond |
+| `data/pdb_contact.json` | built by the authors from Protein Data Bank entries (`src/wfsmbench/io/protein.py`) | PDB archive data are CC0 1.0; the derived file is distributed under the same dedication |
+| `data/sample/` | small graphs written by the authors for the tests | MIT |
+| `results*/` | measurements produced by this code | MIT |

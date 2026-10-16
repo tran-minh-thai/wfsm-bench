@@ -1,22 +1,24 @@
 """gSpan as published, for use as a baseline.
 
-Yan and Han, *gSpan: Graph-Based Substructure Pattern Mining*, ICDM 2002. The definitions are
-transcribed in `docs/GSPAN_SOURCE.md`, read from the paper's own pages, and the code below is
-written against that transcription rather than against a recollection of how gSpan works.
+Yan and Han, *gSpan: Graph-Based Substructure Pattern Mining*, ICDM 2002. The code is written
+against the definitions and the algorithm as printed in that paper, not against another
+implementation.
 
 Two things the paper states without proof are implemented as specified and checked by
-measurement instead of by citation: that the minimum DFS code is a canonical label -- the
-paper's isomorphism theorem, stated proof omitted -- and that a non-minimal code's subtree
-contains no minimum code, which licenses the pruning and is proved only in a technical
-report this project does not hold. GSPAN_SOURCE.md maps each object here to the numbered
-statement it comes from; the numbers stay there so that nothing in the code depends on
-them. The check is that the
-mined set equals what the exhaustive enumerator finds -- an enumerator that uses no DFS codes
-at all, so an error in either would show as a difference.
+measurement instead of by citation: that the minimum DFS code is a canonical label, and that
+a non-minimal code's subtree contains no minimum code, which licenses the pruning. The check
+is that the mined set equals what the exhaustive enumerator finds -- an enumerator that uses
+no DFS codes at all, so an error in either would show as a difference.
 
-Deliberate departures, each recorded in GSPAN_SOURCE.md: the frequency relabelling that opens the
-paper's outer procedure is omitted, and a maximum pattern size is added because every
-comparison in this project is made at one.
+Deliberate departures from the paper:
+
+- The relabelling by frequency that opens the paper's outer procedure is omitted. It changes
+  the label order, and so which code is minimal, but not the mined set.
+- A maximum pattern size is added (``max_edges``, ``max_nodes``), because every comparison in
+  this project is made at one.
+- Host graphs may carry parallel edges, which the paper does not cover. Parallel edges between
+  one vertex pair differ by edge label here, so the 5-tuple code entry still tells them apart;
+  the agreement with the exhaustive enumerator is what checks this.
 """
 
 from __future__ import annotations
@@ -281,7 +283,7 @@ def gspan(graphs: list[Graph], min_support: int, max_edges: int,
                 mine(code + (entry,), child)
 
     # Start from every frequent one-edge pattern, as the outer procedure does. The
-    # relabelling by frequency it opens with is omitted -- see GSPAN_SOURCE.md.
+    # relabelling by frequency it opens with is omitted (see the module docstring).
     seeds: dict[Entry, list[_Occurrence]] = {}
     for index, graph in enumerate(graphs):
         for (u, v), label in graph.edge_items():

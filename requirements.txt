@@ -1,6 +1,9 @@
-networkx>=3.0
-numpy>=1.24
-pyyaml>=6.0
-matplotlib>=3.7
+# Exact versions of the libraries that decide a result, as recorded by the latest measurement
+# runs (results/environment_stage*.txt). Search results depend on the numpy and networkx
+# versions, so a re-run should use these. pytest only runs the test suite.
+networkx==3.7
+numpy==2.5.3
+scipy==1.18.1
+matplotlib==3.11.2
+pyyaml==6.0.3
 pytest>=8.0
-scipy>=1.11
