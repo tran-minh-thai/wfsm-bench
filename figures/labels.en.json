@@ -2,7 +2,7 @@
   "_note": "Text drawn inside each figure by scripts/make_figures.py: titles, axis labels, legends and notes, in English. Captions are not here. A missing key stops the builder rather than falling back to a default.",
   "vi-tri-tren-mat": {
     "title": "Scalarisation tracks the front maximum; the parameter-free selectors stop inside",
-    "xlabel": "size bound (maximum edges in a pattern)",
+    "xlabel": "size bound K (at most K vertices and K edges)",
     "ylabel": "position on the non-dominated front\n(0 = floor, 1 = maximum)",
     "top_line": "front maximum",
     "bottom_line": "front floor",
@@ -45,7 +45,7 @@
   },
   "do-phu-qua-cau": {
     "title": "Ball coverage approaches one, on every dataset but one",
-    "xlabel": "remaining depth  (edges an extension may still add)",
+    "xlabel": "remaining depth  (at most this many edges may still be added)",
     "ylabel": "ball coverage, pooled mean  (%)",
     "cutoff_percent": 90,
     "cutoff_label": "fixed threshold: 90%"
@@ -62,7 +62,7 @@
   },
   "chi-phi-liet-ke": {
     "title": "The five _bond datasets share a slope; Cuneiform steepens at the last bound",
-    "xlabel": "size bound K  (maximum edges in a pattern)",
+    "xlabel": "size bound K  (at most K vertices and K edges)",
     "ylabel_pool": "pool size |P(K)|, patterns  (log scale)",
     "ylabel_per": "seconds per pattern  (log scale)",
     "panel_pool": "factor one: patterns to be evaluated",
