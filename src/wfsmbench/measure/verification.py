@@ -117,6 +117,54 @@ def dichotomy_cells(results: Path, mode: str) -> int:
     return len([k for k in series if k in measured])
 
 
+def dichotomy_steps(series: list[dict], mode: str) -> list[tuple[float, int]]:
+    """(delta G, delta v) between consecutive best patterns of one cell, in the given mode.
+
+    The sequence is the frontier: for each edge count, the pattern with the largest F. per_edge
+    is read from the same sum-mode rows, with G scaled by SIZE_REFERENCE / k as in
+    predicted_argmax, so nothing here reads a per_edge run either.
+    """
+    steps = []
+    for a, b in zip(series, series[1:]):
+        ka, kb = int(a["edges"]), int(b["edges"])
+        ga, gb = float(a["G"]), float(b["G"])
+        if mode == "per_edge":
+            ga, gb = SIZE_REFERENCE * ga / ka, SIZE_REFERENCE * gb / kb
+        steps.append((gb - ga, int(b["nodes"]) - int(a["nodes"])))
+    return steps
+
+
+def strict_case_holds(steps: list[tuple[float, int]], mode: str) -> bool:
+    """Whether every step meets the strict case of the growth dichotomy for this mode.
+
+    sum: delta G > gamma (eta1 + eta2) with delta v <= 1, the rising case.
+    per_edge: delta G < gamma eta2 with delta v >= 0, the falling case.
+    """
+    if mode == "per_edge":
+        return all(dg < GAMMA * ETA2 and dv >= 0 for dg, dv in steps)
+    return all(dg > GAMMA * (ETA1 + ETA2) and dv <= 1 for dg, dv in steps)
+
+
+def dichotomy_counts(results: Path, mode: str) -> dict[str, int]:
+    """Counts behind the growth-dichotomy paragraph, over the cells dichotomy_cells counts.
+
+    cells: cells compared; strict: cells where every step meets the strict case of this mode;
+    predicted: cells where the frontier prediction gives the measured optimum's edge count;
+    at_bound: cells whose measured optimum has as many edges or vertices as the size bound.
+    """
+    series = frontier_series(results)
+    measured = {(int(r["size_bound"]), int(r["min_support"])): r
+                for r in read(results, "weight_mode_landscape.csv") if r["weight_mode"] == mode}
+    cells = [key for key in sorted(series) if key in measured]
+    counts = {"cells": len(cells), "strict": 0, "predicted": 0, "at_bound": 0}
+    for key in cells:
+        row, bound = measured[key], key[0]
+        counts["strict"] += strict_case_holds(dichotomy_steps(series[key], mode), mode)
+        counts["predicted"] += predicted_argmax(series[key], mode) == int(row["optimum_edges"])
+        counts["at_bound"] += bound in (int(row["optimum_edges"]), int(row["optimum_nodes"]))
+    return counts
+
+
 def front_cells(results: Path) -> tuple[int, int]:
     """(cells, collections) behind the dominance-invariance consequence."""
     rows = pareto_rows(results)
