@@ -121,12 +121,13 @@ One reproducible rule: **the weight is the raw edge distance, min-max scaled per
 to `[0.5, 5.0]`**, where the distance is the edge attribute if it is one-dimensional and its
 Euclidean norm if it has several dimensions.
 
-- On the one-dimensional collection this **reproduces the published table exactly** (mean
-  1.519271, min 0.5, max 5.0).
+- On the one-dimensional collection this **reproduces exactly** the table of the authors'
+  earlier, unpublished report (mean 1.519271, min 0.5, max 5.0). Corrected 2026-11-20: this note
+  called that table "published"; the report was never published.
 - On the two-dimensional collection roughly 71% of attribute vectors are zero, and **no
-  simple transform reproduces** the published mean of 2.418317 -- that paper does not state
+  simple transform reproduces** that report's mean of 2.418317 -- the report does not state
   how it preprocessed those weights. The general rule is used instead. Structure (graph, node
-  and edge counts) still matches the published table; only the mean weight differs, and that
+  and edge counts) still matches that table; only the mean weight differs, and that
   difference is reported wherever the collection is used.
 
 **Note added 2026-08-26.** This scaling is why every collection shares the same weight

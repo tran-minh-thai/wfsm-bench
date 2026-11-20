@@ -1,7 +1,8 @@
 """TUDataset loader with edge labels + edge weights.
 
 Two layers: a hand-made fixture that locks the parsing logic offline, and a check
-against the published dataset statistics when the real raw datasets are present.
+against the dataset statistics of the authors' earlier, unpublished report when the real raw
+datasets are present.
 """
 
 from pathlib import Path
@@ -54,7 +55,7 @@ def test_fixture_load_graphs(tmp_path):
 
 
 @pytest.mark.skipif(not (RAW / "BZR_MD").is_dir(), reason="raw BZR_MD not downloaded")
-def test_bzr_md_matches_table2():
+def test_bzr_md_matches_earlier_report():
     data = convert(RAW, "BZR_MD")
     graphs = data["graphs"]
     n = len(graphs)
@@ -66,7 +67,8 @@ def test_bzr_md_matches_table2():
     assert n == 306
     assert avg_nodes == pytest.approx(21.304, abs=1e-3)
     assert avg_edges == pytest.approx(225.056, abs=1e-3)
-    # D7: min-max scaling reproduces the paper's average weight exactly.
+    # D7: min-max scaling reproduces the mean weight of the authors' earlier, unpublished report
+    # (its Table 2) exactly. That report is not a publication and is not cited.
     assert avg_w == pytest.approx(1.519271, abs=1e-5)
     assert min(weights) == pytest.approx(0.5) and max(weights) == pytest.approx(5.0)
 

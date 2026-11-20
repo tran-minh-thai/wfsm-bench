@@ -1,13 +1,13 @@
 {
   "_note": "Text drawn inside each figure by scripts/make_figures.py: titles, axis labels, legends and notes, in English. Captions are not here. A missing key stops the builder rather than falling back to a default.",
   "vi-tri-tren-mat": {
-    "title": "Scalarisation tracks the front maximum; the parameter-free selectors stop inside",
+    "title": "Scalarization tracks the front maximum; the parameter-free selectors stop inside",
     "xlabel": "size bound K (at most K vertices and K edges)",
     "ylabel": "position on the non-dominated front\n(0 = floor, 1 = maximum)",
     "top_line": "front maximum",
     "bottom_line": "front floor",
     "selectors": {
-      "weighted": "scalarisation (penalty subtracted)",
+      "weighted": "scalarization (penalty subtracted)",
       "ideal": "ideal point",
       "maxmin": "max-min"
     },
@@ -27,7 +27,7 @@
     "gap": "estimation term",
     "truncation": "{n} cells end here",
     "caption_note": "The two lines have DIFFERENT DENOMINATORS. The all-cells line stops at size 10 because {dropped} cells have no seeds beyond it; continuing it with the fewer-cells line would draw a step that never happened.",
-    "worst_note": "The difference is taken WITHIN EACH CELL and only then maximised. Maximising the regret and the floor separately subtracts across TWO DIFFERENT CELLS."
+    "worst_note": "The difference is taken WITHIN EACH CELL and only then maximized. Maximizing the regret and the floor separately subtracts across TWO DIFFERENT CELLS."
   },
   "dia-hinh-bi-ep-doi": {
     "title": "Forcing the landscape to change moves no method",
@@ -36,27 +36,17 @@
     "cd": "critical difference"
   },
   "luu-vuc-va-dan-kien": {
-    "title": "Where the optimum dominates the hill-climbing graph, ant colony optimisation does not win",
+    "title": "Where the optimum dominates the hill-climbing graph, ant colony optimization does not win",
     "xlabel": "share of the pool whose ascent reaches an optimum  (%)",
-    "ylabel": "mean rank of ant colony optimisation  (1 = best)",
+    "ylabel": "mean rank of ant colony optimization  (1 = best)",
     "legend_dominates": "optimum dominates the hill-climbing graph",
     "legend_not": "does not dominate",
-    "rank_one": "ant colony optimisation ranked first"
+    "rank_one": "ant colony optimization ranked first"
   },
   "do-phu-qua-cau": {
     "title": "Ball coverage approaches one, on every dataset but one",
     "xlabel": "remaining depth  (at most this many edges may still be added)",
     "ylabel": "ball coverage, pooled mean  (%)"
-  },
-  "thu-hang-khong-chuyen": {
-    "title": "The winner changes with the dataset, in both weighting modes",
-    "xlabel": "mean rank  (1 = best)",
-    "modes": {
-      "sum": "weighting mode sum",
-      "discounted": "weighting mode discounted"
-    },
-    "cd_label": "critical difference\n(Nemenyi) = {cd}",
-    "absent": "not measured in this mode"
   },
   "chi-phi-liet-ke": {
     "title": "The five _bond datasets share a slope; Cuneiform steepens at the last bound",

@@ -157,7 +157,7 @@ PRINTED_PT = (9.0, 10.0)
 # 2026-11-20, the author: printed heights reduced by these amounts (cm on the page), per figure;
 # the front-position figure loses its amount on EACH row. Applied where each builder sets its
 # height, converted to canvas inches through the scale at which the figure prints.
-HEIGHT_CUT_CM = {"front_position_vs_bound.pdf": 0.5, "rank_transfer_by_collection.pdf": 1.0,
+HEIGHT_CUT_CM = {"front_position_vs_bound.pdf": 0.5,
                  "quantum_sweep.pdf": 2.0, "regret_vs_race_size.pdf": 2.0,
                  "ball_coverage_by_depth.pdf": 3.0, "enumeration_cost_by_bound.pdf": 1.0}
 CM = 1 / 2.54
@@ -166,8 +166,7 @@ CM = 1 / 2.54
 # \includegraphics in the manuscript. The text sizes are fitted to it, so a figure included
 # at another width prints at another size; tests/test_figure_type_on_the_page.py reads the
 # drawn files against this table.
-PRINTED_FRACTION = {"rank_transfer_by_collection.pdf": 1.0,
-                    "enumeration_cost_by_bound.pdf": 1.0,
+PRINTED_FRACTION = {"enumeration_cost_by_bound.pdf": 1.0,
                     "ball_coverage_by_depth.pdf": 1.0,
                     "front_position_vs_bound.pdf": 0.86,
                     "regret_vs_race_size.pdf": 0.86,
@@ -758,127 +757,6 @@ def _stats_logs() -> dict[str, str]:
     return dict(re.findall(r'"([^"]+)":\s*"([^"]+)"', body))
 
 
-def figure_rank_transfer(path: Path) -> None:
-    """Mean rank of every method, one row per collection, one panel per weight mode.
-
-    The rank table asks the reader to compare seven numbers across six collections in two
-    modes and see for themselves that the winner changes. That is the claim, and a table is
-    the wrong shape for it.
-
-    One aggregated diagram per mode would be the conventional rendering and would be WRONG
-    here: aggregating over collections is precisely what hides a result that says the ranking
-    does not survive changing collections. So the collections stay separate and the eye reads
-    down the column.
-    """
-    text = labels("thu-hang-khong-chuyen")
-    logs = _stats_logs()
-    ranks_by_mode: dict[str, dict[str, dict[str, float]]] = {}
-    cd = None
-    for collection, stem in logs.items():
-        source = RESULTS / f"{stem}_statistics.log"
-        if not source.exists():
-            continue
-        body = source.read_text(encoding="utf-8", errors="replace")
-        found = re.search(r"Nemenyi CD = ([0-9.]+)", body)
-        if found:
-            cd = float(found.group(1))
-        for mode in text["modes"]:
-            ranks = parse_ranks(body, mode)
-            if ranks:
-                ranks_by_mode.setdefault(mode, {})[collection] = ranks
-    if cd is None or len(ranks_by_mode) < 2:
-        raise SystemExit(f"[fail] rank data for {len(ranks_by_mode)} mode(s) and CD={cd}; the "
-                         f"figure would assert a comparison nothing measured")
-
-    methods = sorted({m for mode in ranks_by_mode.values() for r in mode.values() for m in r})
-    marks = dict(zip(methods, MARKERS))
-    colours = dict(zip(methods, ["#0072B2", "#D55E00", "#009E73", "#CC79A7",
-                                 "#E69F00", "#56B4E9", "#999999"]))
-    import matplotlib.pyplot as plt
-    modes = list(ranks_by_mode)
-    cols = sorted({c for mode in ranks_by_mode.values() for c in mode})
-    # Height is DERIVED from the row count, not fixed. The figure is drawn 9.6in wide and
-    # printed at COT_IN, so every length on the canvas arrives at 0.675 of itself; a height
-    # chosen once for a canvas the reader never sees is how six rows ended up closer together
-    # than the height of one line of their own labels. Here the row pitch is stated in PRINTED
-    # inches -- 0.30in against a 10pt label, which is a line and a half -- the fixed furniture
-    # (both titles, the axis label, the legend, the critical-distance strip) is added in the
-    # same units, and only then is the canvas height the quotient of the two.
-    print_scale = printed_width_in(path) / (9.6 * NARROW)
-    height_in = (0.30 * len(cols) + 1.55 - HEIGHT_CUT_CM[path.name] * CM) / print_scale
-    figure, axes = plt.subplots(1, len(modes), figsize=(9.6 * NARROW, height_in),
-                                sharex=True, sharey=True)
-    # One ORDER for both panels. With sharey and a per-mode order, a mode measured on five
-    # collections and a mode measured on six put different collections on the same row, and
-    # the shared tick labels then named the wrong ones -- measured on the first draft of this
-    # figure. A collection a mode has no data for gets a blank row, which is the honest shape.
-    for ax, mode in zip(axes, modes):
-        for y, collection in enumerate(cols):
-            ranks = ranks_by_mode[mode].get(collection)
-            if not ranks:
-                # Near-black, not the palette's grey. This line explains a row that carries
-                # no mark at all, and in that grey it was the first thing a print threshold
-                # removed -- leaving an empty row and nothing saying why, which reads as lost
-                # data rather than as a cell that was never measured. It is text about the
-                # figure, not one of the series, so it takes the colour of text.
-                ax.annotate(text["absent"], xy=(1.0, y), fontsize=9, color="#1A1A1A",
-                            va="center")
-                continue
-            best = min(ranks, key=ranks.get)
-            for method, value in ranks.items():
-                # scatter does not inherit the marker-edge default above, so it is stated
-                # here; without it this figure keeps the defect the default exists to fix.
-                # The rim is on EVERY mark now, not only the winner's. It used to be the
-                # winner's badge, which left the other six with the luminance of their fill
-                # and nothing else; the winner is still marked, by a thicker rim and a
-                # larger mark.
-                ax.scatter(value, y, s=52 if method == best else 30,
-                           color=colours[method], marker=marks[method], zorder=3,
-                           edgecolor="#1A1A1A",
-                           linewidth=0.9 if method == best else 0.5)
-            # The winner's NAME is not written here. The legend maps every symbol to its
-            # method, so the word repeated what the mark already said, and it collided with
-            # the neighbouring marks while doing it. The larger mark and thicker rim above
-            # are what single the winner out.
-        ax.set_yticks(range(len(cols)))
-        ax.set_yticklabels(cols, fontsize=10)
-        # The critical-distance strip is BELOW the last row, not above the first. Above, it
-        # shared the band with the panel title and the two printed on top of each other: the
-        # title is drawn outside the axes and the strip inside it, so nothing in the layout
-        # engine knew they were neighbours. Below, the strip has a band of its own and the
-        # title has the whole band above the box.
-        # The band below the last row holds the bar and its label, which takes two lines on the
-        # Springer column (2026-11-20); with one row's height for both, the label sat on the
-        # markers of the last row.
-        ax.set_ylim(len(cols) + 1.0, -0.6)
-        ax.set_xlabel(text["xlabel"])
-        ax.set_title(text["modes"][mode], fontsize=10, loc="left")
-        ax.grid(axis="x", lw=0.4, color="#DDDDDD", zorder=0)
-        for edge in ("top", "right"):
-            ax.spines[edge].set_visible(False)
-        # The critical distance, drawn once as a span the reader can carry along the axis.
-        ax.plot([1.0, 1.0 + cd], [len(cols) + 0.7, len(cols) + 0.7], lw=2.2,
-                color="#333333", solid_capstyle="butt", clip_on=False, zorder=4)
-        # A point, not a comma: the figure reads in English now, and a comma decimal inside an
-        # English label is the one place the two languages would visibly collide.
-        ax.annotate(text["cd_label"].format(cd=f"{cd:.3f}"),
-                    xy=(1.0, len(cols) + 0.7), xytext=(0, 6),
-                    textcoords="offset points", fontsize=8)
-    handles = [plt.Line2D([], [], marker=marks[m], ls="", color=colours[m], label=m)
-               for m in methods]
-    # Four columns: seven entries on one row were wider than the Springer column (2026-11-20).
-    figure.legend(handles=handles, frameon=False, fontsize=10, ncol=4,
-                  loc="lower center", bbox_to_anchor=(0.5, -0.02))
-    # No figure title: the journal asks for none inside an illustration; the caption carries it.
-    figure.tight_layout(rect=(0, 0.12, 1, 1))
-    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.12, 1, 1))
-    figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
-    plt.close(figure)
-
-
-# ------------------------------------------------------------------ enumeration cost
-
-
 def enumeration_cost() -> dict[str, list[tuple[int, int, float]]]:
     """collection -> [(size bound, pool size, seconds per pattern)], timed rows only.
 
@@ -988,8 +866,9 @@ def figure_enumeration_cost(path: Path) -> None:
     plt.close(figure)
 
 
-FIGURES = [("rank_transfer_by_collection.pdf", figure_rank_transfer),
-           ("enumeration_cost_by_bound.pdf", figure_enumeration_cost),
+# The rank-transfer figure was removed on 2026-11-20: the manuscript keeps the rank table, which
+# shows the same mean ranks with the precision the critical-difference comparisons need.
+FIGURES = [("enumeration_cost_by_bound.pdf", figure_enumeration_cost),
            ("ball_coverage_by_depth.pdf", figure_ball_coverage),
            ("front_position_vs_bound.pdf", figure_front_position),
            ("regret_vs_race_size.pdf", figure_race_size),

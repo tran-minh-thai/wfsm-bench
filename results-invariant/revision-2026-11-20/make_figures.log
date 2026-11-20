@@ -1,10 +1,9 @@
 # command: scripts/make_figures.py
-# date: 2026-11-20 17:11:53 +0700
-# git_commit: e4b9b34c1c9a350f0c8b6c515276bcc910ff4c9c tree: 4 changed path(s)
-# script_sha256: bf62ffa379740d19a2775aab589b12d43af28991fd40219e4916a94964ec78d9
+# date: 2026-11-20 17:49:40 +0700
+# git_commit: 5ad8bedbc490557c8dc8b74ac00347822fa9bd32 tree: 6 changed path(s)
+# script_sha256: 87f6e0fa8e4f3fb14c06eaccff929becb79ba22e377078e51606be5d508d002b
 # python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
 
-[done] results/figures/rank_transfer_by_collection.pdf
 [done] results/figures/enumeration_cost_by_bound.pdf
 [done] results/figures/ball_coverage_by_depth.pdf
 [done] results/figures/front_position_vs_bound.pdf
