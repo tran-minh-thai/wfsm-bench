@@ -1,0 +1,14 @@
+# command: scripts/make_figures.py
+# date: 2026-11-20 14:33:09 +0700
+# git_commit: 1f955cbf3d87920151548553b18fa656bdfdd2a2 tree: 6 changed path(s)
+# script_sha256: b8ac44aefde9c7599ca439ae4aac3aba526954a779d204655ac75861f9645a66
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+[done] results/figures/rank_transfer_by_collection.pdf
+[done] results/figures/enumeration_cost_by_bound.pdf
+[done] results/figures/ball_coverage_by_depth.pdf
+[done] results/figures/front_position_vs_bound.pdf
+[done] results/figures/regret_vs_race_size.pdf
+[done] results/figures/quantum_sweep.pdf
+[done] results/figures/basin_vs_aco.pdf
+# exit: 0

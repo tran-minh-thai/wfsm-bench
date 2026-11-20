@@ -25,7 +25,7 @@
     "floor_full": "transfer floor, {n} cells",
     "floor_balanced": "transfer floor, {n} cells",
     "gap": "estimation term",
-    "truncation": "{n} cells stop here - not enough seeds for a larger race",
+    "truncation": "{n} cells end here",
     "caption_note": "The two lines have DIFFERENT DENOMINATORS. The all-cells line stops at size 10 because {dropped} cells have no seeds beyond it; continuing it with the fewer-cells line would draw a step that never happened.",
     "worst_note": "The difference is taken WITHIN EACH CELL and only then maximised. Maximising the regret and the floor separately subtracts across TWO DIFFERENT CELLS."
   },
@@ -46,9 +46,7 @@
   "do-phu-qua-cau": {
     "title": "Ball coverage approaches one, on every dataset but one",
     "xlabel": "remaining depth  (at most this many edges may still be added)",
-    "ylabel": "ball coverage, pooled mean  (%)",
-    "cutoff_percent": 90,
-    "cutoff_label": "fixed threshold: 90%"
+    "ylabel": "ball coverage, pooled mean  (%)"
   },
   "thu-hang-khong-chuyen": {
     "title": "The winner changes with the dataset, in both weighting modes",

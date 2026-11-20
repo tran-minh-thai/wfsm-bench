@@ -145,6 +145,14 @@ COLUMN_WIDTH_IN = 6.48
 # about 5.4pt -- below Elsevier's 7pt floor for ordinary text.
 PRINTED_PT = (9.0, 10.0)
 
+# 2026-11-20, the author: printed heights reduced by these amounts (cm on the page), per figure;
+# the front-position figure loses its amount on EACH row. Applied where each builder sets its
+# height, converted to canvas inches through the scale at which the figure prints.
+HEIGHT_CUT_CM = {"front_position_vs_bound.pdf": 0.5, "rank_transfer_by_collection.pdf": 1.0,
+                 "quantum_sweep.pdf": 2.0, "regret_vs_race_size.pdf": 2.0,
+                 "ball_coverage_by_depth.pdf": 3.0, "enumeration_cost_by_bound.pdf": 1.0}
+CM = 1 / 2.54
+
 # The share of the text column each figure is included at -- the width= of its
 # \includegraphics in the manuscript. The text sizes are fitted to it, so a figure included
 # at another width prints at another size; tests/test_figure_type_on_the_page.py reads the
@@ -268,7 +276,8 @@ def figure_quantum(path: Path) -> None:
         got = mean_ranks(f"{tag}_statistics.log", "sum")
         ranks.append(got)
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.4))
+    fig, ax = plt.subplots(figsize=(7.2, 4.4 - HEIGHT_CUT_CM[path.name] * CM * 7.2
+                                    / printed_width_in(path)))
     for method, colour, mark, dash in zip(METHODS, COLOURS, MARKERS, DASHES):
         ax.plot(levels, [r[method] for r in ranks], marker=mark, markersize=5,
                 linestyle=dash,
@@ -285,8 +294,12 @@ def figure_quantum(path: Path) -> None:
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
     ax.set_title(text["title"], loc="left")
-    ax.legend(frameon=False, fontsize=10, ncol=4, loc="upper center",
-              bbox_to_anchor=(0.5, -0.16))
+    # Anchored a fixed distance in points below the axes, not a fraction of the axes height:
+    # a fraction shrinks with the figure, and at the shorter height of 2026-11-20 it put the
+    # legend on top of the axis label.
+    from matplotlib.transforms import offset_copy
+    ax.legend(frameon=False, fontsize=10, ncol=4, loc="upper center", bbox_to_anchor=(0.5, 0.0),
+              bbox_transform=offset_copy(ax.transAxes, fig=fig, y=-44, units="points"))
     style(ax)
     _fit_text_to_print(fig, printed_width_in(path))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
@@ -478,7 +491,8 @@ def figure_front_position(path: Path) -> None:
     names = sorted(data)
     columns = 3
     rows_of = -(-len(names) // columns)
-    fig, axes = plt.subplots(rows_of, columns, figsize=(10.4, 3.2 * rows_of),
+    row_in = 3.2 - HEIGHT_CUT_CM[path.name] * CM * 10.4 / printed_width_in(path)
+    fig, axes = plt.subplots(rows_of, columns, figsize=(10.4, row_in * rows_of),
                             sharex=True, sharey=True)
     flat = axes.ravel()
 
@@ -554,7 +568,8 @@ def figure_race_size(path: Path) -> None:
     # truncation note were then drawn into a space that no longer existed. The height is set
     # from the PRINTED box the panels need, not from a canvas nobody sees.
     print_scale = printed_width_in(path) / 10.4
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15) / print_scale))
+    fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15 - HEIGHT_CUT_CM[path.name] * CM)
+                                            / print_scale))
 
     # Left: the mean total regret against the mean floor. Averaging is linear, so the gap
     # between the two lines IS the mean of the per-cell gaps -- no cross-cell subtraction.
@@ -650,8 +665,10 @@ def figure_ball_coverage(path: Path) -> None:
     already covers -- and the table states it at a single depth. A criterion whose whole
     content is "this approaches one" has to be READ approaching one, not asserted at a point.
 
-    The line that matters most is the one that does NOT reach the cutoff: it is what stops the
-    criterion being a rule that always says "give up".
+    No threshold line is drawn (removed 2026-11-20): the criterion fixes no value of tau, and a
+    dashed line at one value would state a threshold the text does not. The line that matters
+    is the collection that stays far from one: it is what stops the criterion being a rule that
+    always says "give up".
     """
     text = labels("do-phu-qua-cau")
     coverage_by_collection = {}
@@ -669,17 +686,13 @@ def figure_ball_coverage(path: Path) -> None:
                          f"and a two-point line would assert a shape nothing measured")
 
     import matplotlib.pyplot as plt
-    figure, ax = plt.subplots(figsize=(6.4, 3.6))
+    figure, ax = plt.subplots(figsize=(6.4, 3.6 - HEIGHT_CUT_CM[path.name] * CM * 6.4
+                                       / printed_width_in(path)))
     colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
     for (name, series), colour in zip(sorted(coverage_by_collection.items()), colours):
         xs = [d for d in depths if d in series]
         ax.plot(xs, [series[d] for d in xs], marker="o", ms=4, lw=1.6,
                 color=colour, label=name, zorder=3)
-
-    cutoff = float(text["cutoff_percent"])
-    ax.axhline(cutoff, color="#555555", lw=1.0, ls="--", zorder=2)
-    ax.annotate(text["cutoff_label"], xy=(depths[0], cutoff), xytext=(0, 4),
-                textcoords="offset points", fontsize=8, color="#555555")
 
     ax.set_xticks(depths)
     ax.set_ylim(0, 105)
@@ -749,7 +762,7 @@ def figure_rank_transfer(path: Path) -> None:
     # (both titles, the axis label, the legend, the critical-distance strip) is added in the
     # same units, and only then is the canvas height the quotient of the two.
     print_scale = printed_width_in(path) / 9.6
-    height_in = (0.30 * len(cols) + 1.55) / print_scale
+    height_in = (0.30 * len(cols) + 1.55 - HEIGHT_CUT_CM[path.name] * CM) / print_scale
     figure, axes = plt.subplots(1, len(modes), figsize=(9.6, height_in),
                                 sharex=True, sharey=True)
     # One ORDER for both panels. With sharey and a per-mode order, a mode measured on five
@@ -883,7 +896,8 @@ def figure_enumeration_cost(path: Path) -> None:
     # is chosen so the printed panels are as tall as they are wide is not the point -- the
     # point is that it is chosen in printed inches at all.
     print_scale = printed_width_in(path) / 10.0
-    figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05) / print_scale),
+    figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05 - HEIGHT_CUT_CM[path.name] * CM)
+                                              / print_scale),
                                sharex=True)
     colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
     bounds = sorted({k for cells in data.values() for k, _pool, _per in cells})

@@ -101,8 +101,15 @@ def test_no_image_in_the_figures_directory_is_orphaned() -> None:
         f"  delete them, or add the builder back -- a stale picture is read as a fresh one")
 
 
-def _included_figures(tex: str) -> tuple[set[str], list[str]]:
-    """({figure name}, [include arguments that are not a figure in hinh/]) for one draft.
+def _included_figures(tex: str, descriptions: dict[str, str] | None = None
+                      ) -> tuple[set[str], list[str]]:
+    """({figure name}, [include arguments that are not a drawn figure]) for one draft.
+
+    CORRECTED 2026-11-20: the author moved every drawn figure beside the manuscript as
+    FigureN_Description.pdf. An argument of that shape is resolved to the generator's name
+    through `descriptions` (generator name -> Description), and N must be the position of its
+    figure environment in the draft, since LaTeX numbers figures in source order. The old
+    hinh/<name> shape is still read, for drafts written before the move.
 
     Comments go first: a figure taken off the page with a leading % is not on the page, and
     matching the raw text counted it as included. Every include argument is then read, not only
@@ -111,13 +118,22 @@ def _included_figures(tex: str) -> tuple[set[str], list[str]]:
     passed. Here it is returned, and reported, instead.
     """
     visible = "\n".join(re.sub(r"(?<!\\)%.*", "", line) for line in tex.splitlines())
+    by_description = {d: n for n, d in (descriptions or {}).items()}
     names, odd = set(), []
-    for argument in re.findall(r"\\includegraphics\s*(?:\[[^\]]*\])?\s*\{([^}]*)\}", visible):
-        shape = re.fullmatch(r"(?:\./)?hinh/([A-Za-z0-9_-]+)", argument.strip())
-        if shape:
-            names.add(shape.group(1))
-        else:
-            odd.append(argument.strip())
+    number = 0
+    for env in re.finditer(r"\\begin\{figure\}.*?\\end\{figure\}", visible, flags=re.S):
+        number += 1
+        for argument in re.findall(r"\\includegraphics\s*(?:\[[^\]]*\])?\s*\{([^}]*)\}",
+                                   env.group(0)):
+            argument = argument.strip()
+            old = re.fullmatch(r"(?:\./)?hinh/([A-Za-z0-9_-]+)", argument)
+            new = re.fullmatch(r"Figure(\d+)_([A-Za-z0-9]+)\.pdf", argument)
+            if old:
+                names.add(old.group(1))
+            elif new and int(new.group(1)) == number and new.group(2) in by_description:
+                names.add(by_description[new.group(2)])
+            else:
+                odd.append(argument)
     return names, odd
 
 
@@ -155,12 +171,13 @@ def test_every_drawn_figure_is_included_by_the_draft(draft: Path) -> None:
     generator_module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(generator_module)
 
-    included, odd = _included_figures(draft.read_text(encoding="utf-8"))
+    included, odd = _included_figures(draft.read_text(encoding="utf-8"),
+                                      getattr(generator_module, "FIGURE_DESCRIPTION", None))
     assert included, f"{draft.name} includes no figure at all; the pattern stopped matching"
     assert not odd, (
-        f"{draft.name} includes {odd}, which is not a figure by name in hinh/. The generator "
-        f"copies into hinh/ without an extension in the name, so anything else on the page is "
-        f"a file nothing keeps current.")
+        f"{draft.name} includes {odd}, which is not a drawn figure under its generated name "
+        f"(FigureN_Description.pdf with N its figure number, or hinh/<name>). Anything else on "
+        f"the page is a file nothing keeps current.")
 
     copied_names = set(generator_module.IMAGES)
     assert copied_names, "the generator copies no figure; there is nothing to check"

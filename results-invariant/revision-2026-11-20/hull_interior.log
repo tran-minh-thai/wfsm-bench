@@ -1,0 +1,44 @@
+# command: scripts/hull_interior_check.py --out results-invariant/revision-2026-11-20/hull_interior.csv
+# date: 2026-11-20 14:17:36 +0700
+# git_commit: 1f955cbf3d87920151548553b18fa656bdfdd2a2 tree: 6 changed path(s)
+# script_sha256: 5dff102a2d1a4b37e3085dc266d60f22d4328fbbe38ce3b9ba547b91de997a7f
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+24 sum-mode cells; gamma grid [0.1, 0.2, 0.3, 0.4, 0.5, 0.8, 1.0]
+BZR_bond n=200: loose pool 359
+  K=4 s=2: pool 129, hull 1e2v|3e4v; intermediate vertices edges/bound 1/0 (best F 0.332857/-); grid 3e4v|3e4v|3e4v|3e4v|3e4v|1e2v|1e2v
+  K=5 s=2: pool 359, hull 1e2v|4e5v; intermediate vertices edges/bound 1/0 (best F 0.445969/-); grid 4e5v|4e5v|4e5v|4e5v|4e5v|1e2v|1e2v
+COX2_bond n=200: loose pool 360
+  K=4 s=2: pool 134, hull 1e2v|2e3v|3e4v; intermediate vertices edges/bound 2/1 (best F 0.437477/0.075082); grid 3e4v|3e4v|3e4v|3e4v|3e4v|1e2v|1e2v
+  K=5 s=2: pool 360, hull 1e2v|2e3v|4e5v; intermediate vertices edges/bound 2/1 (best F 0.549318/0.064708); grid 4e5v|4e5v|4e5v|4e5v|4e5v|1e2v|1e2v
+Cuneiform n=60: loose pool 4991
+  K=4 s=2: pool 712, hull 1e2v|3e3v|4e4v; intermediate vertices edges/bound 1/1 (best F 0.054691/0.054691); grid 4e4v|3e3v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=4 s=6: pool 712, hull 1e2v|3e3v|4e4v; intermediate vertices edges/bound 1/1 (best F 0.054691/0.054691); grid 4e4v|3e3v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=4 s=12: pool 649, hull 1e2v|3e3v|4e4v; intermediate vertices edges/bound 1/1 (best F 0.054691/0.054691); grid 4e4v|3e3v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=4 s=18: pool 542, hull 1e2v|3e3v|4e4v; intermediate vertices edges/bound 1/1 (best F 0.054691/0.054691); grid 4e4v|3e3v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=4 s=30: pool 365, hull 1e2v|3e3v|4e4v; intermediate vertices edges/bound 1/1 (best F 0.121816/0.121816); grid 3e3v|3e3v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=4 s=36: pool 239, hull 1e2v|4e4v; intermediate vertices edges/bound 0/0 (best F -/-); grid 4e4v|1e2v|1e2v|1e2v|1e2v|1e2v|1e2v
+  K=4 s=42: pool 199, hull 1e2v|4e4v; intermediate vertices edges/bound 0/0 (best F -/-); grid 4e4v|1e2v|1e2v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=2: pool 4991, hull 1e2v|3e3v|5e4v; intermediate vertices edges/bound 1/1 (best F 0.005947/0.005947); grid 5e4v|5e4v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=6: pool 4551, hull 1e2v|3e3v|5e4v; intermediate vertices edges/bound 1/1 (best F 0.005947/0.005947); grid 5e4v|5e4v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=12: pool 3549, hull 1e2v|3e3v|5e4v; intermediate vertices edges/bound 1/1 (best F 0.005947/0.005947); grid 5e4v|5e4v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=18: pool 2420, hull 1e2v|3e3v|5e4v; intermediate vertices edges/bound 1/1 (best F 0.005947/0.005947); grid 5e4v|5e4v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=30: pool 1230, hull 1e2v|3e3v|5e5v; intermediate vertices edges/bound 1/1 (best F 0.121816/0.121816); grid 3e3v|3e3v|3e3v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=36: pool 525, hull 1e2v|4e4v|5e5v; intermediate vertices edges/bound 1/1 (best F 0.053880/0.053880); grid 4e4v|1e2v|1e2v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=42: pool 351, hull 1e2v|4e4v|5e5v; intermediate vertices edges/bound 1/1 (best F 0.053880/0.053880); grid 4e4v|1e2v|1e2v|1e2v|1e2v|1e2v|1e2v
+DHFR_bond n=200: loose pool 359
+  K=4 s=2: pool 136, hull 1e2v|2e3v|3e4v; intermediate vertices edges/bound 2/1 (best F 0.291617/-0.041440); grid 3e4v|3e4v|3e4v|3e4v|1e2v|1e2v|1e2v
+  K=5 s=2: pool 359, hull 1e2v|2e3v|4e5v; intermediate vertices edges/bound 2/1 (best F 0.387996/-0.042964); grid 4e5v|4e5v|4e5v|4e5v|1e2v|1e2v|1e2v
+QM9_bond n=200: loose pool 613
+  K=4 s=2: pool 242, hull 1e2v|2e3v|3e4v; intermediate vertices edges/bound 2/1 (best F 0.300974/0.163201); grid 3e4v|2e3v|2e3v|2e3v|1e2v|1e2v|1e2v
+  K=5 s=2: pool 613, hull 1e2v|2e3v|3e4v|4e5v|5e5v; intermediate vertices edges/bound 3/2 (best F 0.192493/0.164478); grid 5e5v|2e3v|2e3v|2e3v|1e2v|1e2v|1e2v
+alchemy_full_bond n=200: loose pool 428
+  K=4 s=2: pool 162, hull 1e2v|2e3v|3e4v; intermediate vertices edges/bound 2/1 (best F 0.122644/0.008677); grid 3e4v|2e3v|1e2v|1e2v|1e2v|1e2v|1e2v
+  K=5 s=2: pool 428, hull 1e2v|2e3v|3e4v|4e5v; intermediate vertices edges/bound 3/2 (best F 0.149346/0.029187); grid 4e5v|2e3v|1e2v|1e2v|1e2v|1e2v|1e2v
+[reproduced] 168 (cell, gamma) peaks compared with degeneracy_gamma_*.csv, 0 mismatch(es)
+
+[edges] 22 of 24 cells have an intermediate vertex on the upper hull (22 with F > 0 there); 22 of 24 have an intermediate maximiser at some gamma of the grid
+
+[bound] 20 of 24 cells have an intermediate vertex on the upper hull (18 with F > 0 there); 16 of 24 have an intermediate maximiser at some gamma of the grid
+[done] results-invariant/revision-2026-11-20/hull_interior.csv
+# exit: 0
