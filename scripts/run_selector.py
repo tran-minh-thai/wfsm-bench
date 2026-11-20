@@ -43,7 +43,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
 
-FIXED = ("aco", "local_search")
+# always-PSO joined on 2026-11-20: scored over all seven methods it is the strongest fixed rule
+# on these cells, and comparing racing with weaker rules only would overstate it.
+FIXED = ("aco", "local_search", "pso")
 
 # The stage 13 per-seed files: two budgets each, disjoint seeds for race and bill.
 STAGE_13_RUNS = ["results/weight_mode_runs_sel*.csv"]
@@ -125,10 +127,25 @@ def evaluate(cells, split: bool, all_pairs: bool = False):
     return rows
 
 
+def scoring_seeds(cells, key, cheap, dear, methods) -> list[int]:
+    """Seeds present at both budgets for every method: the only seeds race and bill may use."""
+    if not methods:
+        return []
+    return sorted(set.intersection(*[set(cells[key][budget][m])
+                                     for budget in (cheap, dear) for m in methods]))
+
+
 def _score(cells, key, cheap, dear, split: bool):
     """One (cell, budget pair), or [] when it cannot be scored."""
     methods = sorted(set(cells[key][cheap]) & set(cells[key][dear]))
-    seeds = sorted({s for m in cells[key][cheap].values() for s in m})
+    # CORRECTED 2026-11-20. Race and bill are drawn from the seeds present at BOTH budgets for
+    # every method. The seeds used to be read from the racing budget alone, and eight cells
+    # merge a 40-seed stage-13 file (budgets 60 and 240) with a 20-seed file (all four
+    # budgets): at a paying budget of 120 or 180 they raced on 20 seeds but could pay on only
+    # the 10 odd seeds that exist there, while the pay_seeds column still said 20. Racing on
+    # seeds that the bill cannot see is not the protocol, and it made this table disagree with
+    # the transfer column of results/selector_seed_sweep.csv, which already used this rule.
+    seeds = scoring_seeds(cells, key, cheap, dear, methods)
     if len(seeds) < 4 or len(methods) < 2:
         return []
     race_seeds = [s for s in seeds if s % 2 == 0] if split else seeds
@@ -182,7 +199,7 @@ def summarise(rows, label):
     print()
     out = {}
     for name, label2 in (("race", "race"), ("aco", "always-ACO"),
-                         ("local_search", "always-ILS")):
+                         ("local_search", "always-ILS"), ("pso", "always-PSO")):
         values = [r[name] for r in rows if r[name] is not None]
         if not values:
             print(f"  {label2:<14} no cell could be compared")
@@ -242,7 +259,7 @@ def main(argv: list[str]) -> int:
 
     header = ("dataset,weight_mode,max_size,min_support,seed_split,race_budget,"
               "pay_budget,picked,race_seeds,pay_seeds,top,tied_at_top,transfers,"
-              "estimated_right,regret_race,regret_aco,regret_ils")
+              "estimated_right,regret_race,regret_aco,regret_ils,regret_pso")
     lines = [header]
     for label, rows in (("disjoint", split_rows), ("shared", shared_rows)):
         for row in rows:
@@ -253,7 +270,7 @@ def main(argv: list[str]) -> int:
                          f"{row['pay_seeds']},{row['top']},{row['tied_at_top']},"
                          f"{row['transfers']},{row['estimated_right']},"
                          f"{num(row['race'])},{num(row['aco'])},"
-                         f"{num(row['local_search'])}")
+                         f"{num(row['local_search'])},{num(row['pso'])}")
     # newline="": the same bytes on every system. The default translates to CRLF on Windows,
     # so the measurement machine would rewrite an unchanged table as a changed file.
     args.out.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="")

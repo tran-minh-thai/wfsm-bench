@@ -64,19 +64,25 @@ def main(argv: list[str]) -> int:
     out_rows, compared, mismatches = [], 0, []
     for row in rows:
         key = (*row["cell"], row["cheap"], row["dear"])
-        seeds = sorted({s for m in cells[row["cell"]][row["cheap"]].values() for s in m})
-        pay_seeds = [s for s in seeds if s % 2 == 1]
         dear = cells[row["cell"]][row["dear"]]
         scored_methods = sorted(set(cells[row["cell"]][row["cheap"]]) & set(dear))
+        seeds = rs.scoring_seeds(cells, row["cell"], row["cheap"], row["dear"], scored_methods)
+        pay_seeds = [s for s in seeds if s % 2 == 1]
         fixed = {m: rs.regret(m, dear, pay_seeds, scored_methods) for m in methods}
-        # Seeds actually present at the paying budget, which the tracked pay_seeds column does
-        # not count: it counts odd seeds of the racing budget.
-        present = len({s for m in scored_methods for s in dear.get(m, {}) if s in pay_seeds})
+        # Seeds actually present at the paying budget for every method. Since run_selector
+        # draws both halves from seeds present at both budgets, this equals pay_seeds there;
+        # it is recorded so that the equality is checked rather than assumed.
+        present = len({s for s in pay_seeds if all(s in dear.get(m, {}) for m in scored_methods)})
+        if present != row["pay_seeds"]:
+            print(f"[refused] {key}: {present} paying seed(s) present against "
+                  f"{row['pay_seeds']} counted by run_selector; nothing written")
+            return 1
         old = tracked.get(key)
         if old is not None:
             compared += 1
             for column, value in (("regret_race", row["race"]), ("regret_aco", fixed.get("aco")),
-                                  ("regret_ils", fixed.get("local_search"))):
+                                  ("regret_ils", fixed.get("local_search")),
+                                  ("regret_pso", fixed.get("pso"))):
                 if fmt(value) != old[column]:
                     mismatches.append((key, column, fmt(value), old[column]))
         out_rows.append({"dataset": key[0], "weight_mode": key[1], "max_size": key[2],

@@ -1,0 +1,151 @@
+# command: scripts/run_selector.py --all-pairs --out results/selector_regret_allpairs.csv
+# date: 2026-11-20 12:24:36 +0700
+# git_commit: ed2c03870fcb764b7435641ada5ddbcca8cdbc23 tree: 2 changed path(s)
+# script_sha256: 59b497532382362b3c7605d08d72387932095269f6ce72b8d654f4c7e5a12ee3
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+reading 11 per-seed files
+
+  == DISJOINT SEEDS -- race on even, pay on odd ==
+  dataset             mode        picked            race      aco      ils  race/pay seeds
+  BZR_bond            discounted  multiswarm        0.00%    0.00%    0.35%     20/20    
+  BZR_bond            sum         aco               0.69%    0.69%    9.15%     20/20    
+  COX2_bond           discounted  pso               0.00%    0.00%    0.00%     20/20    
+  COX2_bond           sum         pso               0.00%    0.40%    3.12%     20/20    
+  Cuneiform           discounted  local_search      0.00%    1.15%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           discounted  aco               0.00%    0.00%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    2.60%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    1.18%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.08%    0.15%    0.08%     20/20    
+  Cuneiform           discounted  local_search      0.00%    1.18%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    0.23%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    0.23%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.00%    5.01%    0.00%     10/10    
+  Cuneiform           discounted  local_search      0.22%    4.14%    0.22%     10/10    
+  Cuneiform           discounted  local_search      0.30%    3.47%    0.30%     10/10    
+  Cuneiform           discounted  local_search      0.22%    4.14%    0.22%     10/10    
+  Cuneiform           discounted  local_search      0.30%    3.47%    0.30%     10/10    
+  Cuneiform           discounted  local_search      0.30%    3.47%    0.30%     10/10    
+  Cuneiform           sum         genetic           0.31%    1.28%    2.75%     10/10    
+  Cuneiform           sum         genetic           0.21%    0.10%    1.36%     10/10    
+  Cuneiform           sum         genetic           0.31%    0.10%    0.10%     10/10    
+  Cuneiform           sum         genetic           0.21%    0.10%    1.36%     10/10    
+  Cuneiform           sum         genetic           0.31%    0.10%    0.10%     10/10    
+  Cuneiform           sum         multiswarm        0.42%    0.10%    0.10%     10/10    
+  Cuneiform           sum         genetic           0.00%   21.22%    1.87%     10/10    
+  Cuneiform           sum         genetic           0.64%   20.28%    4.46%     10/10    
+  Cuneiform           sum         local_search      0.95%   17.41%    0.95%     20/20    
+  Cuneiform           sum         genetic           0.64%   20.28%    4.46%     10/10    
+  Cuneiform           sum         genetic           0.64%   16.49%    1.28%     10/10    
+  Cuneiform           sum         genetic           0.64%   16.49%    1.28%     10/10    
+  Cuneiform           sum         genetic           8.90%   31.91%    0.00%     10/10    
+  Cuneiform           sum         genetic           3.74%   29.38%    0.00%     10/10    
+  Cuneiform           sum         genetic           2.92%   25.51%    0.00%     10/10    
+  Cuneiform           sum         genetic           3.74%   29.38%    0.00%     10/10    
+  Cuneiform           sum         genetic           2.92%   25.51%    0.00%     10/10    
+  Cuneiform           sum         multiswarm        1.60%   25.51%    0.00%     10/10    
+  Cuneiform           sum         local_search      0.00%    0.23%    0.00%     10/10    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     10/10    
+  Cuneiform           sum         aco               0.00%    0.00%    0.00%     10/10    
+  DHFR_bond           sum         aco               0.00%    0.00%   23.48%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    2.05%     10/10    
+  QM9_bond            discounted  aco               0.00%    0.00%    1.46%     10/10    
+  QM9_bond            discounted  aco               0.00%    0.00%    3.91%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    1.46%     10/10    
+  QM9_bond            discounted  aco               0.00%    0.00%    1.17%     10/10    
+  QM9_bond            discounted  aco               0.00%    0.00%    1.17%     10/10    
+  QM9_bond            sum         aco               0.00%    0.00%   20.87%     10/10    
+  QM9_bond            sum         aco               0.00%    0.00%   12.10%     10/10    
+  QM9_bond            sum         aco               0.00%    0.00%   15.66%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   12.10%     10/10    
+  QM9_bond            sum         aco               0.00%    0.00%   11.37%     10/10    
+  QM9_bond            sum         aco               0.00%    0.00%   11.37%     10/10    
+  alchemy_full_bond   discounted  aco               0.00%    0.00%    9.61%     20/20    
+  alchemy_full_bond   sum         aco               0.00%    0.00%   27.61%     20/20    
+
+  race           mean regret   0.51%   worst   8.90%   over 61 cells
+  always-ACO     mean regret   5.13%   worst  31.91%   over 61 cells
+  always-ILS     mean regret   3.11%   worst  27.61%   over 61 cells
+  always-PSO     mean regret   1.87%   worst  11.29%   over 61 cells
+
+  == SHARED SEEDS -- as measured before, to size the optimism ==
+  dataset             mode        picked            race      aco      ils  race/pay seeds
+  BZR_bond            discounted  pso               0.00%    0.00%    0.27%     40/40    
+  BZR_bond            sum         aco               0.25%    0.25%   10.21%     40/40    
+  COX2_bond           discounted  pso               0.00%    0.00%    0.00%     40/40    
+  COX2_bond           sum         aco               0.43%    0.43%    1.76%     40/40    
+  Cuneiform           discounted  local_search      0.00%    0.79%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           discounted  aco               0.00%    0.00%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    2.09%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.70%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.22%    0.00%     40/40    
+  Cuneiform           discounted  local_search      0.00%    0.70%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.23%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    0.23%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    4.11%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.00%    2.73%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.11%    2.37%    0.11%     20/20    
+  Cuneiform           discounted  local_search      0.00%    2.73%    0.00%     20/20    
+  Cuneiform           discounted  local_search      0.11%    2.37%    0.11%     20/20    
+  Cuneiform           discounted  local_search      0.11%    2.37%    0.11%     20/20    
+  Cuneiform           sum         genetic           0.00%    1.18%    2.60%     20/20    
+  Cuneiform           sum         genetic           0.10%    0.05%    2.00%     20/20    
+  Cuneiform           sum         genetic           0.21%    0.00%    0.74%     20/20    
+  Cuneiform           sum         genetic           0.10%    0.05%    2.00%     20/20    
+  Cuneiform           sum         genetic           0.21%    0.00%    0.74%     20/20    
+  Cuneiform           sum         multiswarm        0.10%    0.00%    0.74%     20/20    
+  Cuneiform           sum         local_search      3.10%   19.88%    3.10%     20/20    
+  Cuneiform           sum         local_search      3.15%   18.71%    3.15%     20/20    
+  Cuneiform           sum         local_search      0.95%   16.19%    0.95%     40/40    
+  Cuneiform           sum         genetic           0.00%   18.71%    3.15%     20/20    
+  Cuneiform           sum         genetic           0.00%   15.78%    1.28%     20/20    
+  Cuneiform           sum         genetic           0.00%   15.78%    1.28%     20/20    
+  Cuneiform           sum         local_search      0.00%   23.91%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%   21.35%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%   21.11%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%   21.35%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%   21.11%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%   21.11%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%    1.06%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           sum         local_search      0.00%    0.00%    0.00%     20/20    
+  Cuneiform           sum         aco               0.00%    0.00%    0.00%     20/20    
+  DHFR_bond           sum         aco               0.00%    0.00%   21.92%     40/40    
+  QM9_bond            discounted  aco               0.00%    0.00%   12.49%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    7.41%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    2.83%     40/40    
+  QM9_bond            discounted  aco               0.00%    0.00%    7.41%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    1.76%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    1.76%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   31.04%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   18.83%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   14.84%     40/40    
+  QM9_bond            sum         aco               0.00%    0.00%   18.83%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   12.53%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   12.53%     20/20    
+  alchemy_full_bond   discounted  aco               0.00%    0.00%    8.86%     40/40    
+  alchemy_full_bond   sum         aco               0.00%    0.00%   27.44%     40/40    
+
+  race           mean regret   0.15%   worst   3.15%   over 61 cells
+  always-ACO     mean regret   4.26%   worst  23.91%   over 61 cells
+  always-ILS     mean regret   3.85%   worst  31.04%   over 61 cells
+  always-PSO     mean regret   1.91%   worst  11.29%   over 61 cells
+
+  optimism of the shared-seed figure: 0.15% -> 0.51% (+0.37 percentage points)
+  race against the best fixed rule, on disjoint seeds: 0.51% vs 1.87%  -> race still wins
+
+[done] results/selector_regret_allpairs.csv
+# exit: 0

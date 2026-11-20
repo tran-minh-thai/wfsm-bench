@@ -219,7 +219,7 @@ def table_selector() -> str:
     names = list(groups[0].regret) if groups else []
     labels = {"all": "all cells", "sharp": "sharp top (one winner)",
               "plateau": "plateau top (methods tie)"}
-    heading = {"race": "race", "aco": "always ACO", "ils": "always ILS"}
+    heading = {"race": "race", "aco": "always ACO", "ils": "always ILS", "pso": "always PSO"}
     # mean +/- sd / worst. The spread is across the group's CELLS: a row of the artefact is
     # one cell whose race is already run over its seeds, so seed-level variation sits inside
     # each value and is not recoverable here. Printed because mean and worst alone leave the

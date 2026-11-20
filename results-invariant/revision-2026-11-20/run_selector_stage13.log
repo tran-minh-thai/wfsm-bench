@@ -1,0 +1,51 @@
+# command: scripts/run_selector.py --out results/selector_regret.csv
+# date: 2026-11-20 12:24:36 +0700
+# git_commit: ed2c03870fcb764b7435641ada5ddbcca8cdbc23 tree: 4 changed path(s)
+# script_sha256: 59b497532382362b3c7605d08d72387932095269f6ce72b8d654f4c7e5a12ee3
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+reading 6 per-seed files
+
+  == DISJOINT SEEDS -- race on even, pay on odd ==
+  dataset             mode        picked            race      aco      ils  race/pay seeds
+  BZR_bond            discounted  multiswarm        0.00%    0.00%    0.35%     20/20    
+  BZR_bond            sum         aco               0.69%    0.69%    9.15%     20/20    
+  COX2_bond           discounted  pso               0.00%    0.00%    0.00%     20/20    
+  COX2_bond           sum         pso               0.00%    0.40%    3.12%     20/20    
+  Cuneiform           discounted  local_search      0.08%    0.15%    0.08%     20/20    
+  Cuneiform           sum         local_search      0.95%   17.41%    0.95%     20/20    
+  DHFR_bond           sum         aco               0.00%    0.00%   23.48%     20/20    
+  QM9_bond            discounted  aco               0.00%    0.00%    3.91%     20/20    
+  QM9_bond            sum         aco               0.00%    0.00%   15.66%     20/20    
+  alchemy_full_bond   discounted  aco               0.00%    0.00%    9.61%     20/20    
+  alchemy_full_bond   sum         aco               0.00%    0.00%   27.61%     20/20    
+
+  race           mean regret   0.16%   worst   0.95%   over 11 cells
+  always-ACO     mean regret   1.70%   worst  17.41%   over 11 cells
+  always-ILS     mean regret   8.54%   worst  27.61%   over 11 cells
+  always-PSO     mean regret   2.55%   worst  11.29%   over 11 cells
+
+  == SHARED SEEDS -- as measured before, to size the optimism ==
+  dataset             mode        picked            race      aco      ils  race/pay seeds
+  BZR_bond            discounted  pso               0.00%    0.00%    0.27%     40/40    
+  BZR_bond            sum         aco               0.25%    0.25%   10.21%     40/40    
+  COX2_bond           discounted  pso               0.00%    0.00%    0.00%     40/40    
+  COX2_bond           sum         aco               0.43%    0.43%    1.76%     40/40    
+  Cuneiform           discounted  local_search      0.00%    0.22%    0.00%     40/40    
+  Cuneiform           sum         local_search      0.95%   16.19%    0.95%     40/40    
+  DHFR_bond           sum         aco               0.00%    0.00%   21.92%     40/40    
+  QM9_bond            discounted  aco               0.00%    0.00%    2.83%     40/40    
+  QM9_bond            sum         aco               0.00%    0.00%   14.84%     40/40    
+  alchemy_full_bond   discounted  aco               0.00%    0.00%    8.86%     40/40    
+  alchemy_full_bond   sum         aco               0.00%    0.00%   27.44%     40/40    
+
+  race           mean regret   0.15%   worst   0.95%   over 11 cells
+  always-ACO     mean regret   1.55%   worst  16.19%   over 11 cells
+  always-ILS     mean regret   8.10%   worst  27.44%   over 11 cells
+  always-PSO     mean regret   2.54%   worst  11.29%   over 11 cells
+
+  optimism of the shared-seed figure: 0.15% -> 0.16% (+0.01 percentage points)
+  race against the best fixed rule, on disjoint seeds: 0.16% vs 1.70%  -> race still wins
+
+[done] results/selector_regret.csv
+# exit: 0

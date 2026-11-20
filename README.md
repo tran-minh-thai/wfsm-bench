@@ -538,7 +538,7 @@ the calibration artefacts; `results/rho_summary.txt` lists the values.
 | `SUPPORT_FRACTIONS` | `scripts/run_pareto_size.py` | `0.03333, 0.1, 0.2, 0.3, 0.5, 0.6, 0.7` | support thresholds of the Pareto-front runs |
 | `STUDY_GRAPH_LIMIT` | `scripts/run_pareto_size.py` | `60` | graphs used from Cuneiform in the Pareto-front runs |
 | `ALPHA` | `scripts/run_statistics.py` | `0.05` | significance level of the pairwise tests (Holm-corrected) |
-| `FIXED` | `scripts/run_selector.py` | `aco, local_search` | fixed single-method rules the racing selector is compared with |
+| `FIXED` | `scripts/run_selector.py` | `aco, local_search, pso` | fixed single-method rules the racing selector is compared with |
 | `DECOMPOSITION_SIZE` | `src/wfsmbench/measure/selector.py` | `10` | race size at which the regret bound's two terms are separated |
 | `TIE` | `scripts/measure_race_only_signals.py` | `0.001` | fitness gap under which two methods count as tied in a race |
 | `CD` | `scripts/make_figures.py` | `1.007` | Nemenyi critical difference drawn on the rank figures (7 methods, 80 blocks, alpha 0.05) |
