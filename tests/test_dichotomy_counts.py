@@ -53,17 +53,22 @@ def test_the_real_counts_have_denominators_and_stay_inside_them(capsys) -> None:
 
 
 def test_counts_on_a_built_results_tree(tmp_path) -> None:
-    """Three cells at bound 4: optimum with K vertices but fewer edges, with K edges, and inside."""
+    """Four cells at bound 4: optimum with K vertices but fewer edges, with K edges, inside, and
+    at the largest edge count of a pool that has no K-edge pattern (at the bound, ticket 5)."""
     frontier = ["dataset,graph_limit,max_size,min_support,edges,nodes,G"]
     landscape = ["dataset,graph_limit,size_bound,support_fraction,min_support,weight_mode,"
                  "optimum_edges,optimum_nodes"]
     rising = [(1, 2, 0.10), (2, 3, 0.20), (3, 4, 0.30), (4, 4, 0.40)]     # every step above HI
+    capped = rising[:3]                                                     # pool stops at 3 edges
     stalling = [(1, 2, 0.10), (2, 3, 0.20), (3, 4, 0.205), (4, 4, 0.21)]  # last steps below
-    for support, points, edges, nodes in ((2, rising, 3, 4), (6, rising, 4, 4), (12, stalling, 2, 3)):
+    for support, points, edges, nodes in ((2, rising, 3, 4), (6, rising, 4, 4), (12, stalling, 2, 3),
+                                           (18, capped, 3, 4)):
         frontier += [f"Cuneiform,60,4,{support},{k},{v},{g}" for k, v, g in points]
         landscape.append(f"Cuneiform,60,4,0.1,{support},sum,{edges},{nodes}")
     (tmp_path / "degeneracy_frontier_cuneiform.csv").write_text("\n".join(frontier) + "\n")
     (tmp_path / "weight_mode_landscape.csv").write_text("\n".join(landscape) + "\n")
     counts = V.dichotomy_counts(tmp_path, "sum")
-    assert counts["cells"] == 3 and counts["strict"] == 2
-    assert counts["at_bound"] == 1      # only K edges is at the bound; K vertices alone is not
+    assert counts["cells"] == 4 and counts["strict"] == 3
+    # at the bound = the pool's largest edge count: K edges in a full pool, 3 edges in the capped
+    # one; K vertices with fewer edges than the pool's largest is not at the bound
+    assert counts["at_bound"] == 2

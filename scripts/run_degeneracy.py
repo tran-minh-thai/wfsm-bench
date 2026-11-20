@@ -106,8 +106,14 @@ def frontier(pool, stats, params):
     return best
 
 
-def shape_of(peak: int, size: int) -> str:
-    if peak >= size:
+def shape_of(peak: int, top: int) -> str:
+    """Where a peak edge count sits, with `top` the LARGEST edge count of the cell's pool.
+
+    The manuscript's definition (2026-11-20): at the bound means the pool's largest edge count,
+    which is K unless no frequent pattern has K edges. Rows written before that date used
+    `peak >= K`, and so call a 3-edge peak "interior" in a K = 4 cell whose pool stops at 3.
+    """
+    if peak >= top:
         return "at-the-bound"
     return "interior" if peak > 1 else "at-the-floor"
 
@@ -248,7 +254,7 @@ def main(argv: list[str]) -> int:
                 peak = max(tuned_front, key=lambda k: tuned_front[k][0])
                 gamma_rows.append(
                     f"{dataset},{limit},{size},{support},{gamma},{peak},"
-                    f"{tuned_front[peak][1]},{shape_of(peak, size)},"
+                    f"{tuned_front[peak][1]},{shape_of(peak, max(tuned_front))},"
                     f"{tuned_front[peak][0]:.6f}")
 
     print(f"\nturn-over condition agrees with the measured peak in {agree}/{total} "
@@ -302,7 +308,7 @@ def main(argv: list[str]) -> int:
                 peak = max(front, key=lambda k: front[k])
                 peaks.append(peak)
                 values.append(round(front[peak], 6))
-                cells.append(f"k={peak} {shape_of(peak, size):<14}")
+                cells.append(f"k={peak} {shape_of(peak, max(front)):<14}")
             stable = (len(set(peaks)) == 1 and len(set(values)) == 1
                       and 1 < peaks[0] < min(calibration_sizes))
             # %g, not %.1f: the extended tail holds 0.25 and 0.05, which a single
