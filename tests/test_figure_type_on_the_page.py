@@ -1,4 +1,4 @@
-"""Every drawn figure uses an accepted, embedded font, and its text reaches the page at 9-10pt.
+"""Every drawn figure uses the body face, embedded, and its text reaches the page at body size.
 
 Read from the PDF files themselves, not from the builder's font-size arguments. The builder
 sets sizes on a canvas that the typesetter then scales to the width the manuscript asks for,
@@ -7,10 +7,10 @@ only size worth checking is the one in the file, multiplied by that scale.
 
 What the check reads, and why each part is there:
 
-* the font of every text-showing operator: the family must be Arial (the journal asks for
-  Helvetica or Arial), the font
-  program must be TrueType (Type 3, matplotlib's default, is refused by the journal) and it
-  must be embedded;
+* the font of every text-showing operator: the family must be Computer Modern (the body face of
+  the Springer class, set by LaTeX through text.usetex; the author asked on 2026-11-20 for figure
+  lettering close to the body text), the font must be an outline font (Type 3, matplotlib's
+  default for its own fonts, is a bitmap-like procedure font) and it must be embedded;
 * the effective size of every string: the Tf operand times the scale of the text matrix and
   the current transformation matrix -- rotation does not change it, so rotated axis labels are
   checked like the rest;
@@ -30,7 +30,9 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "make_figures.py"
-ACCEPTED_FAMILY = "Arial"
+# Computer Modern Type 1 fonts are named CMR10, CMMI10, CMSY10, CMBX10, ... after the subset tag.
+ACCEPTED_FAMILY = "Computer Modern"
+ACCEPTED_PREFIX = "CM"
 # The journal's floor for sub- and superscripts is 6pt; matplotlib sets them at 0.7 of the
 # base size, and the base is at least 9pt, so 0.7 * 9 is what a correct figure produces.
 INDEX_FLOOR_RATIO = 0.7
@@ -152,21 +154,24 @@ def page_report(path: Path, printed_width_in: float) -> list[str]:
     if not runs:
         return [f"{path.name}: no text found -- the reader, not the figure, is broken"]
     scale = printed_width_in * 72.0 / width
-    low, high = 9.0, 10.0
+    low, high = _printed_range()
     problems = []
     for font in {tuple(run["font"].items()) for run in runs}:
         font = dict(font)
-        if ACCEPTED_FAMILY not in font["name"]:
+        if not font["name"].split("+")[-1].startswith(ACCEPTED_PREFIX):
             problems.append(f"{path.name}: font {font['name']} is not {ACCEPTED_FAMILY}")
-        if font["subtype"] != "CIDFontType2" and font["subtype"] != "TrueType":
-            problems.append(f"{path.name}: font {font['name']} is {font['subtype']}, not TrueType")
+        if font["subtype"] == "Type3":
+            problems.append(f"{path.name}: font {font['name']} is Type3, not an outline font")
         if not font["embedded"]:
             problems.append(f"{path.name}: font {font['name']} is not embedded")
     largest_in_block = {}
     for run in runs:
         largest_in_block[run["block"]] = max(largest_in_block.get(run["block"], 0), run["size"])
     for run in runs:
-        printed = run["size"] * scale
+        # In TeX points: the PDF states sizes in PostScript points (72 to the inch), while the
+        # range is the body size, which LaTeX states in TeX points (72.27 to the inch). Text set
+        # by LaTeX at 9.91pt reads 9.87 in the PDF; compared unconverted it failed the range.
+        printed = run["size"] * scale * 72.27 / 72.0
         is_index = run["size"] < largest_in_block[run["block"]] - 1e-6
         if is_index:
             if printed < INDEX_FLOOR_RATIO * low - TOLERANCE_PT:
@@ -199,11 +204,25 @@ def test_figure_type_meets_the_journal_rules(name: str, printed: float, drawn_fi
 
 
 # ---------------------------------------------------------------- the check must be able to fail
+def _printed_range() -> tuple[float, float]:
+    """The builder's own range, so the check and the drawing cannot drift apart."""
+    global _RANGE
+    try:
+        return _RANGE
+    except NameError:
+        _RANGE = tuple(_builder().PRINTED_PT)
+        return _RANGE
+
+
 def _draw(tmp_path: Path, family: str, fontsize: float, fonttype: int = 42) -> Path:
+    """family "latex" draws through text.usetex in Computer Modern, as the builder does."""
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    with matplotlib.rc_context({"font.family": family, "pdf.fonttype": fonttype}):
+    rc = ({"text.usetex": True, "font.family": "serif", "font.serif": ["Computer Modern Roman"]}
+          if family == "latex" else {"text.usetex": False, "font.family": family,
+                                     "pdf.fonttype": fonttype})
+    with matplotlib.rc_context(rc):
         fig, ax = plt.subplots(figsize=(4.0, 3.0))
         ax.plot([1, 10, 100], [1, 2, 3])
         ax.set_xscale("log")
@@ -218,16 +237,16 @@ def _draw(tmp_path: Path, family: str, fontsize: float, fonttype: int = 42) -> P
 
 
 def test_a_correct_figure_passes(tmp_path: Path) -> None:
-    good = _draw(tmp_path, "Arial", 9.5)
+    good = _draw(tmp_path, "latex", sum(_printed_range()) / 2)
     assert page_report(good, 4.0) == []
 
 
 @pytest.mark.parametrize("family,fontsize,fonttype,expected", [
-    ("Arial", 8.0, 42, "outside 9.0-10.0pt"),     # too small on the page
-    ("Arial", 11.0, 42, "outside 9.0-10.0pt"),    # too large on the page
-    ("DejaVu Sans", 9.5, 42, "is not Arial"),              # matplotlib's default family
-    ("Times New Roman", 9.5, 42, "is not Arial"),          # the family used before 2026-11-20
-    ("Arial", 9.5, 3, "not TrueType"),            # matplotlib's default font type
+    ("latex", 9.0, 42, "outside"),                          # the old 9pt, below body size
+    ("latex", 11.0, 42, "outside"),                         # too large on the page
+    ("DejaVu Sans", 9.95, 42, "is not Computer Modern"),    # matplotlib's default family
+    ("Arial", 9.95, 42, "is not Computer Modern"),          # the face used earlier on 2026-11-20
+    ("DejaVu Sans", 9.95, 3, "not an outline font"),        # matplotlib's default font type
 ])
 def test_the_check_rejects_each_breach(tmp_path: Path, family, fontsize, fonttype,
                                        expected) -> None:
@@ -238,7 +257,7 @@ def test_the_check_rejects_each_breach(tmp_path: Path, family, fontsize, fonttyp
 
 def test_the_check_reads_the_print_scale(tmp_path: Path) -> None:
     """The same file passes at the width it was drawn for and fails when shrunk to 0.86."""
-    good = _draw(tmp_path, "Arial", 9.5)
+    good = _draw(tmp_path, "latex", sum(_printed_range()) / 2)
     assert page_report(good, 4.0) == []
     assert any("outside" in line for line in page_report(good, 0.86 * 4.0))
 

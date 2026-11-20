@@ -44,7 +44,22 @@ def labels(figure: str) -> dict:
         raise SystemExit(f"[fail] {LABELS_PATH} has no labels for {figure!r}. A missing key "
                          f"must not fall back to a default: that is how a figure ships with a "
                          f"placeholder axis.")
-    return loaded[figure]
+    return _escape_for_latex(loaded[figure])
+
+
+def _escape_for_latex(value):
+    """Label text goes through LaTeX (text.usetex): a bare % would start a comment and drop the
+    rest of the string. Applied to every string of a figure's labels, nested ones included."""
+    if isinstance(value, str):
+        # | < > in OT1 text mode print as an em dash and inverted punctuation ("|P(K)|" came out
+        # as "--P(K)--"), so they are set in math mode, as the body sets them.
+        value = re.sub(r"(?<!\\)%", r"\\%", value)
+        return re.sub(r"[|<>]", lambda m: f"${m.group(0)}$", value)
+    if isinstance(value, dict):
+        return {k: _escape_for_latex(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_escape_for_latex(v) for v in value]
+    return value
 
 import matplotlib                                              # noqa: E402
 matplotlib.use("Agg")
@@ -77,15 +92,32 @@ NO_DATE_METADATA = {"CreationDate": None}
 matplotlib.rcParams["lines.markeredgecolor"] = "#1A1A1A"
 matplotlib.rcParams["lines.markeredgewidth"] = 0.7
 
-# Arial, embedded as TrueType (fonttype 42 above). The target journal (Knowledge and Information
-# Systems, Springer; chosen 2026-11-20) asks for figure lettering "Helvetica or Arial (sans serif
-# fonts)", with every font embedded; the author chose Arial over keeping a serif face. The body
-# is Computer Modern, which matplotlib cannot use cleanly (its Computer Modern font has no
-# U+2265). Until 2026-11-20 the figures used Times New Roman, to match the Elsevier body text.
-# matplotlib falls back to DejaVu without a word when a family is missing, so the family is
-# checked before drawing (require_font) rather than trusted.
-FIGURE_FONT = "Arial"
-matplotlib.rcParams["font.family"] = FIGURE_FONT
+# Figure text is typeset by LaTeX in the manuscript's own face, Computer Modern (2026-11-20, the
+# author: figure lettering "as close as possible to the body text", in face and size). The
+# Springer class sets the body in Computer Modern at 10pt; matplotlib's own Computer Modern font
+# has no U+2265 and the OpenType version embeds as CFF with viewer warnings, so the text goes
+# through latex instead (text.usetex) and the PDF carries the same Type 1 fonts as the body.
+# The journal recommends Helvetica or Arial for lettering; the author chose consistency with the
+# body. Before, the figures used Arial (earlier on 2026-11-20) and Times New Roman (Elsevier).
+# underscore: dataset and method names keep their underscores; newunicodechar: the few symbols
+# the labels and builders print.
+FIGURE_FONT = "Computer Modern"
+# One design size for every size: a canvas drawn at 17pt and printed at 10pt would otherwise
+# take the 17pt design (CMR17, measured 2026-11-20), visibly lighter than the body's CMR10.
+LATEX_PREAMBLE = ("\\DeclareFontShape{OT1}{cmr}{m}{n}{<->cmr10}{}"
+                  "\\DeclareFontShape{OML}{cmm}{m}{it}{<->cmmi10}{}"
+                  "\\DeclareFontShape{OMS}{cmsy}{m}{n}{<->cmsy10}{}"
+                  "\\usepackage{type1cm}\\usepackage{underscore}\\usepackage{newunicodechar}"
+                  "\\newunicodechar{\u2192}{\\ensuremath{\\rightarrow}}"
+                  "\\newunicodechar{\u00b7}{\\ensuremath{\\cdot}}"
+                  "\\newunicodechar{\u2265}{\\ensuremath{\\geq}}"
+                  "\\newunicodechar{\u2264}{\\ensuremath{\\leq}}"
+                  "\\newunicodechar{\u00d7}{\\ensuremath{\\times}}"
+                  "\\newunicodechar{\u2212}{\\ensuremath{-}}"
+                  "\\newunicodechar{\u2013}{--}")
+matplotlib.rcParams.update({"text.usetex": True, "font.family": "serif",
+                            "font.serif": ["Computer Modern Roman"],
+                            "text.latex.preamble": LATEX_PREAMBLE})
 # Text is measured on the raster canvas -- to place labels and to refuse overlaps -- and the
 # canvas hints glyphs to its pixel grid. At 100 dpi that made every string about 5% narrower
 # than the same string in the saved PDF (measured 2026-09-29: 159.8pt against 168.2pt of ink),
@@ -146,13 +178,15 @@ COLUMN_WIDTH_IN = 372.0 / 72.27
 ELSEVIER_COLUMN_IN = 6.48
 NARROW = COLUMN_WIDTH_IN / ELSEVIER_COLUMN_IN
 
-# Every string on the printed page lies in this range, in points: the author's 9-10pt (set when
-# the Elsevier table text was 10pt), inside the journal's 8-12pt for lettering. The Springer
-# class sets table text at 8pt, so figure text now sits one to two points above it.
+# Every string on the printed page lies in this range, in TeX points: one size for every figure,
+# close to the 10pt body (the author, 2026-11-20). 9.5pt rather than 10: drawn at 10pt, the
+# two-panel figures ran their panel titles and axis labels into each other in the 372pt column
+# (measured 2026-11-20). Within the journal's 8-12pt. Before: 9-10pt, which left most figures at
+# 9pt and a few strings at 10pt.
 # Before 2026-09-29 sizes were chosen per figure, and three figures were never scaled at all:
 # the basin labels, drawn at 7pt and printed at 0.86 of a 7.2in canvas, reached the page at
 # about 5.4pt -- below Elsevier's 7pt floor for ordinary text.
-PRINTED_PT = (9.0, 10.0)
+PRINTED_PT = (9.45, 9.55)
 
 # 2026-11-20, the author: printed heights reduced by these amounts (cm on the page), per figure;
 # the front-position figure loses its amount on EACH row. Applied where each builder sets its
@@ -179,16 +213,13 @@ def printed_width_in(path: Path) -> float:
 
 
 def require_font() -> None:
-    """Refuse to draw when the figure font is not installed, instead of drawing in DejaVu."""
-    from matplotlib import font_manager
-    try:
-        font_manager.findfont(font_manager.FontProperties(family=FIGURE_FONT),
-                              fallback_to_default=False)
-    except ValueError:
-        raise SystemExit(f"[fail] the font {FIGURE_FONT!r} is not installed. matplotlib would "
-                         f"draw every figure in DejaVu Sans instead, which the journal's "
-                         f"artwork instructions do not accept; install it and run again.")
-
+    """Refuse to draw when LaTeX is missing: without it matplotlib cannot set the figure text in
+    the body face, and silently drawing in DejaVu instead is what this check exists to stop."""
+    import shutil
+    missing = [tool for tool in ("latex", "dvipng") if shutil.which(tool) is None]
+    if missing:
+        raise SystemExit(f"[fail] {', '.join(missing)} not on PATH; the figure text is typeset "
+                         f"by LaTeX in Computer Modern and cannot be drawn without it")
 
 def _saved_width_in(fig, tight: bool) -> float:
     """The width the saved PDF will have: the tight bounding box plus its padding, or the
@@ -358,13 +389,18 @@ def figure_basins(path: Path) -> None:
     # 280% invites a reader to ask what lives there.
     shares = [p[0] for p in points]
     ax.set_xlim(min(shares) / 4, min(max(shares) * 4, 100.0))
-    ax.axhline(1.0, color="#999999", linewidth=0.8, linestyle=":")
+    # The reference line and its words share one colour of their own (the author, 2026-11-20), the
+    # palette's green, unlike the orange and blue of the two point groups; dashed and heavier
+    # than a grid line, so it also stands apart in greyscale.
+    RANK_ONE_COLOUR = "#2CA02C"
+    ax.axhline(1.0, color=RANK_ONE_COLOUR, linewidth=1.2, linestyle="--", zorder=1)
     # The one string on this canvas that was still English in the printed draft: every
     # other word here came from the label file and this one was typed in place.
-    # Under the line, where no point can be (a mean rank is at least 1): above it, on the
-    # narrower Springer column, the label ran into the point labels near rank 1 (2026-11-20).
-    rank_one = ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0),
-                           color="#555555", va="top", ha="right")
+    # Above the line, at its right end (the author, 2026-11-20: under it the axis cut the
+    # letters). The point names are placed afterwards with this label as an obstacle.
+    rank_one = ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0), xytext=(0, 2),
+                           textcoords="offset points", color=RANK_ONE_COLOUR, va="bottom",
+                           ha="right")
     legend = ax.legend(frameon=False, loc="upper left")
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
@@ -678,7 +714,10 @@ def figure_race_size(path: Path) -> None:
     # right owner of it, not the left panel.
     handles, label_text = left.get_legend_handles_labels()
     # Two columns: three were wider than the Springer column (2026-11-20).
-    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=2,
+    # Compact handles and gaps: at body size in Computer Modern the two columns were wider than
+    # the canvas, and the fit kept widening the saved box (2026-11-20).
+    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=2, handlelength=1.6,
+               handletextpad=0.5, columnspacing=1.0,
                loc="lower center", bbox_to_anchor=(0.5, -0.01))
     # No figure title: the journal asks for none inside an illustration; the caption carries it.
     fig.tight_layout(rect=(0, 0.15, 1, 1))
@@ -839,7 +878,9 @@ def figure_enumeration_cost(path: Path) -> None:
         ax.set_yscale("log")
         ax.set_xticks(bounds)
         ax.set_ylabel(ylabel, fontsize=9)
-        ax.set_title(panel, loc="left", fontsize=9)
+        # Wrapped: on one line the right panel's title ran past the canvas in the 372pt column,
+        # and the fit kept widening the saved box (2026-11-20).
+        ax.set_title("\n".join(textwrap.wrap(panel, 26)), loc="left", fontsize=9)
         style(ax)
         # The y grid is what makes a slope comparable between two lines that sit in different
         # decades, and on a log axis the minor lines are the ones that carry the reading.
@@ -849,7 +890,9 @@ def figure_enumeration_cost(path: Path) -> None:
                           linestyle=dataset_style(name)[2], color=dataset_style(name)[0],
                           label=name)
                for name, _cells in sorted(data.items())]
-    figure.legend(handles=handles, frameon=False, fontsize=8, ncol=3,
+    # Two columns with compact handles: three were wider than the canvas at body size (2026-11-20).
+    figure.legend(handles=handles, frameon=False, fontsize=8, ncol=2, handlelength=1.6,
+                  handletextpad=0.5, columnspacing=1.0,
                   loc="lower center", bbox_to_anchor=(0.5, -0.075))
     # One x label for both panels, not one each. The panels share the axis (sharex), so the
     # second copy said nothing the first had not; it was also the copy that overhung the right
