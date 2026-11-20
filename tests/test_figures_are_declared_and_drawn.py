@@ -124,7 +124,7 @@ def _included_figures(tex: str) -> tuple[set[str], list[str]]:
 # Every draft that exists is checked, not one named file. The English manuscript became the
 # submission version on 2026-09-25 while this check still read only the Vietnamese draft, so
 # the file that would be submitted was outside it.
-DRAFTS = [ROOT.parent / "paper" / "manuscript.tex", DRAFT]
+DRAFTS = [ROOT.parent / "paper" / "RaceSel.tex", DRAFT]
 
 
 @pytest.mark.parametrize("draft", DRAFTS, ids=lambda p: p.name)

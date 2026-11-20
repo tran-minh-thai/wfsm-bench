@@ -133,7 +133,7 @@ def style(ax) -> None:
     ax.set_axisbelow(True)
 
 
-# The manuscript's text column: \linewidth of manuscript.tex, measured by building it on
+# The manuscript's text column: \linewidth of RaceSel.tex, measured by building it on
 # 2026-09-29 -- 468.33pt, 6.4804in. The earlier figure of 6.48in had been inferred from how
 # one figure printed and agrees with the measurement.
 COLUMN_WIDTH_IN = 6.48
