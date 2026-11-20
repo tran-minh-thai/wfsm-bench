@@ -1,7 +1,7 @@
 # command: scripts/make_figures.py
-# date: 2026-11-20 20:29:31 +0700
-# git_commit: 86569d9fe6d439e8ed291f0ff179dc3371964de6 tree: 2 changed path(s)
-# script_sha256: 13bfe4ad65dec0f132231a42d97946a6a4430af8b435069ffe3591dc9d7ed118
+# date: 2026-11-20 21:43:53 +0700
+# git_commit: b1a6c295ceaf60c46561993c4601ebbf912f362f tree: 7 changed path(s)
+# script_sha256: e8522a88a3017e6de66b67b05cafcda5e1772ea55002ffa54daece0dc5000ecf
 # python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
 
 [done] results/figures/enumeration_cost_by_bound.pdf

@@ -125,9 +125,6 @@ matplotlib.rcParams.update({"text.usetex": True, "font.family": "serif",
 # within 1% of the ink in the PDF. The output is vector, so nothing drawn changes.
 matplotlib.rcParams["text.hinting"] = "no_hinting"
 
-# Nemenyi critical difference for seven methods over eighty blocks. Drawn on the sweep
-# so a reader can see at a glance that nothing moves by a distinguishable amount.
-CD = 1.007
 METHODS = ["aco", "pso", "multiswarm", "genetic", "clpso", "local_search", "random"]
 # Colourblind-safe (Okabe-Ito), fixed order so a rebuild never recolours a line.
 COLOURS = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#000000", "#999999"]
@@ -156,8 +153,22 @@ def rows(name: str) -> list[dict]:
         return list(csv.DictReader(handle))
 
 
+# Friedman/Nemenyi logs, one block per seed (decision D4, 2026-11-20).
+STATS_DIR = ROOT / "results-invariant" / "revision-2026-11-20" / "statistics_seed_blocks"
+
+
 def mean_ranks(log: str, mode: str) -> dict[str, float] | None:
-    return parse_ranks(need(RESULTS / log).read_text(encoding="utf-8"), mode)
+    return parse_ranks(need(STATS_DIR / log).read_text(encoding="utf-8"), mode)
+
+
+def critical_difference() -> float:
+    """The Nemenyi CD the statistics logs state; one value across the quantum sweep's logs."""
+    values = {float(v) for tag in QUANTA for v in
+              re.findall(r"Nemenyi CD = ([0-9.]+)", need(STATS_DIR / f"{tag}_statistics.log")
+                         .read_text(encoding="utf-8"))}
+    if len(values) != 1:
+        raise SystemExit(f"[fail] the quantum logs state {sorted(values)} as the critical difference")
+    return values.pop()
 
 def style(ax) -> None:
     ax.spines["top"].set_visible(False)
@@ -324,10 +335,15 @@ def figure_quantum(path: Path) -> None:
     # The critical difference drawn against the flattest interesting line, so the
     # comparison a reader needs -- movement against the threshold of significance -- is
     # on the page rather than left to arithmetic.
+    # The Nemenyi critical difference, read from the statistics logs (one block per seed since
+    # decision D4, 2026-11-20; it was a constant 1.007 for (budget, seed) blocks).
+    cd = critical_difference()
     base = ranks[0]["local_search"]
-    ax.axhspan(base - CD / 2, base + CD / 2, color="#999999", alpha=0.13, zorder=0)
-    ax.annotate(text["cd"], xy=(levels[-1], base + CD / 2), fontsize=10,
-                color="#555555", va="bottom", ha="right")
+    ax.axhspan(base - cd / 2, base + cd / 2, color="#999999", alpha=0.13, zorder=0)
+    # Inside the band, under its top edge at the left end: with seed blocks the band is twice as
+    # tall, and a label on its upper edge sat on the random-search line (2026-11-20).
+    ax.annotate(text["cd"], xy=(levels[0], base + cd / 2), xytext=(3, -2),
+                textcoords="offset points", fontsize=10, color="#555555", va="top", ha="left")
     ax.set_xscale("log")
     ax.invert_xaxis()
     ax.set_xlabel(text["xlabel"])

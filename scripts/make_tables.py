@@ -34,6 +34,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
+# Friedman/Nemenyi logs, one block per seed (decision D4, 2026-11-20).
+STATS_DIR = ROOT / "results-invariant" / "revision-2026-11-20" / "statistics_seed_blocks"
 
 sys.path.insert(0, str(ROOT / "src"))
 
@@ -74,7 +76,7 @@ def read_many(pattern: str) -> list[dict]:
 
 
 def mean_ranks(collection: str, mode: str) -> dict[str, float] | None:
-    path = RESULTS / f"{STATS_LOG[collection]}_statistics.log"
+    path = STATS_DIR / f"{STATS_LOG[collection]}_statistics.log"
     if not path.exists():
         MISSING.append(path.name)
         return None
@@ -182,7 +184,7 @@ def table_quantum() -> str:
     # which is a different experiment without the quantum column. That glob has now
     # collided twice, once here and once when a QM9 slice was mistaken for the base run.
     for tag in ("q000", "q002", "q005", "q010", "q020", "q050", "q100"):
-        path = RESULTS / f"{tag}_statistics.log"
+        path = STATS_DIR / f"{tag}_statistics.log"
         if not path.exists():
             MISSING.append(path.name)
             continue

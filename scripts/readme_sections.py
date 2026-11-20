@@ -48,7 +48,6 @@ CONSTANTS = [
     ("scripts/run_selector.py", "FIXED", "fixed single-method rules the racing selector is compared with"),
     ("src/wfsmbench/measure/selector.py", "DECOMPOSITION_SIZE", "race size at which the regret bound's two terms are separated"),
     ("scripts/measure_race_only_signals.py", "TIE", "fitness gap under which two methods count as tied in a race"),
-    ("scripts/make_figures.py", "CD", "Nemenyi critical difference drawn on the rank figures (7 methods, 80 blocks, alpha 0.05)"),
 ]
 
 # The collections each dataset row comes from, for the table's last column.

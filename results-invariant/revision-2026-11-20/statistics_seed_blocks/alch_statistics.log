@@ -1,0 +1,156 @@
+# command: scripts/run_statistics.py --runs results/weight_mode_runs_alch.csv --blocks seed --out results-invariant/revision-2026-11-20/statistics_seed_blocks/statistics_pairwise_alch.csv
+# date: 2026-11-20 21:40:23 +0700
+# git_commit: b1a6c295ceaf60c46561993c4601ebbf912f362f tree: 2 changed path(s)
+# script_sha256: e30c6eaa8c1c8f69d6fe869c21562815f67ab80fa00cb8632a77f12dfa1e3e85
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+weight_mode_runs_alch.csv: dataset alchemy_full_bond, 2 modes, 4 budgets, 7 methods, 20 seeds
+
+=== sum ===
+Friedman over 20 blocks (seed, ranks averaged over 4 budgets): chi2 = 94.5, p = 3.55e-18
+mean ranks (1 = best), Nemenyi CD = 2.014:
+    aco          1.000
+    pso          3.100
+    genetic      3.125
+    multiswarm   3.525
+    clpso        4.850
+    local_search 5.650
+    random       6.750
+  budget   60: 14/21 pairs differ after Holm
+      multiswarm>random (n=20, p=0.0012)
+      aco>multiswarm (n=20, p=0.0014)
+      pso>random (n=20, p=0.0014)
+      aco>random (n=20, p=0.0014)
+      aco>clpso (n=20, p=0.0014)
+      aco>local_search (n=20, p=0.0014)
+      aco>pso (n=19, p=0.0018)
+      aco>genetic (n=18, p=0.0027)
+      pso>local_search (n=16, p=0.0056)
+      multiswarm>clpso (n=16, p=0.0095)
+      multiswarm>local_search (n=14, p=0.01)
+      pso>clpso (n=14, p=0.012)
+      clpso>random (n=10, p=0.018)
+      pso>genetic (n=19, p=0.038)
+  budget  120: 14/21 pairs differ after Holm
+      aco>clpso (n=20, p=0.00049)
+      aco>pso (n=20, p=0.00071)
+      aco>local_search (n=20, p=0.00097)
+      aco>multiswarm (n=20, p=0.00097)
+      aco>random (n=20, p=0.0011)
+      pso>random (n=20, p=0.0012)
+      clpso>random (n=20, p=0.0012)
+      multiswarm>random (n=20, p=0.0012)
+      aco>genetic (n=19, p=0.0012)
+      pso>local_search (n=17, p=0.0022)
+      pso>clpso (n=14, p=0.0041)
+      genetic>random (n=20, p=0.0049)
+      multiswarm>local_search (n=14, p=0.019)
+      multiswarm>clpso (n=12, p=0.043)
+  budget  180: 14/21 pairs differ after Holm
+      aco>pso (n=20, p=0.00025)
+      aco>multiswarm (n=20, p=0.00025)
+      aco>local_search (n=20, p=0.00069)
+      aco>clpso (n=20, p=0.00097)
+      aco>random (n=20, p=0.0012)
+      pso>random (n=20, p=0.0012)
+      multiswarm>random (n=20, p=0.0012)
+      clpso>random (n=19, p=0.0017)
+      pso>local_search (n=16, p=0.0017)
+      multiswarm>local_search (n=16, p=0.0017)
+      local_search>random (n=18, p=0.0018)
+      genetic>random (n=20, p=0.0021)
+      aco>genetic (n=11, p=0.0088)
+      clpso>pso (n=9, p=0.031)
+  budget  240: 13/21 pairs differ after Holm
+      aco>pso (n=20, p=0.00016)
+      aco>clpso (n=20, p=0.00016)
+      aco>multiswarm (n=20, p=0.00016)
+      aco>local_search (n=20, p=0.0011)
+      pso>random (n=20, p=0.0012)
+      clpso>random (n=20, p=0.0012)
+      multiswarm>random (n=20, p=0.0012)
+      aco>random (n=20, p=0.0012)
+      genetic>random (n=19, p=0.0022)
+      pso>local_search (n=14, p=0.0058)
+      clpso>local_search (n=14, p=0.0058)
+      multiswarm>local_search (n=14, p=0.0058)
+      local_search>random (n=17, p=0.0077)
+
+=== discounted ===
+Friedman over 20 blocks (seed, ranks averaged over 4 budgets): chi2 = 95.1, p = 2.59e-18
+mean ranks (1 = best), Nemenyi CD = 2.014:
+    aco          1.275
+    pso          2.475
+    multiswarm   3.025
+    genetic      4.175
+    clpso        4.625
+    local_search 5.625
+    random       6.800
+  budget   60: 16/21 pairs differ after Holm
+      aco>multiswarm (n=19, p=0.00027)
+      aco>random (n=20, p=0.00074)
+      multiswarm>random (n=20, p=0.00084)
+      aco>local_search (n=20, p=0.0012)
+      aco>clpso (n=20, p=0.0012)
+      pso>random (n=20, p=0.0012)
+      pso>clpso (n=13, p=0.0037)
+      aco>pso (n=13, p=0.0037)
+      clpso>random (n=13, p=0.0037)
+      aco>genetic (n=17, p=0.0037)
+      multiswarm>clpso (n=12, p=0.0054)
+      multiswarm>genetic (n=16, p=0.0071)
+      pso>local_search (n=14, p=0.0081)
+      multiswarm>local_search (n=11, p=0.0081)
+      pso>genetic (n=19, p=0.0081)
+      local_search>random (n=20, p=0.041)
+  budget  120: 12/21 pairs differ after Holm
+      aco>clpso (n=18, p=0.00071)
+      aco>random (n=20, p=0.0013)
+      pso>random (n=20, p=0.0014)
+      multiswarm>random (n=20, p=0.0014)
+      clpso>random (n=19, p=0.0018)
+      aco>local_search (n=18, p=0.0018)
+      pso>clpso (n=14, p=0.0041)
+      pso>local_search (n=15, p=0.0066)
+      genetic>random (n=20, p=0.0066)
+      multiswarm>clpso (n=12, p=0.0066)
+      local_search>random (n=18, p=0.0066)
+      multiswarm>local_search (n=15, p=0.014)
+  budget  180: 10/21 pairs differ after Holm
+      pso>local_search (n=18, p=0.00071)
+      multiswarm>local_search (n=18, p=0.00071)
+      aco>local_search (n=18, p=0.00071)
+      pso>random (n=20, p=0.0012)
+      multiswarm>random (n=20, p=0.0012)
+      aco>random (n=20, p=0.0012)
+      clpso>random (n=19, p=0.0018)
+      local_search>random (n=17, p=0.0034)
+      genetic>random (n=20, p=0.0092)
+      clpso>local_search (n=14, p=0.019)
+  budget  240: 10/21 pairs differ after Holm
+      pso>local_search (n=17, p=0.00078)
+      multiswarm>local_search (n=17, p=0.00078)
+      aco>local_search (n=17, p=0.00078)
+      clpso>local_search (n=16, p=0.0011)
+      pso>random (n=20, p=0.0012)
+      multiswarm>random (n=20, p=0.0012)
+      aco>random (n=20, p=0.0012)
+      clpso>random (n=19, p=0.0015)
+      genetic>random (n=20, p=0.0044)
+      local_search>random (n=15, p=0.0066)
+
+=== ranking change: sum vs discounted ===
+method               sum    discounted   shift
+pso                3.100         2.475   0
+clpso              4.850         4.625   0
+multiswarm         3.525         3.025   +1
+aco                1.000         1.275   0
+genetic            3.125         4.175   -1
+local_search       5.650         5.625   0
+random             6.750         6.800   0
+
+Spearman between the two orderings: rho = 0.964, p = 0.000454
+rho near 1 would mean the objective's defect did not change the ranking; the further below 1, the more of the reported ordering belonged to the objective rather than to the methods.
+
+[done] results-invariant/revision-2026-11-20/statistics_seed_blocks/statistics_pairwise_alch.csv
+# exit: 0

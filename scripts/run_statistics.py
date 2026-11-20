@@ -10,8 +10,11 @@ so every comparison is paired.
       Holm-corrected within each cell, because 15 pairwise tests at alpha = 0.05 would
       otherwise produce a "significant" result by chance more often than not.
 
-    Friedman across the six methods within a mode, blocked by (budget, seed). This asks
-      whether the methods differ at all before any pair is inspected.
+    Friedman across the methods within a mode, one block per SEED (default since 2026-11-20):
+      within a seed the methods are ranked at every budget and the ranks averaged over the
+      budgets. Runs that share a seed at different budgets start from the same random stream,
+      so (budget, seed) blocks -- the earlier analysis, still available with
+      --blocks budget-seed -- are not independent, and the test assumes they are.
 
     Nemenyi critical difference for the post-hoc, reported as mean ranks and one CD value:
       two methods differ significantly exactly when their mean ranks are further apart
@@ -88,6 +91,9 @@ def main(argv: list[str]) -> int:
                     help="per-seed CSV written by run_weight_mode.py")
     ap.add_argument("--out", type=Path, default=None,
                     help="where to write the pairwise table (default alongside --runs)")
+    ap.add_argument("--blocks", choices=["seed", "budget-seed"], default="seed",
+                    help="Friedman block: one per seed with ranks averaged over the budgets "
+                         "(default), or one per (budget, seed)")
     args = ap.parse_args(argv)
     if not args.runs.exists():
         raise SystemExit(f"no per-seed results at {args.runs}")
@@ -109,16 +115,25 @@ def main(argv: list[str]) -> int:
         print(f"\n=== {mode} ===", flush=True)
 
         # --- Friedman first: is there anything to look at? ------------------------
-        blocks = [[fitness[(mode, budget, method, seed)] for method in methods]
-                  for budget in budgets for seed in seeds]
+        if args.blocks == "seed":
+            # Per seed, the rank of each method averaged over the budgets; lower is better.
+            blocks = [list(np.mean([rankdata([-fitness[(mode, budget, method, seed)]
+                                              for method in methods]) for budget in budgets],
+                                   axis=0)) for seed in seeds]
+            ranks = np.array([rankdata(block) for block in blocks])
+            described = f"seed, ranks averaged over {len(budgets)} budgets"
+        else:
+            blocks = [[-fitness[(mode, budget, method, seed)] for method in methods]
+                      for budget in budgets for seed in seeds]
+            ranks = np.array([rankdata(block) for block in blocks])
+            described = "budget x seed"
         columns = list(zip(*blocks))
         statistic, p_friedman = friedmanchisquare(*columns)
-        print(f"Friedman over {len(blocks)} blocks (budget x seed): "
+        print(f"Friedman over {len(blocks)} blocks ({described}): "
               f"chi2 = {statistic:.1f}, p = {p_friedman:.3g}"
               f"{'' if p_friedman < ALPHA else '  -- no overall difference'}", flush=True)
 
         # --- mean ranks and the Nemenyi critical difference ------------------------
-        ranks = np.array([rankdata([-value for value in block]) for block in blocks])
         means = ranks.mean(axis=0)
         mean_ranks[mode] = means
         k, n = len(methods), len(blocks)
@@ -184,7 +199,11 @@ def main(argv: list[str]) -> int:
     out = args.out or RESULTS / args.runs.name.replace("weight_mode_runs",
                                                        "statistics_pairwise")
     out.write_text("\n".join(rows) + "\n", encoding="utf-8")
-    print(f"\n[done] {out.relative_to(ROOT)}", flush=True)
+    try:
+        shown = out.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        shown = out.as_posix()
+    print(f"\n[done] {shown}", flush=True)
     return 0
 
 
