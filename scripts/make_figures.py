@@ -389,10 +389,10 @@ def figure_basins(path: Path) -> None:
     # 280% invites a reader to ask what lives there.
     shares = [p[0] for p in points]
     ax.set_xlim(min(shares) / 4, min(max(shares) * 4, 100.0))
-    # The reference line and its words share one colour of their own (the author, 2026-11-20), the
-    # palette's green, unlike the orange and blue of the two point groups; dashed and heavier
+    # The reference line and its words share one colour of their own (the author, 2026-11-20), a
+    # dark green, unlike the orange and blue of the two point groups; dashed and heavier
     # than a grid line, so it also stands apart in greyscale.
-    RANK_ONE_COLOUR = "#2CA02C"
+    RANK_ONE_COLOUR = "#1B5E20"   # dark green (the author, 2026-11-20)
     ax.axhline(1.0, color=RANK_ONE_COLOUR, linewidth=1.2, linestyle="--", zorder=1)
     # The one string on this canvas that was still English in the printed draft: every
     # other word here came from the label file and this one was typed in place.
@@ -606,8 +606,9 @@ def figure_front_position(path: Path) -> None:
     # No figure title: the journal asks for none inside an illustration; the caption carries it.
     # Two columns and more room under the panels: on the Springer column three entries on one
     # row met the shared axis label (2026-11-20).
-    fig.legend(frameon=False, fontsize=9, ncol=2, loc="upper center",
-               bbox_to_anchor=(0.5, 0.0))
+    # One row (the author, 2026-11-20), with compact handles and gaps so the row fits the column.
+    fig.legend(frameon=False, fontsize=9, ncol=3, loc="upper center", handlelength=1.6,
+               handletextpad=0.4, columnspacing=0.9, bbox_to_anchor=(0.5, 0.0))
     fig.tight_layout(rect=(0.02, 0.03, 1, 1))
     _fit_text_to_print(fig, printed_width_in(path), rect=(0.02, 0.03, 1, 1))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
@@ -891,6 +892,8 @@ def figure_enumeration_cost(path: Path) -> None:
                           label=name)
                for name, _cells in sorted(data.items())]
     # Two columns with compact handles: three were wider than the canvas at body size (2026-11-20).
+    # Two columns with compact handles: one row of six measures 451pt at 9.5pt against the 372pt
+    # column (2026-11-20), and three columns were wider than the canvas too.
     figure.legend(handles=handles, frameon=False, fontsize=8, ncol=2, handlelength=1.6,
                   handletextpad=0.5, columnspacing=1.0,
                   loc="lower center", bbox_to_anchor=(0.5, -0.075))
