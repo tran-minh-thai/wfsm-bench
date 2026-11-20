@@ -1,0 +1,5 @@
+dataset,graphs,size_bound,min_support,pool,embeddings_max,embeddings_total,per_host_max,per_host_of_database_worst,database_over_per_host
+Cuneiform,60,3,2,127,428,17031,60,40,7.13
+Cuneiform,60,4,2,712,822,129685,180,120,4.57
+BZR_bond,60,4,2,62,1234,11831,37,24,33.35
+BZR_MD,30,3,2,256,38704,170345,1985,1985,19.5

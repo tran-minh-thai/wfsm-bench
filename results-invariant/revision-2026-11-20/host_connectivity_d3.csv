@@ -1,0 +1,5 @@
+dataset,graphs,depth,connected_graphs,connected_share,components_mean,components_max,isolated_nodes,ball_coverage_pooled,ball_coverage_within_component
+Cuneiform,200,3,200,1.0,1,1,0,1.0,1.0
+QM9_bond,200,3,200,1.0,1,1,0,0.802422,0.802422
+BZR_bond,200,3,200,1.0,1,1,0,0.307644,0.307644
+alchemy_full_bond,200,3,200,1.0,1,1,0,0.8101,0.8101

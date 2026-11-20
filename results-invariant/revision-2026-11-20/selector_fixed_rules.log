@@ -1,0 +1,16 @@
+# command: scripts/selector_all_fixed_rules.py --out results-invariant/revision-2026-11-20/selector_fixed_rules.csv
+# date: 2026-11-20 11:43:02 +0700
+# git_commit: a19bb8e93cdfbd129ed99f87c832f07bc1744807 tree: 2 changed path(s)
+# script_sha256: a1513a7d19e4cb324aa267846cbdf85b55964268f9a19a26ae61f5da5086c200
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+[reproduced] 61 of 61 tracked rows compared, 61 rows scored, 0 mismatch(es)
+
+group     cells            race           aco         clpso       genetic  local_search    multiswarm           pso        random
+all          61      0.61/ 8.90    5.13/31.91    6.51/33.28    6.44/32.99    3.11/27.61    2.73/20.85    1.87/11.29   22.29/62.82
+sharp        39      0.95/ 8.90    7.97/31.91    9.85/33.28    6.36/32.99    4.29/27.61    4.25/20.85    2.81/11.29   27.47/62.82
+plateau      22      0.00/ 0.00    0.09/ 1.15    0.61/ 3.59    6.58/26.95    1.01/ 9.61    0.04/ 0.53    0.22/ 0.92   13.10/40.22
+  (mean / worst regret in percent, disjoint seeds)
+
+[done] results-invariant/revision-2026-11-20/selector_fixed_rules.csv
+# exit: 0

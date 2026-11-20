@@ -1,0 +1,13 @@
+# command: scripts/host_connectivity.py --depth 3 --out results-invariant/revision-2026-11-20/host_connectivity_d3.csv
+# date: 2026-11-20 11:44:50 +0700
+# git_commit: a19bb8e93cdfbd129ed99f87c832f07bc1744807 tree: 4 changed path(s)
+# script_sha256: a14823a685fba29fe1bae311264b481849b19b9c9afbd737d3295e3c3446ebc1
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+Cuneiform: 200/200 connected, components mean 1 max 1, coverage whole host 1.0000, within component 1.0000
+QM9_bond: 200/200 connected, components mean 1 max 1, coverage whole host 0.8024, within component 0.8024
+BZR_bond: 200/200 connected, components mean 1 max 1, coverage whole host 0.3076, within component 0.3076
+alchemy_full_bond: 200/200 connected, components mean 1 max 1, coverage whole host 0.8101, within component 0.8101
+[reproduced] 4 of 4 collection(s) matched bound_locality_d3.csv
+[done] results-invariant/revision-2026-11-20/host_connectivity_d3.csv
+# exit: 0

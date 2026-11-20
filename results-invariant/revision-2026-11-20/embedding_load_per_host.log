@@ -1,0 +1,13 @@
+# command: scripts/embedding_load_per_host.py --out results-invariant/revision-2026-11-20/embedding_load_per_host.csv
+# date: 2026-11-20 11:44:11 +0700
+# git_commit: a19bb8e93cdfbd129ed99f87c832f07bc1744807 tree: 3 changed path(s)
+# script_sha256: d8e7cae8673d44ebb7d0263cd2f2fbeba09a28a8a6a7842f0646160a7c6f842e
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+Cuneiform:60:3: pool 127, database max 428, per-host max 60 (ratio 7.13)
+Cuneiform:60:4: pool 712, database max 822, per-host max 180 (ratio 4.57)
+BZR_bond:60:4: pool 62, database max 1234, per-host max 37 (ratio 33.35)
+BZR_MD:30:3: pool 256, database max 38704, per-host max 1985 (ratio 19.5)
+[reproduced] 4 of 4 cell(s) matched the tracked embedding load
+[done] results-invariant/revision-2026-11-20/embedding_load_per_host.csv
+# exit: 0

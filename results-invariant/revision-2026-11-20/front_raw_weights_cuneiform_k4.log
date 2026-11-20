@@ -1,0 +1,16 @@
+# command: scripts/front_raw_weights.py --sizes 4 --out results-invariant/revision-2026-11-20/front_raw_weights_cuneiform_k4.csv
+# date: 2026-11-20 11:46:54 +0700
+# git_commit: a19bb8e93cdfbd129ed99f87c832f07bc1744807 tree: 5 changed path(s)
+# script_sha256: 1e80e08c9d320dc3c83e199ad8a526956c347246b7fd8fb5b9b3c83476af8708
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+Cuneiform: raw distance in [0.0, 18.21087394998933]; stored w = 0.247105 d + 0.5
+K=4 support=2: pool 712, front patterns scaled 23 raw 8 common 8; picks (edges scaled/raw) ideal 3/3, maxmin 3/3, weighted 4/4
+K=4 support=6: pool 712, front patterns scaled 23 raw 8 common 8; picks (edges scaled/raw) ideal 3/3, maxmin 3/3, weighted 4/4
+K=4 support=12: pool 649, front patterns scaled 23 raw 8 common 8; picks (edges scaled/raw) ideal 3/3, maxmin 3/3, weighted 4/4
+K=4 support=18: pool 542, front patterns scaled 23 raw 8 common 8; picks (edges scaled/raw) ideal 3/3, maxmin 3/3, weighted 4/4
+K=4 support=30: pool 365, front patterns scaled 19 raw 4 common 4; picks (edges scaled/raw) ideal 3/2 (different pattern), maxmin 2/2, weighted 3/3
+K=4 support=36: pool 239, front patterns scaled 40 raw 1 common 1; picks (edges scaled/raw) ideal 3/1 (different pattern), maxmin 2/1 (different pattern), weighted 4/1 (different pattern)
+K=4 support=42: pool 199, front patterns scaled 40 raw 1 common 1; picks (edges scaled/raw) ideal 3/1 (different pattern), maxmin 2/1 (different pattern), weighted 4/1 (different pattern)
+[done] 7 cell(s) -> results-invariant/revision-2026-11-20/front_raw_weights_cuneiform_k4.csv
+# exit: 0
