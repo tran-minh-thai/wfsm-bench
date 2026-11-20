@@ -1,0 +1,85 @@
+# command: scripts/friedman_seed_blocks.py --out results-invariant/revision-2026-11-20/friedman_seed_blocks.csv
+# date: 2026-11-20 21:30:01 +0700
+# git_commit: 17139890cd7a2e8f29a76ea05db88c79632dc0ab tree: 4 changed path(s)
+# script_sha256: c9869110620a5aaba775674e9d3952a5bdfddecde513859d0adc1e29d277f7c9
+# python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
+
+[reproduced] 77 mean ranks of the 80-block analysis compared with the tracked statistics logs, 0 mismatch(es)
+
+[budget_x_seed] 11 dataset-mode combinations; blocks 80, CD 1.007; largest p 1.55e-41; best ahead of second by more than the CD in 4 of 11; 39 reversing pair-dataset combination(s)
+  Cuneiform          sum        p=5.39e-53  best genetic      second local_search gap 0.225 
+  Cuneiform          discounted p=1.55e-41  best local_search second aco          gap 1.338 > CD
+  QM9_bond           sum        p=1.54e-63  best aco          second pso          gap 2.169 > CD
+  QM9_bond           discounted p=7.28e-53  best aco          second pso          gap 0.556 
+  BZR_bond           sum        p=6.71e-48  best aco          second pso          gap 0.281 
+  BZR_bond           discounted p=9.83e-45  best pso          second multiswarm   gap 0.062 
+  COX2_bond          sum        p=5.28e-50  best multiswarm   second pso          gap 0.237 
+  COX2_bond          discounted p=2.32e-51  best local_search second pso          gap 0.050 
+  DHFR_bond          sum        p=8.64e-62  best aco          second pso          gap 2.019 > CD
+  alchemy_full_bond  sum        p=1.37e-69  best aco          second genetic      gap 2.094 > CD
+  alchemy_full_bond  discounted p=2.9e-64   best aco          second pso          gap 0.506 
+  reversal sum        aco-genetic              Cuneiform -2.150 / QM9_bond +3.394
+  reversal sum        aco-genetic              Cuneiform -2.150 / BZR_bond +1.894
+  reversal sum        aco-genetic              Cuneiform -2.150 / COX2_bond +1.163
+  reversal sum        aco-genetic              Cuneiform -2.150 / DHFR_bond +2.531
+  reversal sum        aco-genetic              Cuneiform -2.150 / alchemy_full_bond +2.094
+  reversal sum        aco-local_search         Cuneiform -1.925 / QM9_bond +3.956
+  reversal sum        aco-local_search         Cuneiform -1.925 / BZR_bond +2.106
+  reversal sum        aco-local_search         Cuneiform -1.925 / DHFR_bond +3.863
+  reversal sum        aco-local_search         Cuneiform -1.925 / alchemy_full_bond +4.331
+  reversal sum        aco-multiswarm           QM9_bond +2.219 / COX2_bond -1.206
+  reversal sum        aco-multiswarm           COX2_bond -1.206 / DHFR_bond +2.381
+  reversal sum        aco-multiswarm           COX2_bond -1.206 / alchemy_full_bond +2.450
+  reversal sum        aco-pso                  Cuneiform -1.888 / QM9_bond +2.169
+  reversal sum        aco-pso                  Cuneiform -1.888 / DHFR_bond +2.019
+  reversal sum        aco-pso                  Cuneiform -1.888 / alchemy_full_bond +2.250
+  reversal sum        genetic-local_search     COX2_bond -1.256 / DHFR_bond +1.331
+  reversal sum        genetic-local_search     COX2_bond -1.256 / alchemy_full_bond +2.237
+  reversal sum        genetic-multiswarm       Cuneiform +1.312 / QM9_bond -1.175
+  reversal sum        genetic-multiswarm       Cuneiform +1.312 / BZR_bond -1.175
+  reversal sum        genetic-multiswarm       Cuneiform +1.312 / COX2_bond -2.369
+  reversal sum        local_search-multiswarm  Cuneiform +1.087 / QM9_bond -1.737
+  reversal sum        local_search-multiswarm  Cuneiform +1.087 / BZR_bond -1.387
+  reversal sum        local_search-multiswarm  Cuneiform +1.087 / COX2_bond -1.112
+  reversal sum        local_search-multiswarm  Cuneiform +1.087 / DHFR_bond -1.481
+  reversal sum        local_search-multiswarm  Cuneiform +1.087 / alchemy_full_bond -1.881
+  reversal discounted aco-local_search         Cuneiform -1.338 / QM9_bond +2.569
+  reversal discounted aco-local_search         Cuneiform -1.338 / BZR_bond +1.075
+  reversal discounted aco-local_search         Cuneiform -1.338 / alchemy_full_bond +2.925
+  reversal discounted clpso-genetic            Cuneiform -1.356 / BZR_bond +2.144
+  reversal discounted clpso-local_search       Cuneiform -2.744 / alchemy_full_bond +1.150
+  reversal discounted genetic-local_search     Cuneiform -1.388 / alchemy_full_bond +1.200
+  reversal discounted genetic-local_search     BZR_bond -1.225 / alchemy_full_bond +1.200
+  reversal discounted genetic-local_search     COX2_bond -1.400 / alchemy_full_bond +1.200
+  reversal discounted local_search-multiswarm  Cuneiform +1.500 / QM9_bond -1.794
+  reversal discounted local_search-multiswarm  Cuneiform +1.500 / BZR_bond -1.106
+  reversal discounted local_search-multiswarm  Cuneiform +1.500 / alchemy_full_bond -2.219
+  reversal discounted local_search-pso         Cuneiform +1.475 / QM9_bond -2.013
+  reversal discounted local_search-pso         Cuneiform +1.475 / BZR_bond -1.169
+  reversal discounted local_search-pso         Cuneiform +1.475 / alchemy_full_bond -2.419
+
+[seed] 11 dataset-mode combinations; blocks 20, CD 2.014; largest p 6.08e-12; best ahead of second by more than the CD in 1 of 11; 11 reversing pair-dataset combination(s)
+  Cuneiform          sum        p=1.44e-18  best genetic      second pso          gap 0.325 
+  Cuneiform          discounted p=5.7e-13   best local_search second aco          gap 1.650 
+  QM9_bond           sum        p=3.56e-16  best aco          second pso          gap 1.875 
+  QM9_bond           discounted p=4.89e-16  best aco          second pso          gap 1.300 
+  BZR_bond           sum        p=4.99e-14  best aco          second pso          gap 0.250 
+  BZR_bond           discounted p=1.09e-13  best pso          second multiswarm   gap 0.200 
+  COX2_bond          sum        p=6.76e-14  best multiswarm   second pso          gap 0.500 
+  COX2_bond          discounted p=6.08e-12  best local_search second pso          gap 0.350 
+  DHFR_bond          sum        p=4.22e-17  best aco          second pso          gap 1.750 
+  alchemy_full_bond  sum        p=3.55e-18  best aco          second pso          gap 2.100 > CD
+  alchemy_full_bond  discounted p=2.59e-18  best aco          second pso          gap 1.200 
+  reversal sum        aco-genetic              Cuneiform -3.025 / QM9_bond +3.375
+  reversal sum        aco-genetic              Cuneiform -3.025 / BZR_bond +2.075
+  reversal sum        aco-genetic              Cuneiform -3.025 / DHFR_bond +2.275
+  reversal sum        aco-genetic              Cuneiform -3.025 / alchemy_full_bond +2.125
+  reversal sum        aco-local_search         Cuneiform -2.625 / QM9_bond +4.275
+  reversal sum        aco-local_search         Cuneiform -2.625 / BZR_bond +2.675
+  reversal sum        aco-local_search         Cuneiform -2.625 / DHFR_bond +4.175
+  reversal sum        aco-local_search         Cuneiform -2.625 / alchemy_full_bond +4.650
+  reversal sum        aco-pso                  Cuneiform -2.700 / alchemy_full_bond +2.100
+  reversal discounted local_search-multiswarm  Cuneiform +2.350 / QM9_bond -2.150
+  reversal discounted local_search-multiswarm  Cuneiform +2.350 / alchemy_full_bond -2.600
+[done] results-invariant/revision-2026-11-20/friedman_seed_blocks.csv and results-invariant/revision-2026-11-20/friedman_seed_blocks_reversals.csv
+# exit: 0
