@@ -55,7 +55,7 @@
       "sum": "weighting mode sum",
       "discounted": "weighting mode discounted"
     },
-    "cd_label": "critical difference (Nemenyi) = {cd}",
+    "cd_label": "critical difference\n(Nemenyi) = {cd}",
     "absent": "not measured in this mode"
   },
   "chi-phi-liet-ke": {

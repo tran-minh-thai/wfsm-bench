@@ -77,13 +77,14 @@ NO_DATE_METADATA = {"CreationDate": None}
 matplotlib.rcParams["lines.markeredgecolor"] = "#1A1A1A"
 matplotlib.rcParams["lines.markeredgewidth"] = 0.7
 
-# Times New Roman, embedded as TrueType (fonttype 42 above). Elsevier's artwork instructions
-# accept Times among a short list of families and require every font embedded, and the
-# manuscript body is set in the same face (Liberation Serif, its metric twin, where that is
-# installed). DejaVu Sans -- matplotlib's default, and what every figure used before
-# 2026-09-29 -- is on neither list. matplotlib falls back to DejaVu without a word when a
-# family is missing, so the family is checked before drawing (require_font) rather than trusted.
-FIGURE_FONT = "Times New Roman"
+# Arial, embedded as TrueType (fonttype 42 above). The target journal (Knowledge and Information
+# Systems, Springer; chosen 2026-11-20) asks for figure lettering "Helvetica or Arial (sans serif
+# fonts)", with every font embedded; the author chose Arial over keeping a serif face. The body
+# is Computer Modern, which matplotlib cannot use cleanly (its Computer Modern font has no
+# U+2265). Until 2026-11-20 the figures used Times New Roman, to match the Elsevier body text.
+# matplotlib falls back to DejaVu without a word when a family is missing, so the family is
+# checked before drawing (require_font) rather than trusted.
+FIGURE_FONT = "Arial"
 matplotlib.rcParams["font.family"] = FIGURE_FONT
 # Text is measured on the raster canvas -- to place labels and to refuse overlaps -- and the
 # canvas hints glyphs to its pixel grid. At 100 dpi that made every string about 5% narrower
@@ -133,13 +134,21 @@ def style(ax) -> None:
     ax.set_axisbelow(True)
 
 
-# The manuscript's text column: \linewidth of RaceSel.tex, measured by building it on
-# 2026-09-29 -- 468.33pt, 6.4804in. The earlier figure of 6.48in had been inferred from how
-# one figure printed and agrees with the measurement.
-COLUMN_WIDTH_IN = 6.48
+# The manuscript's text column: \linewidth of RaceSel.tex under the Springer Nature class,
+# measured by building it on 2026-11-20 -- 372.0pt, 5.147in. (Under the Elsevier class it was
+# 468.33pt.) Within the journal's limit of 174mm for a single-column figure.
+COLUMN_WIDTH_IN = 372.0 / 72.27
+# Each builder draws on a canvas whose width was chosen for the Elsevier column (6.48in) and is
+# scaled to the printed width. The canvas narrows by the same factor as the column, so a figure
+# prints at the scale it was tuned at: the type fits in the same 9-10pt and the printed HEIGHTS
+# the author set stay as they were. Drawing the old canvases into the narrower column instead
+# scaled them by 0.79, and the type no longer settled in 9-10pt (measured 2026-11-20).
+ELSEVIER_COLUMN_IN = 6.48
+NARROW = COLUMN_WIDTH_IN / ELSEVIER_COLUMN_IN
 
-# Every string on the printed page lies in this range, in points: the size of the
-# manuscript's table text (\footnotesize, measured at 10pt) at the top, and nothing below 9.
+# Every string on the printed page lies in this range, in points: the author's 9-10pt (set when
+# the Elsevier table text was 10pt), inside the journal's 8-12pt for lettering. The Springer
+# class sets table text at 8pt, so figure text now sits one to two points above it.
 # Before 2026-09-29 sizes were chosen per figure, and three figures were never scaled at all:
 # the basin labels, drawn at 7pt and printed at 0.86 of a 7.2in canvas, reached the page at
 # about 5.4pt -- below Elsevier's 7pt floor for ordinary text.
@@ -163,7 +172,7 @@ PRINTED_FRACTION = {"rank_transfer_by_collection.pdf": 1.0,
                     "front_position_vs_bound.pdf": 0.86,
                     "regret_vs_race_size.pdf": 0.86,
                     "quantum_sweep.pdf": 0.86,
-                    "basin_vs_aco.pdf": 0.86}
+                    "basin_vs_aco.pdf": 1.0}   # full width since the Springer column (2026-11-20)
 
 
 def printed_width_in(path: Path) -> float:
@@ -276,7 +285,7 @@ def figure_quantum(path: Path) -> None:
         got = mean_ranks(f"{tag}_statistics.log", "sum")
         ranks.append(got)
 
-    fig, ax = plt.subplots(figsize=(7.2, 4.4 - HEIGHT_CUT_CM[path.name] * CM * 7.2
+    fig, ax = plt.subplots(figsize=(7.2 * NARROW, 4.4 - HEIGHT_CUT_CM[path.name] * CM * 7.2 * NARROW
                                     / printed_width_in(path)))
     for method, colour, mark, dash in zip(METHODS, COLOURS, MARKERS, DASHES):
         ax.plot(levels, [r[method] for r in ranks], marker=mark, markersize=5,
@@ -293,7 +302,7 @@ def figure_quantum(path: Path) -> None:
     ax.invert_xaxis()
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
-    ax.set_title(text["title"], loc="left")
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
     # Anchored a fixed distance in points below the axes, not a fraction of the axes height:
     # a fraction shrinks with the figure, and at the shorter height of 2026-11-20 it put the
     # legend on top of the axis label.
@@ -353,15 +362,17 @@ def figure_basins(path: Path) -> None:
     ax.axhline(1.0, color="#999999", linewidth=0.8, linestyle=":")
     # The one string on this canvas that was still English in the printed draft: every
     # other word here came from the label file and this one was typed in place.
+    # Under the line, where no point can be (a mean rank is at least 1): above it, on the
+    # narrower Springer column, the label ran into the point labels near rank 1 (2026-11-20).
     rank_one = ax.annotate(text["rank_one"], xy=(ax.get_xlim()[1], 1.0),
-                           color="#555555", va="bottom", ha="right")
+                           color="#555555", va="top", ha="right")
     legend = ax.legend(frameon=False, loc="upper left")
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
     # The title states the half that holds without exception. The converse -- a
     # non-dominant optimum meaning ACO wins -- holds in six of eight, so claiming the
     # figure shows basin structure "tracking" the ranking would overstate it.
-    ax.set_title(text["title"], loc="left")
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
     style(ax)
     # Laid out and sized BEFORE the point names are placed, and the names are then kept out
     # of the layout: placing them first and laying out afterwards moved every mark, and on
@@ -515,8 +526,8 @@ def figure_front_position(path: Path) -> None:
     names = sorted(data)
     columns = 3
     rows_of = -(-len(names) // columns)
-    row_in = 3.2 - HEIGHT_CUT_CM[path.name] * CM * 10.4 / printed_width_in(path)
-    fig, axes = plt.subplots(rows_of, columns, figsize=(10.4, row_in * rows_of),
+    row_in = 3.2 - HEIGHT_CUT_CM[path.name] * CM * 10.4 * NARROW / printed_width_in(path)
+    fig, axes = plt.subplots(rows_of, columns, figsize=(10.4 * NARROW, row_in * rows_of),
                             sharex=True, sharey=True)
     flat = axes.ravel()
 
@@ -557,11 +568,13 @@ def figure_front_position(path: Path) -> None:
                              va="center", ha="left", annotation_clip=False)
     fig.supxlabel(text["xlabel"], fontsize=9)
     fig.supylabel(text["ylabel"], fontsize=9)
-    fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
-    fig.legend(frameon=False, fontsize=9, ncol=3, loc="lower center",
-               bbox_to_anchor=(0.5, -0.05))
-    fig.tight_layout(rect=(0.02, 0.06, 1, 0.95))
-    _fit_text_to_print(fig, printed_width_in(path), rect=(0.02, 0.06, 1, 0.95))
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
+    # Two columns and more room under the panels: on the Springer column three entries on one
+    # row met the shared axis label (2026-11-20).
+    fig.legend(frameon=False, fontsize=9, ncol=2, loc="upper center",
+               bbox_to_anchor=(0.5, 0.0))
+    fig.tight_layout(rect=(0.02, 0.03, 1, 1))
+    _fit_text_to_print(fig, printed_width_in(path), rect=(0.02, 0.03, 1, 1))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
@@ -593,8 +606,8 @@ def figure_race_size(path: Path) -> None:
     # three lines of its own tick labels, which is not an axes box, and the legend and the
     # truncation note were then drawn into a space that no longer existed. The height is set
     # from the PRINTED box the panels need, not from a canvas nobody sees.
-    print_scale = printed_width_in(path) / 10.4
-    fig, axes = plt.subplots(1, 2, figsize=(10.4, (2.35 + 1.15 - HEIGHT_CUT_CM[path.name] * CM)
+    print_scale = printed_width_in(path) / (10.4 * NARROW)
+    fig, axes = plt.subplots(1, 2, figsize=(10.4 * NARROW, (2.35 + 1.15 - HEIGHT_CUT_CM[path.name] * CM)
                                             / print_scale))
 
     # Left: the mean total regret against the mean floor. Averaging is linear, so the gap
@@ -665,11 +678,12 @@ def figure_race_size(path: Path) -> None:
     # label it was sitting on top of. It describes both panels anyway, so the figure is the
     # right owner of it, not the left panel.
     handles, label_text = left.get_legend_handles_labels()
-    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=3,
+    # Two columns: three were wider than the Springer column (2026-11-20).
+    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=2,
                loc="lower center", bbox_to_anchor=(0.5, -0.01))
-    fig.suptitle(text["title"], x=0.02, ha="left", fontsize=11)
-    fig.tight_layout(rect=(0, 0.10, 1, 0.94))
-    _fit_text_to_print(fig, printed_width_in(path), rect=(0, 0.10, 1, 0.94))
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
+    fig.tight_layout(rect=(0, 0.15, 1, 1))
+    _fit_text_to_print(fig, printed_width_in(path), rect=(0, 0.15, 1, 1))
     fig.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(fig)
 
@@ -715,7 +729,7 @@ def figure_ball_coverage(path: Path) -> None:
                          f"and a two-point line would assert a shape nothing measured")
 
     import matplotlib.pyplot as plt
-    figure, ax = plt.subplots(figsize=(6.4, 3.6 - HEIGHT_CUT_CM[path.name] * CM * 6.4
+    figure, ax = plt.subplots(figsize=(6.4 * NARROW, 3.6 - HEIGHT_CUT_CM[path.name] * CM * 6.4 * NARROW
                                        / printed_width_in(path)))
     for name, series in sorted(coverage_by_collection.items()):
         colour, mark, dash = dataset_style(name)
@@ -727,7 +741,7 @@ def figure_ball_coverage(path: Path) -> None:
     ax.set_ylim(0, 105)
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
-    ax.set_title(text["title"], fontsize=10, loc="left")
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
     ax.legend(frameon=False, fontsize=8, loc="lower right")
     ax.grid(axis="y", lw=0.4, color="#DDDDDD", zorder=0)
     for edge in ("top", "right"):
@@ -790,9 +804,9 @@ def figure_rank_transfer(path: Path) -> None:
     # inches -- 0.30in against a 10pt label, which is a line and a half -- the fixed furniture
     # (both titles, the axis label, the legend, the critical-distance strip) is added in the
     # same units, and only then is the canvas height the quotient of the two.
-    print_scale = printed_width_in(path) / 9.6
+    print_scale = printed_width_in(path) / (9.6 * NARROW)
     height_in = (0.30 * len(cols) + 1.55 - HEIGHT_CUT_CM[path.name] * CM) / print_scale
-    figure, axes = plt.subplots(1, len(modes), figsize=(9.6, height_in),
+    figure, axes = plt.subplots(1, len(modes), figsize=(9.6 * NARROW, height_in),
                                 sharex=True, sharey=True)
     # One ORDER for both panels. With sharey and a per-mode order, a mode measured on five
     # collections and a mode measured on six put different collections on the same row, and
@@ -833,27 +847,31 @@ def figure_rank_transfer(path: Path) -> None:
         # title is drawn outside the axes and the strip inside it, so nothing in the layout
         # engine knew they were neighbours. Below, the strip has a band of its own and the
         # title has the whole band above the box.
-        ax.set_ylim(len(cols) + 0.45, -0.6)
+        # The band below the last row holds the bar and its label, which takes two lines on the
+        # Springer column (2026-11-20); with one row's height for both, the label sat on the
+        # markers of the last row.
+        ax.set_ylim(len(cols) + 1.0, -0.6)
         ax.set_xlabel(text["xlabel"])
         ax.set_title(text["modes"][mode], fontsize=10, loc="left")
         ax.grid(axis="x", lw=0.4, color="#DDDDDD", zorder=0)
         for edge in ("top", "right"):
             ax.spines[edge].set_visible(False)
         # The critical distance, drawn once as a span the reader can carry along the axis.
-        ax.plot([1.0, 1.0 + cd], [len(cols) - 0.15, len(cols) - 0.15], lw=2.2,
+        ax.plot([1.0, 1.0 + cd], [len(cols) + 0.7, len(cols) + 0.7], lw=2.2,
                 color="#333333", solid_capstyle="butt", clip_on=False, zorder=4)
         # A point, not a comma: the figure reads in English now, and a comma decimal inside an
         # English label is the one place the two languages would visibly collide.
         ax.annotate(text["cd_label"].format(cd=f"{cd:.3f}"),
-                    xy=(1.0, len(cols) - 0.15), xytext=(0, 5),
+                    xy=(1.0, len(cols) + 0.7), xytext=(0, 6),
                     textcoords="offset points", fontsize=8)
     handles = [plt.Line2D([], [], marker=marks[m], ls="", color=colours[m], label=m)
                for m in methods]
-    figure.legend(handles=handles, frameon=False, fontsize=10, ncol=len(methods),
+    # Four columns: seven entries on one row were wider than the Springer column (2026-11-20).
+    figure.legend(handles=handles, frameon=False, fontsize=10, ncol=4,
                   loc="lower center", bbox_to_anchor=(0.5, -0.02))
-    figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
-    figure.tight_layout(rect=(0, 0.06, 1, 0.94))
-    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.06, 1, 0.94))
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
+    figure.tight_layout(rect=(0, 0.12, 1, 1))
+    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.12, 1, 1))
     figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(figure)
 
@@ -924,8 +942,8 @@ def figure_enumeration_cost(path: Path) -> None:
     # ran into the right panel's, and the left panel's y label into the suptitle. The height
     # is chosen so the printed panels are as tall as they are wide is not the point -- the
     # point is that it is chosen in printed inches at all.
-    print_scale = printed_width_in(path) / 10.0
-    figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05 - HEIGHT_CUT_CM[path.name] * CM)
+    print_scale = printed_width_in(path) / (10.0 * NARROW)
+    figure, axes = plt.subplots(1, 2, figsize=(10.0 * NARROW, (2.55 + 1.05 - HEIGHT_CUT_CM[path.name] * CM)
                                               / print_scale),
                                sharex=True)
     bounds = sorted({k for cells in data.values() for k, _pool, _per in cells})
@@ -960,12 +978,12 @@ def figure_enumeration_cost(path: Path) -> None:
     # edge, because it is centred under an axes whose right side IS the figure's right side,
     # and the crop then took its closing bracket off.
     figure.supxlabel(text["xlabel"], fontsize=9, y=0.105)
-    figure.suptitle(text["title"], fontsize=10, x=0.01, ha="left")
+    # No figure title: the journal asks for none inside an illustration; the caption carries it.
     # w_pad separates the two panels: the left panel's x label is long enough to reach under
     # the right panel's y label, and tight_layout's default gutter was measured for the type
     # size before the scaling pass, not after it.
-    figure.tight_layout(rect=(0, 0.11, 1, 0.94), w_pad=2.4)
-    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.11, 1, 0.94), w_pad=2.4)
+    figure.tight_layout(rect=(0, 0.11, 1, 1), w_pad=2.4)
+    _fit_text_to_print(figure, printed_width_in(path), rect=(0, 0.11, 1, 1), w_pad=2.4)
     figure.savefig(path, dpi=200, metadata=NO_DATE_METADATA, bbox_inches="tight")
     plt.close(figure)
 

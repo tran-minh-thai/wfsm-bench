@@ -7,7 +7,8 @@ only size worth checking is the one in the file, multiplied by that scale.
 
 What the check reads, and why each part is there:
 
-* the font of every text-showing operator: the family must be Times New Roman, the font
+* the font of every text-showing operator: the family must be Arial (the journal asks for
+  Helvetica or Arial), the font
   program must be TrueType (Type 3, matplotlib's default, is refused by the journal) and it
   must be embedded;
 * the effective size of every string: the Tf operand times the scale of the text matrix and
@@ -29,7 +30,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "make_figures.py"
-ACCEPTED_FAMILY = "TimesNewRoman"
+ACCEPTED_FAMILY = "Arial"
 # The journal's floor for sub- and superscripts is 6pt; matplotlib sets them at 0.7 of the
 # base size, and the base is at least 9pt, so 0.7 * 9 is what a correct figure produces.
 INDEX_FLOOR_RATIO = 0.7
@@ -217,15 +218,16 @@ def _draw(tmp_path: Path, family: str, fontsize: float, fonttype: int = 42) -> P
 
 
 def test_a_correct_figure_passes(tmp_path: Path) -> None:
-    good = _draw(tmp_path, "Times New Roman", 9.5)
+    good = _draw(tmp_path, "Arial", 9.5)
     assert page_report(good, 4.0) == []
 
 
 @pytest.mark.parametrize("family,fontsize,fonttype,expected", [
-    ("Times New Roman", 8.0, 42, "outside 9.0-10.0pt"),     # too small on the page
-    ("Times New Roman", 11.0, 42, "outside 9.0-10.0pt"),    # too large on the page
-    ("DejaVu Sans", 9.5, 42, "is not TimesNewRoman"),       # matplotlib's default family
-    ("Times New Roman", 9.5, 3, "not TrueType"),            # matplotlib's default font type
+    ("Arial", 8.0, 42, "outside 9.0-10.0pt"),     # too small on the page
+    ("Arial", 11.0, 42, "outside 9.0-10.0pt"),    # too large on the page
+    ("DejaVu Sans", 9.5, 42, "is not Arial"),              # matplotlib's default family
+    ("Times New Roman", 9.5, 42, "is not Arial"),          # the family used before 2026-11-20
+    ("Arial", 9.5, 3, "not TrueType"),            # matplotlib's default font type
 ])
 def test_the_check_rejects_each_breach(tmp_path: Path, family, fontsize, fonttype,
                                        expected) -> None:
@@ -236,7 +238,7 @@ def test_the_check_rejects_each_breach(tmp_path: Path, family, fontsize, fonttyp
 
 def test_the_check_reads_the_print_scale(tmp_path: Path) -> None:
     """The same file passes at the width it was drawn for and fails when shrunk to 0.86."""
-    good = _draw(tmp_path, "Times New Roman", 9.5)
+    good = _draw(tmp_path, "Arial", 9.5)
     assert page_report(good, 4.0) == []
     assert any("outside" in line for line in page_report(good, 0.86 * 4.0))
 
