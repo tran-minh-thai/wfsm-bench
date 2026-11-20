@@ -303,10 +303,34 @@ def test_the_cost_figure_refuses_a_collection_measured_at_two_bounds(tmp_path: P
 
 def test_the_cost_figure_draws_once_every_collection_has_three(tmp_path: Path) -> None:
     """The other half of the refusal: it must pass on data that earns it."""
-    module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
-                    _o("Alpha", 6, 900, "400.0"))
+    # A real dataset name: every drawn dataset needs its own fixed style (colour, marker, dash).
+    module = _builder_on(tmp_path, _o("Cuneiform", 4, 100, "10.0"), _o("Cuneiform", 5, 300, "60.0"),
+                    _o("Cuneiform", 6, 900, "400.0"))
     module.figure_enumeration_cost(tmp_path / "enumeration_cost_by_bound.pdf")
     assert (tmp_path / "enumeration_cost_by_bound.pdf").stat().st_size > 5000
+
+
+def test_a_dataset_without_a_fixed_style_is_refused(tmp_path: Path) -> None:
+    """A dataset absent from DATASET_STYLE must stop the drawing, not fall back to a default
+    colour and marker another dataset may share (the editing rules: one identity per series)."""
+    module = _builder_on(tmp_path, _o("Alpha", 4, 100, "10.0"), _o("Alpha", 5, 300, "60.0"),
+                    _o("Alpha", 6, 900, "400.0"))
+    with pytest.raises(SystemExit) as refused:
+        module.figure_enumeration_cost(tmp_path / "enumeration_cost_by_bound.pdf")
+    assert "Alpha" in str(refused.value) and "DATASET_STYLE" in str(refused.value)
+    assert not (tmp_path / "enumeration_cost_by_bound.pdf").exists()
+
+
+def test_every_dataset_style_is_distinct() -> None:
+    """No two datasets share a colour, a marker or a line style."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("mf", ROOT / "scripts" / "make_figures.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    styles = list(module.DATASET_STYLE.values())
+    for position in range(3):
+        values = [str(s[position]) for s in styles]
+        assert len(set(values)) == len(values), f"shared channel {position}: {values}"
 
 
 def test_the_cost_figure_refuses_a_cell_two_artefacts_disagree_on(tmp_path: Path) -> None:

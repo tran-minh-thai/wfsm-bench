@@ -1,7 +1,7 @@
 # command: scripts/make_figures.py
-# date: 2026-11-20 14:33:09 +0700
-# git_commit: 1f955cbf3d87920151548553b18fa656bdfdd2a2 tree: 6 changed path(s)
-# script_sha256: b8ac44aefde9c7599ca439ae4aac3aba526954a779d204655ac75861f9645a66
+# date: 2026-11-20 15:52:21 +0700
+# git_commit: 30becf43c826bb37d664135da6c8e7d7c1630c54 tree: 4 changed path(s)
+# script_sha256: 33c09be8eb64fbd6bbbf26ad19bff163f96967c442bf738337d312aa246e6d42
 # python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
 
 [done] results/figures/rank_transfer_by_collection.pdf

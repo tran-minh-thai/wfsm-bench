@@ -1,7 +1,7 @@
 # command: scripts/hull_interior_check.py --out results-invariant/revision-2026-11-20/hull_interior.csv
-# date: 2026-11-20 14:17:36 +0700
-# git_commit: 1f955cbf3d87920151548553b18fa656bdfdd2a2 tree: 6 changed path(s)
-# script_sha256: 5dff102a2d1a4b37e3085dc266d60f22d4328fbbe38ce3b9ba547b91de997a7f
+# date: 2026-11-20 15:45:42 +0700
+# git_commit: 30becf43c826bb37d664135da6c8e7d7c1630c54 tree: 2 changed path(s)
+# script_sha256: c0a72fe631e2d63eb7eff7b08fcd212d1498f15cfa6069139b29011fd42abf7b
 # python: Python 3.14.6 host: ThaiTMs-MacBook-Pro
 
 24 sum-mode cells; gamma grid [0.1, 0.2, 0.3, 0.4, 0.5, 0.8, 1.0]
@@ -36,6 +36,8 @@ alchemy_full_bond n=200: loose pool 428
   K=4 s=2: pool 162, hull 1e2v|2e3v|3e4v; intermediate vertices edges/bound 2/1 (best F 0.122644/0.008677); grid 3e4v|2e3v|1e2v|1e2v|1e2v|1e2v|1e2v
   K=5 s=2: pool 428, hull 1e2v|2e3v|3e4v|4e5v; intermediate vertices edges/bound 3/2 (best F 0.149346/0.029187); grid 4e5v|2e3v|1e2v|1e2v|1e2v|1e2v|1e2v
 [reproduced] 168 (cell, gamma) peaks compared with degeneracy_gamma_*.csv, 0 mismatch(es)
+
+[pool] 22 of 24 cells have an intermediate vertex on the upper hull (21 with F > 0 there); 20 of 24 have an intermediate maximiser at some gamma of the grid
 
 [edges] 22 of 24 cells have an intermediate vertex on the upper hull (22 with F > 0 there); 22 of 24 have an intermediate maximiser at some gamma of the grid
 

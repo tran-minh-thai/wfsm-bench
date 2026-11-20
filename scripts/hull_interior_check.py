@@ -11,11 +11,13 @@ intermediate-size pattern is a vertex of that hull, and this script counts, per 
     consumed the reward);
   - for each gamma of the study's grid, whether the maximiser has an intermediate edge count.
 
-"Intermediate" is counted under two definitions, because the repository holds both:
+"Intermediate" is counted under three definitions:
+  - pool: an edge count strictly between the smallest and the largest edge count of the pool, the
+    manuscript's definition since 2026-11-20 (ticket 4);
   - edges: 1 < |E| < K, the reading of run_degeneracy.shape_of and of degeneracy_gamma_*.csv;
-  - bound: 1 < |E| and neither |E| = K nor |V| = K, the manuscript's definition of a pattern
-    "at the bound" (k = K or v = K). A 3-edge tree with 4 vertices at K = 4 is intermediate under
-    the first and at the bound under the second.
+  - bound: 1 < |E| and neither |E| = K nor |V| = K, the manuscript's earlier definition.
+The first two differ only in a cell whose pool has no pattern with K edges (two cells at K = 4,
+where a 4-edge pattern needs a cycle the molecules do not have).
 
 The cells are those of results/degeneracy_frontier_*.csv. Before writing anything the script
 re-derives, for every cell and every gamma of the grid, the edge count of the maximiser and
@@ -124,7 +126,10 @@ def main(argv: list[str]) -> int:
                 pts.append((penalty(v, k, base), g, i))
                 edges.append(k)
                 nodes.append(v)
-            lo = min(edges)
+            lo, hi = min(edges), max(edges)
+
+            def inner_pool(i):
+                return lo < edges[i] < hi
 
             def inner_edges(i):
                 return lo < edges[i] < size
@@ -132,7 +137,7 @@ def main(argv: list[str]) -> int:
             def inner_bound(i):
                 return lo < edges[i] and edges[i] != size and nodes[i] != size
 
-            grid_inside = grid_inside_bound = 0
+            grid_inside = grid_inside_bound = grid_inside_pool = 0
             grid_peaks = []
             for gamma in rd.GAMMAS:
                 tuned = Params(max_nodes=size, max_edges=size, min_support=support,
@@ -149,6 +154,7 @@ def main(argv: list[str]) -> int:
                 grid_peaks.append(f"{peak}e{min(nodes[i] for i in winners if edges[i] == peak)}v")
                 grid_inside += all(inner_edges(i) for i in winners)
                 grid_inside_bound += all(inner_bound(i) for i in winners)
+                grid_inside_pool += all(inner_pool(i) for i in winners)
                 want = tracked.get((dataset, limit, size, support), {}).get(gamma)
                 if want is not None:
                     compared += 1
@@ -166,7 +172,7 @@ def main(argv: list[str]) -> int:
                 hi_g = float("inf") if j == 0 else (g - reachable[j - 1][1]) / (pen - reachable[j - 1][0])
                 vertices.append((i, lo_g, hi_g, g - lo_g * pen))
             out_row = {}
-            for label, test in (("edges", inner_edges), ("bound", inner_bound)):
+            for label, test in (("pool", inner_pool), ("edges", inner_edges), ("bound", inner_bound)):
                 inner = [x for x in vertices if test(x[0])]
                 out_row[f"intermediate_vertices_{label}"] = len(inner)
                 out_row[f"intermediate_gamma_{label}"] = (
@@ -180,8 +186,12 @@ def main(argv: list[str]) -> int:
                         **out_row,
                         "grid_gammas": len(rd.GAMMAS),
                         "grid_peaks": "|".join(grid_peaks),
+                        "grid_intermediate_pool": grid_inside_pool,
                         "grid_intermediate_edges": grid_inside,
-                        "grid_intermediate_bound": grid_inside_bound})
+                        "grid_intermediate_bound": grid_inside_bound,
+                        "pool_edges_max": hi,
+                        "grid_peak_at_default_gamma_intermediate_pool": int(
+                            lo < int(grid_peaks[0].split("e")[0]) < hi)})
             r = out[-1]
             print(f"  K={size} s={support}: pool {len(cell_pool)}, hull {r['hull_vertex_shapes']}; "
                   f"intermediate vertices edges/bound {r['intermediate_vertices_edges']}/"
@@ -200,7 +210,7 @@ def main(argv: list[str]) -> int:
         writer = csv.DictWriter(handle, fieldnames=list(out[0]), lineterminator="\n")
         writer.writeheader()
         writer.writerows(out)
-    for label in ("edges", "bound"):
+    for label in ("pool", "edges", "bound"):
         with_vertex = sum(1 for r in out if r[f"intermediate_vertices_{label}"])
         with_grid = sum(1 for r in out if r[f"grid_intermediate_{label}"])
         positive = sum(1 for r in out if r[f"intermediate_best_F_{label}"]

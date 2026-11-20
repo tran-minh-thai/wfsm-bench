@@ -150,7 +150,9 @@ def dichotomy_counts(results: Path, mode: str) -> dict[str, int]:
 
     cells: cells compared; strict: cells where every step meets the strict case of this mode;
     predicted: cells where the frontier prediction gives the measured optimum's edge count;
-    at_bound: cells whose measured optimum has as many edges or vertices as the size bound.
+    at_bound: cells whose measured optimum has as many EDGES as the size bound (k = K). Since
+    2026-11-20 the manuscript counts sizes in edges; a pattern with K vertices and fewer edges is
+    not at the bound, since it can still grow by an edge that closes a cycle.
     """
     series = frontier_series(results)
     measured = {(int(r["size_bound"]), int(r["min_support"])): r
@@ -161,7 +163,7 @@ def dichotomy_counts(results: Path, mode: str) -> dict[str, int]:
         row, bound = measured[key], key[0]
         counts["strict"] += strict_case_holds(dichotomy_steps(series[key], mode), mode)
         counts["predicted"] += predicted_argmax(series[key], mode) == int(row["optimum_edges"])
-        counts["at_bound"] += bound in (int(row["optimum_edges"]), int(row["optimum_nodes"]))
+        counts["at_bound"] += int(row["optimum_edges"]) == bound
     return counts
 
 

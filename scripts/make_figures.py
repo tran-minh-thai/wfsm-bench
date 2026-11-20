@@ -331,12 +331,14 @@ def figure_basins(path: Path) -> None:
     MARK_AREA = 70                                 # scatter size, pt^2
     fig, ax = plt.subplots(figsize=(printed_width_in(path), printed_width_in(path) * 0.7))
     text = labels("luu-vuc-va-dan-kien")
-    for dominates, colour, label in ((True, "#D55E00", text["legend_dominates"]),
-                                     (False, "#0072B2", text["legend_not"])):
+    # Two groups, told apart by colour, marker AND fill: solid diamonds against hollow circles.
+    for dominates, colour, mark, label in ((True, "#D55E00", "D", text["legend_dominates"]),
+                                           (False, "#0072B2", "o", text["legend_not"])):
         group = [p for p in points if p[2] is dominates]
-        ax.scatter([p[0] for p in group], [p[1] for p in group], s=MARK_AREA,
-                   color=colour, label=label, zorder=3,
-                   edgecolor="white", linewidth=0.8)
+        ax.scatter([p[0] for p in group], [p[1] for p in group], s=MARK_AREA, marker=mark,
+                   facecolors=colour if dominates else "white", edgecolors=colour if not dominates
+                   else "#1A1A1A", linewidths=1.6 if not dominates else 0.8,
+                   label=label, zorder=3)
     # The scale is set HERE, before anything reads a display coordinate. It used to be set
     # further down, after this placement had already measured the figure on a linear x axis
     # -- a layout that never reached the page, so every clearance test was answering about a
@@ -456,6 +458,28 @@ def figure_basins(path: Path) -> None:
 
 SELECTOR_ORDER = ["weighted", "ideal", "maxmin"]
 SELECTOR_COLOUR = {"weighted": "#D55E00", "ideal": "#0072B2", "maxmin": "#009E73"}
+# 2026-11-20, the author: every series is told apart by colour AND line style AND marker (AND
+# fill where an area is drawn), so a figure survives a greyscale print and a reader who cannot
+# separate the hues. One fixed identity per selector and per dataset, used in every figure.
+SELECTOR_MARKER = {"weighted": "o", "ideal": "s", "maxmin": "^"}
+SELECTOR_DASH = {"weighted": "-", "ideal": "--", "maxmin": "-."}
+# Datasets: the editing rules' palette (D.9), no two hues of one colour; red is kept free for a
+# proposed method. Each dataset also owns a marker and a dash.
+DATASET_STYLE = {
+    "Cuneiform":         ("#1F77B4", "o", "-"),
+    "QM9_bond":          ("#FF7F0E", "s", "--"),
+    "BZR_bond":          ("#2CA02C", "^", "-."),
+    "COX2_bond":         ("#9467BD", "D", ":"),
+    "DHFR_bond":         ("#8C564B", "v", (0, (5, 1, 1, 1, 1, 1))),
+    "alchemy_full_bond": ("#000000", "P", (0, (6, 2))),
+}
+
+
+def dataset_style(name: str) -> tuple[str, str, object]:
+    if name not in DATASET_STYLE:
+        raise SystemExit(f"[fail] no style for dataset {name!r}; add it to DATASET_STYLE so it "
+                         f"is not drawn in a default that another dataset may share")
+    return DATASET_STYLE[name]
 
 
 def front_positions() -> dict[str, dict[str, dict[int, list[float]]]]:
@@ -504,13 +528,15 @@ def figure_front_position(path: Path) -> None:
             if not per_bound:
                 continue
             colour = SELECTOR_COLOUR[selector]
+            mark = SELECTOR_MARKER[selector]
             for bound in bounds:
                 values = per_bound.get(bound, [])
-                ax.scatter([bound] * len(values), values, s=14, color=colour,
+                ax.scatter([bound] * len(values), values, s=14, color=colour, marker=mark,
                            alpha=0.30, zorder=2, linewidth=0)
             xs = [b for b in bounds if per_bound.get(b)]
-            ax.plot(xs, [statistics.mean(per_bound[b]) for b in xs], marker="o",
+            ax.plot(xs, [statistics.mean(per_bound[b]) for b in xs], marker=mark,
                     markersize=5, linewidth=1.8, color=colour, zorder=3,
+                    linestyle=SELECTOR_DASH[selector],
                     label=text["selectors"][selector] if index == 0 else None)
         ax.axhline(1.0, color="#777777", linewidth=0.8, linestyle=":", zorder=1)
         ax.axhline(0.0, color="#777777", linewidth=0.8, linestyle=":", zorder=1)
@@ -578,14 +604,17 @@ def figure_race_size(path: Path) -> None:
     bal_y = [statistics.mean([float(r[f"regret_n{n}"]) for r in balanced]) for n in sizes]
     full_floor = statistics.mean([float(r["transfer_only"]) for r in data if r["transfer_only"]])
     bal_floor = statistics.mean([float(r["transfer_only"]) for r in balanced])
-    left.fill_between(complete, full_y, full_floor, color="#D55E00", alpha=0.13, zorder=1,
-                      label=text["gap"])
+    # An OPAQUE light tint (the orange at 13% on white) under an opaque hatch. A face with an
+    # alpha makes the PDF backend apply that alpha to the hatch lines too, and the hatch then
+    # vanishes on the page.
+    left.fill_between(complete, full_y, full_floor, facecolor="#F9EADE", hatch="////",
+                      hatchcolor="#D55E00", edgecolor="none", zorder=1, label=text["gap"])
     left.plot(complete, full_y, marker="o", markersize=5, linewidth=2.0, color="#D55E00",
               zorder=4, label=text["full"].format(n=len(data)))
     left.axhline(full_floor, color="#D55E00", linewidth=1.2, linestyle="--", zorder=3,
                  label=text["floor_full"].format(n=len(data)))
     left.plot(sizes, bal_y, marker="s", markersize=4, linewidth=1.6, color="#0072B2",
-              zorder=4, label=text["balanced"].format(n=len(balanced)))
+              linestyle="-.", zorder=4, label=text["balanced"].format(n=len(balanced)))
     left.axhline(bal_floor, color="#0072B2", linewidth=1.0, linestyle=":", zorder=3,
                  label=text["floor_balanced"].format(n=len(balanced)))
     left.set_ylabel(text["ylabel_mean"], fontsize=9)
@@ -598,7 +627,7 @@ def figure_race_size(path: Path) -> None:
                linewidth=2.0, color="#D55E00", zorder=4,
                label=text["full"].format(n=len(data)))
     right.plot(sizes, [max(gaps(balanced, n)) for n in sizes], marker="s", markersize=4,
-               linewidth=1.6, color="#0072B2", zorder=4,
+               linewidth=1.6, color="#0072B2", linestyle="-.", zorder=4,
                label=text["balanced"].format(n=len(balanced)))
     right.axhline(0.0, color="#777777", linewidth=0.8, linestyle=":", zorder=1)
     right.set_ylabel(text["ylabel_worst"], fontsize=9)
@@ -688,10 +717,10 @@ def figure_ball_coverage(path: Path) -> None:
     import matplotlib.pyplot as plt
     figure, ax = plt.subplots(figsize=(6.4, 3.6 - HEIGHT_CUT_CM[path.name] * CM * 6.4
                                        / printed_width_in(path)))
-    colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
-    for (name, series), colour in zip(sorted(coverage_by_collection.items()), colours):
+    for name, series in sorted(coverage_by_collection.items()):
+        colour, mark, dash = dataset_style(name)
         xs = [d for d in depths if d in series]
-        ax.plot(xs, [series[d] for d in xs], marker="o", ms=4, lw=1.6,
+        ax.plot(xs, [series[d] for d in xs], marker=mark, ms=4, lw=1.6, linestyle=dash,
                 color=colour, label=name, zorder=3)
 
     ax.set_xticks(depths)
@@ -899,15 +928,15 @@ def figure_enumeration_cost(path: Path) -> None:
     figure, axes = plt.subplots(1, 2, figsize=(10.0, (2.55 + 1.05 - HEIGHT_CUT_CM[path.name] * CM)
                                               / print_scale),
                                sharex=True)
-    colours = ["#0072B2", "#D55E00", "#009E73", "#CC79A7", "#E69F00", "#56B4E9"]
     bounds = sorted({k for cells in data.values() for k, _pool, _per in cells})
 
-    for (name, cells), colour in zip(sorted(data.items()), colours):
+    for name, cells in sorted(data.items()):
+        colour, mark, dash = dataset_style(name)
         xs = [k for k, _pool, _per in cells]
-        axes[0].plot(xs, [pool for _k, pool, _per in cells], marker="o", ms=4.5, lw=1.7,
-                     color=colour, label=name, zorder=3)
-        axes[1].plot(xs, [per for _k, _pool, per in cells], marker="o", ms=4.5, lw=1.7,
-                     color=colour, label=name, zorder=3)
+        axes[0].plot(xs, [pool for _k, pool, _per in cells], marker=mark, ms=4.5, lw=1.7,
+                     linestyle=dash, color=colour, label=name, zorder=3)
+        axes[1].plot(xs, [per for _k, _pool, per in cells], marker=mark, ms=4.5, lw=1.7,
+                     linestyle=dash, color=colour, label=name, zorder=3)
 
     for ax, ylabel, panel in ((axes[0], text["ylabel_pool"], text["panel_pool"]),
                               (axes[1], text["ylabel_per"], text["panel_per"])):
@@ -920,8 +949,10 @@ def figure_enumeration_cost(path: Path) -> None:
         # decades, and on a log axis the minor lines are the ones that carry the reading.
         ax.grid(axis="y", which="minor", alpha=0.12, linewidth=0.5)
 
-    handles = [plt.Line2D([], [], marker="o", ms=4.5, lw=1.7, color=colour, label=name)
-               for (name, _cells), colour in zip(sorted(data.items()), colours)]
+    handles = [plt.Line2D([], [], marker=dataset_style(name)[1], ms=4.5, lw=1.7,
+                          linestyle=dataset_style(name)[2], color=dataset_style(name)[0],
+                          label=name)
+               for name, _cells in sorted(data.items())]
     figure.legend(handles=handles, frameon=False, fontsize=8, ncol=3,
                   loc="lower center", bbox_to_anchor=(0.5, -0.075))
     # One x label for both panels, not one each. The panels share the axis (sharex), so the

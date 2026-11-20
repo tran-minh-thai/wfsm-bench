@@ -53,7 +53,7 @@ def test_the_real_counts_have_denominators_and_stay_inside_them(capsys) -> None:
 
 
 def test_counts_on_a_built_results_tree(tmp_path) -> None:
-    """Three cells at bound 4: optimum at the bound by vertices only, by edges, and inside."""
+    """Three cells at bound 4: optimum with K vertices but fewer edges, with K edges, and inside."""
     frontier = ["dataset,graph_limit,max_size,min_support,edges,nodes,G"]
     landscape = ["dataset,graph_limit,size_bound,support_fraction,min_support,weight_mode,"
                  "optimum_edges,optimum_nodes"]
@@ -66,4 +66,4 @@ def test_counts_on_a_built_results_tree(tmp_path) -> None:
     (tmp_path / "weight_mode_landscape.csv").write_text("\n".join(landscape) + "\n")
     counts = V.dichotomy_counts(tmp_path, "sum")
     assert counts["cells"] == 3 and counts["strict"] == 2
-    assert counts["at_bound"] == 2      # vertices at the bound count, edges at the bound count
+    assert counts["at_bound"] == 1      # only K edges is at the bound; K vertices alone is not
