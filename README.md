@@ -1,11 +1,10 @@
 # wfsm-bench
 
-Weighted frequent subgraph mining posed as optimisation: find the connected subgraphs that
-maximise a fitness combining weighted support (WSUP), average total weight (ATW) and a size
-penalty. The repository holds the objective and its variants, eight search methods and an
-exhaustive enumerator that gives the true optimum wherever it is tractable, a racing selector
-that picks a method per dataset, the experiment stages behind every reported number, and the
-artefacts those stages produced.
+Weighted frequent subgraph mining treated as an optimisation problem. The objective scores a
+connected subgraph by its weighted support (WSUP), its average total weight (ATW) and a size
+penalty. The repository contains the objective and its weight modes, eight search methods, an
+exhaustive enumerator that gives the exact optimum on small cells, a racing selector that picks
+a method per dataset, the experiment scripts, and the measurements they produced.
 
 | method | kind |
 |---|---|
@@ -13,71 +12,46 @@ artefacts those stages produced.
 | `pso` | discrete particle swarm over graph-edit moves |
 | `clpso` | comprehensive-learning particle swarm |
 | `multiswarm` | dynamic multi-swarm particle swarm |
-| `aco` | ant colony optimisation, constructive |
+| `aco` | ant colony optimisation |
 | `genetic` | elitist genetic algorithm |
 | `local_search` | iterated local search |
-| `random` | blind sampling, the floor |
+| `random` | random sampling |
 | `greedy` | beam search |
 
-Every search scores patterns through one cached evaluator, and budgets count distinct patterns
-scored, so methods are compared on equal work. A search that stalls restarts part of its
-population instead of stopping early. `tests/test_search_invariants.py` checks, for every
-method, that it uses its budget, that seeds differ and reproduce, and that a larger budget
-never does worse.
+All searches share one cached evaluator, and a budget is the number of distinct patterns
+scored, so the methods do the same amount of work. `tests/test_search_invariants.py` checks
+that each method spends its budget, that runs with the same seed repeat, and that a larger
+budget never gives a worse result.
 
-## Repository layout
+## Layout
 
 ```
-src/wfsmbench/        the library
-  core/                 graph model, particle, canonical signature
-  io/                   dataset readers and converters (TUDataset, molecular, protein)
-  preprocess/           dataset statistics, frequent edge templates
-  measure/              weight measures, fitness, diversity, Pareto metrics, selector regret
-  match/                subgraph matching (VF2 monomorphism)
-  pivot/                pivot scoring and selection
-  pso/                  graph-edit moves and the swarm variants
-  baselines/            exhaustive, greedy, ant colony, genetic, local search, random, gSpan
-  experiments/          run harness and parallel execution
-  config.py             every tunable parameter (Params)
-scripts/              experiment drivers, table and figure builders, run-record tools
-tests/                test suite
-data/                 prepared datasets (built by scripts/prepare_datasets.py)
-  sample/               tiny hand-checked dataset the tests use
-  pdb_contact.json      the one dataset that cannot be rebuilt; tracked
-figures/labels.en.json  every word drawn inside a figure
-results/              artefacts whose numbers depend on the machine (times) or on seeds
-  runs/                 a copy of every published run, never overwritten
-  submitted/            the artefacts of a submitted version, never overwritten
-results-invariant/    artefacts that are counts or set comparisons, machine-independent
-docs/DesignDecisions.md  every modelling choice left open by the method description
-run_experiments_windows.bat  the stage driver (the one definition of every stage)
-run_all_windows.bat   set up a Windows machine and run stages, publishing each one
-COMMIT_MAP.tsv        old commit -> new commit, for records written before 2026-09-29
+src/wfsmbench/          library
+  core/                   graph model, particle, canonical signature
+  io/                     dataset readers and converters
+  preprocess/             dataset statistics, frequent edge templates
+  measure/                weights, fitness, diversity, Pareto metrics, selector regret
+  match/                  subgraph matching (VF2)
+  pivot/                  pivot scoring
+  pso/                    graph-edit moves and swarm variants
+  baselines/              exhaustive, greedy, ant colony, genetic, local search, random, gSpan
+  experiments/            run harness, parallel execution
+  config.py               parameters (Params)
+scripts/                experiment drivers, table and figure builders
+tests/                  test suite
+data/                   prepared datasets; data/sample/ is a small set used by the tests
+figures/labels.en.json  text drawn in the figures
+results/                measurements that depend on seeds or on the machine
+results-invariant/      exact counts and set comparisons
+docs/DesignDecisions.md modelling choices not fixed by the method description
+run_experiments_windows.bat   stage driver
+run_all_windows.bat           sets up a Windows machine and runs stages
 ```
-
-## Requirements
-
-- Python 3.11 or newer. The recorded runs used Python 3.12.10 on Windows (AMD64); the
-  development machine uses Python 3.14 on macOS (arm64).
-- The packages in `requirements.txt`, pinned to exact versions: networkx 3.7, numpy 2.5.3,
-  scipy 1.18.1, matplotlib 3.11.2, pyyaml 6.0.3, and pytest for the tests. Search results
-  depend on the numpy and networkx versions (numpy gives no bit-stream guarantee across
-  releases); exhaustive results do not.
-- The recorded runs used two library sets, both on Python 3.12.10. Stages 2, 4, 5, 6, 7, 8
-  and 14 used the pinned set above; the other stages used numpy 2.5.1, networkx 3.6.1,
-  scipy 1.18.0 and matplotlib 3.11.1. Each stage's set is in its
-  `results/environment_stage<N>.txt`. Where the same cells were run under both sets the
-  outputs are identical: stage 14 compares 3080 seeded runs, 1120 of them across the two
-  sets, with no disagreement, and the stage 5 to 8 search and landscape files re-run under
-  the pinned set match the earlier ones byte for byte.
-- Redrawing figures needs the Times New Roman font; the builder stops if it is missing.
-- No GPU. The work is CPU-bound subgraph matching, spread over worker processes.
 
 ## Setup
 
-There is nothing to compile. Create an environment and install the packages.
-
-macOS / Linux:
+Python 3.11 or newer, no GPU. The versions in `requirements.txt` are pinned; search results
+depend on the numpy and networkx versions, exhaustive results do not.
 
 ```bash
 git clone https://github.com/tran-minh-thai/wfsm-bench.git
@@ -85,19 +59,12 @@ cd wfsm-bench
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+python -m pytest -q
 ```
 
-Windows (Command Prompt):
-
-```bat
-git clone https://github.com/tran-minh-thai/wfsm-bench.git
-cd wfsm-bench
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-On Windows, `run_all_windows.bat` does all of this, and then runs stages.
+On Windows, use `python` and `.venv\Scripts\activate`, or run `run_all_windows.bat`, which
+also clones the repository and creates the environment. Tests that compare with the manuscript
+or read the raw downloads are skipped when those files are absent.
 
 ## Datasets
 
@@ -105,14 +72,11 @@ On Windows, `run_all_windows.bat` does all of this, and then runs stages.
 python scripts/prepare_datasets.py
 ```
 
-downloads the TUDataset collections (https://www.chrsmrrs.com/graphkerneldatasets) into
-`data/raw/` and writes one JSON file per dataset into `data/`. It skips a dataset whose raw
-files are already present. Edge weights are scaled per dataset to `[0.5, 5.0]`
-(`docs/DesignDecisions.md`, decision D7). The molecular `_bond` datasets are rebuilt from
-the real bonds, with the bond length as the weight. `pdb_contact.json` is tracked in `data/`
-because the protein structures it was built from are no longer available.
-
-The measured statistics of every dataset, from `results-invariant/dataset_profile.csv`:
+downloads the TUDataset collections into `data/raw/` and writes one JSON file per dataset to
+`data/`. Edge weights are scaled to `[0.5, 5.0]` per dataset (decision D7 in
+[docs/DesignDecisions.md](docs/DesignDecisions.md)). The `_bond` datasets are rebuilt from the
+molecular bonds, weighted by bond length. `data/pdb_contact.json` is tracked because its source
+structures cannot be downloaded again.
 
 <!-- generated:datasets -->
 | dataset | graphs | mean nodes | mean edges | node labels | edge labels | mean weight | source |
@@ -127,20 +91,7 @@ The measured statistics of every dataset, from `results-invariant/dataset_profil
 | pdb_contact | 473 | 83.6 | 162.1 | 6 | 2 | 3.267 | protein contact graphs (tracked, not rebuilt) |
 <!-- /generated:datasets -->
 
-Every run record (see *Run records*) carries a SHA-256 of each file in `data/`, so a run on
-rebuilt data can be told apart from a run on the original files.
-
-## Tests
-
-```bash
-python -m pytest -q
-```
-
-Some checks skip on a clone: those that compare the figures and tables with the manuscript,
-which is not part of this repository, and those that read the raw downloads in `data/raw/`,
-which exist only after `scripts/prepare_datasets.py` has been run.
-
-## A small end-to-end run (about four minutes)
+## Quick check (about four minutes)
 
 ```bash
 python scripts/prepare_datasets.py
@@ -148,66 +99,54 @@ python scripts/run_weight_mode.py --preset quick --modes sum --seeds 3 --workers
 python scripts/compare_landscape.py --suffix _smoke
 ```
 
-The run enumerates seven cells of Cuneiform (60 graphs, patterns up to 4 edges) and runs the
-seven search methods on them. Enumeration draws no random numbers, so the last command checks
-that the pool size, optimum and plateau counts of every cell match the tracked artefacts
-exactly; it fails if any differs or if nothing could be compared. The `_smoke` files are
-ignored by git.
+This enumerates seven Cuneiform cells (60 graphs, patterns up to 4 edges) and runs the seven
+search methods on them. The last command compares the pool size, optimum and plateau counts of
+each cell with the tracked results and fails on any difference.
 
-## Running the experiments
+## Experiments
 
-The experiments are organised in 20 stages. `run_experiments_windows.bat` is the single
-definition of what each stage runs.
-
-On Windows:
+The experiments are split into 20 stages, defined in `run_experiments_windows.bat`.
 
 ```bat
 run_experiments_windows.bat 17          REM one stage
-run_experiments_windows.bat 3 4 5       REM several
-run_all_windows.bat 17                  REM set up or update the checkout, test, run, publish
-run_all_windows.bat rerun-untraceable   REM every stage whose artefacts have no traceable record
+run_experiments_windows.bat 3 4 5       REM several stages
+run_all_windows.bat 17                  REM update the checkout, test, run, publish
 ```
 
-Before each stage the driver refuses to run from a checkout that is behind its remote or has
-uncommitted changes under `src/` or `scripts/`, then writes the run record
-`results/environment_stage<N>.txt`. After each stage `scripts/publish_results.py` keeps a copy
-of what the stage wrote in `results/runs/`, commits the artefacts and pushes them.
-`scripts/stages_to_rerun.py` lists the stages whose artefacts cannot be traced to a commit in
-this history.
+The driver refuses to run from a checkout with uncommitted changes under `src/` or `scripts/`
+or one that is behind its remote. It writes a run record before each stage and commits the
+results after it (`scripts/publish_results.py`). On macOS or Linux, `python
+scripts/stage_commands.py <N>` prints the commands of stage N; set `WORKERS` to the number of
+cores first. The worker count does not change any result.
 
-On macOS or Linux, run the same commands from the repository root with the environment active.
-`python scripts/stage_commands.py <N>` prints the commands of stage N, read from the Windows
-driver; they are listed below. Set `WORKERS` to the number of cores first
-(`export WORKERS=8`); the worker count does not change any result, because every run is seeded
-on its own.
-
-| stage | what it measures | approximate time | depends on the machine |
+| stage | measures | time | machine-dependent |
 |---:|---|---|---|
-| 1 | calibration of the discount rho on QM9_bond | 15 min | no |
-| 2 | search methods on QM9_bond | 30 min | seeds only |
-| 3 | size degeneracy on Cuneiform, sizes 4 and 5, and its rho calibration | 20 min | no |
-| 4 | search methods on Cuneiform, size 5 | 25 min | seeds only |
+| 1 | calibration of the discount rho, QM9_bond | 15 min | no |
+| 2 | search methods, QM9_bond | 30 min | seeds only |
+| 3 | size degeneracy and rho calibration, Cuneiform | 20 min | no |
+| 4 | search methods, Cuneiform, size 5 | 25 min | seeds only |
 | 5 | anti-monotone pruning on and off, size 6 | 1 h | seeds only |
-| 6 | the landscape of all 21 Cuneiform cells, both weight modes | 16 h | no |
-| 7 | search methods on Cuneiform, size 6 | 12.6 h | seeds only |
-| 8 | search methods on Cuneiform, size 4, looser budget | 10 min | seeds only |
-| 9 | search methods on BZR_bond, COX2_bond, DHFR_bond | 2 h | seeds only |
-| 10 | plateau structure forced by rounding the objective, QM9_bond | 1.7 h | seeds only |
+| 6 | landscape of the 21 Cuneiform cells, both weight modes | 16 h | no |
+| 7 | search methods, Cuneiform, size 6 | 12.6 h | seeds only |
+| 8 | search methods, Cuneiform, size 4, looser budget | 10 min | seeds only |
+| 9 | search methods, BZR_bond, COX2_bond, DHFR_bond | 2 h | seeds only |
+| 10 | plateaus from rounding the objective, QM9_bond | 1.7 h | seeds only |
 | 11 | basins of steepest ascent, six datasets | 30 min | no |
-| 12 | search methods on alchemy_full_bond | 40 min | seeds only |
-| 13 | the racing selector on disjoint race and pay seeds, six datasets | 2.5 h | seeds only |
-| 14 | determinism: stage 13 against the earlier runs of the same cells | 10 s | no |
-| 15 | rho calibration on four more datasets | 15 min | no |
-| 16 | where Pareto-front selectors land on the size axis, Cuneiform | 6.5 h | no |
+| 12 | search methods, alchemy_full_bond | 40 min | seeds only |
+| 13 | racing selector, disjoint race and pay seeds, six datasets | 2.5 h | seeds only |
+| 14 | determinism of stage 13 against earlier runs | 10 s | no |
+| 15 | rho calibration, four more datasets | 15 min | no |
+| 16 | position of Pareto-front selectors on the size axis, Cuneiform | 6.5 h | no |
 | 17 | the same on the five `_bond` datasets | 3.2 h | no |
-| 18 | gSpan against the exhaustive enumerator, timed | 3 h | yes (times) |
+| 18 | gSpan against the exhaustive enumerator, timed | 3 h | yes |
 | 19 | gSpan against the enumerator, pattern sets only | 7 h | no |
-| 20 | enumeration cost at the third size bound, timed | 9 to 11 h | yes (times) |
+| 20 | enumeration cost at the third size bound, timed | 9 to 11 h | yes |
 
-Times are the estimates in the header of `run_experiments_windows.bat`, for a 12-thread
-machine. "Seeds only" means the numbers depend
-on the seeds and the numpy version but not on the machine; "no" means they are exact counts
-that any machine reproduces; "yes" means they are wall-clock times.
+Times are for a 12-thread machine. "Seeds only" results depend on the seeds and the numpy
+version; "no" results are exact counts; "yes" results are wall-clock times.
+
+<details>
+<summary>Commands of each stage</summary>
 
 <!-- generated:stage-commands -->
 **Stage 1**
@@ -405,6 +344,8 @@ python scripts/run_gspan_baseline.py --dataset Cuneiform --graph-limit 60 --size
 ```
 <!-- /generated:stage-commands -->
 
+</details>
+
 ## Tables and figures
 
 ```bash
@@ -412,72 +353,60 @@ python scripts/make_tables.py --out results/tables.md
 python scripts/make_figures.py
 ```
 
-Both read only the tracked artefacts. Figures are written to `results/figures/` (not tracked)
-as vector PDF, in Times New Roman, with every string between 9 and 10 pt at the width each
-figure is printed at (`PRINTED_FRACTION` in `scripts/make_figures.py`); the words come from
-`figures/labels.en.json`.
+Both read only the tracked results. Figures are written to `results/figures/` as vector PDF and
+need the Times New Roman font.
 
 ## Results
 
-`results/` holds artefacts that depend on seeds or on the machine; `results-invariant/` holds
-exact counts and set comparisons that any machine reproduces. The files at the top of each
-tree are the current version, and a later run of the same stage replaces them.
-`results/runs/<UTC time>_<commit>_stage<N>/` keeps every published run as it was, and
-`scripts/freeze_submitted.py --label <name>` copies the artefacts of a submitted version to
-`results/submitted/`; neither is ever overwritten.
+`results/` holds measurements that depend on seeds or on the machine, and `results-invariant/`
+holds counts that any machine reproduces. A new run of a stage replaces the files at the top of
+each tree; `results/runs/` keeps a copy of every published run, and `results/submitted/` the
+results of a submitted version.
 
 | files | written by | contents |
 |---|---|---|
-| `results/weight_mode_landscape*.csv` | `run_weight_mode.py` | one row per cell (dataset, graphs, size bound, support, weight mode): pool size, optimum, its size and support, plateau and local-optimum counts |
-| `results/weight_mode_runs*.csv` | `run_weight_mode.py` | one row per search run: cell, budget, method, seed, fitness, whether it found the optimum |
-| `results/weight_mode_methods*.csv` | `run_weight_mode.py` | per cell, budget and method: mean and standard deviation of fitness, gap to the optimum, hits |
-| `results/statistics_pairwise_*.csv` | `run_statistics.py` | Wilcoxon signed-rank tests for every pair of methods, paired by seed, Holm-corrected |
-| `results/degeneracy_frontier_*.csv` | `run_degeneracy.py` | per pattern size: the best pattern's support and weight, the terms of the fitness decomposition, measured and modelled fitness |
-| `results/degeneracy_gamma_*.csv` | `run_degeneracy.py` | the optimum's size and fitness for each size-penalty coefficient |
-| `results/degeneracy_rho*.csv` | `run_degeneracy.py` | the optimum's size by bound for each discount rho, and whether it is stable |
-| `results/rho_summary.txt` | `pick_stable_rho.py` | the calibrated rho per dataset, or why there is none |
-| `results/basins_*.csv` | `run_basins.py` | basins of steepest ascent: share of the pool reaching the optimum, largest basin, path lengths |
+| `results/weight_mode_landscape*.csv` | `run_weight_mode.py` | per cell: pool size, optimum, its size and support, plateau and local-optimum counts |
+| `results/weight_mode_runs*.csv` | `run_weight_mode.py` | per search run: cell, budget, method, seed, fitness, whether the optimum was found |
+| `results/weight_mode_methods*.csv` | `run_weight_mode.py` | per cell, budget and method: mean and standard deviation of fitness, gap, hits |
+| `results/statistics_pairwise_*.csv` | `run_statistics.py` | Wilcoxon signed-rank tests between methods, paired by seed, Holm-corrected |
+| `results/degeneracy_frontier_*.csv` | `run_degeneracy.py` | per edge count: the best pattern, its support and weight, measured and modelled fitness |
+| `results/degeneracy_gamma_*.csv` | `run_degeneracy.py` | size and fitness of the optimum for each size-penalty coefficient |
+| `results/degeneracy_rho*.csv` | `run_degeneracy.py` | size of the optimum by bound for each discount rho |
+| `results/rho_summary.txt` | `pick_stable_rho.py` | calibrated rho per dataset |
+| `results/basins_*.csv` | `run_basins.py` | basins of steepest ascent |
 | `results/selector_regret*.csv` | `run_selector.py` | per cell: the method the race picked, its regret, and the regret of each fixed rule |
-| `results/selector_seed_sweep.csv` | `run_selector_seed_sweep.py` | regret of the race by race size, against the transfer-only floor |
-| `results/pareto_size_*.csv` | `run_pareto_size.py` | the non-dominated front of each cell and where each selector's pick lies on it |
-| `results/gspan_baseline_*.csv` | `run_gspan_baseline.py` | gSpan and the enumerator per cell: pattern counts, seconds, speed-up, whether the pattern sets agree |
-| `results/determinism_*` | `check_determinism.py` | comparisons of repeated runs of the same cells, with the number of rows compared |
-| `results/environment_*.txt` | `environment.py` | run records (see below) |
-| `results/*.log` | the stage commands | console output of each command, named in the stage commands |
-| `results/tables.md` | `make_tables.py` | the result tables, generated from the artefacts |
-| `results-invariant/dataset_profile.csv` | `measure_datasets.py` | the dataset statistics shown above |
-| `results-invariant/gspan_agreement_*.csv` | `run_gspan_baseline.py` | pattern-set agreement between gSpan and the enumerator, counts only |
-| `results-invariant/bound_locality_d*.csv` | `measure_bound_locality.py` | coverage of a host graph by a ball of each remaining depth |
+| `results/selector_seed_sweep.csv` | `run_selector_seed_sweep.py` | regret of the race by race size |
+| `results/pareto_size_*.csv` | `run_pareto_size.py` | non-dominated front of each cell and the pick of each selector |
+| `results/gspan_baseline_*.csv` | `run_gspan_baseline.py` | gSpan and the enumerator per cell: pattern counts, seconds, agreement |
+| `results/determinism_*` | `check_determinism.py` | comparisons of repeated runs, with the number of rows compared |
+| `results/environment_*.txt` | `environment.py` | run records |
+| `results-invariant/dataset_profile.csv` | `measure_datasets.py` | dataset statistics |
+| `results-invariant/gspan_agreement_*.csv` | `run_gspan_baseline.py` | pattern-set agreement between gSpan and the enumerator |
+| `results-invariant/bound_locality_d*.csv` | `measure_bound_locality.py` | coverage of a host graph by a ball of each depth |
 | `results-invariant/embedding_load.csv` | `measure_embedding_load.py` | embeddings per pattern at each size bound |
-| `results-invariant/race_only_signals.csv` | `measure_race_only_signals.py` | quantities a race can observe, against the regret it incurs |
-| `results-invariant/check_scope_audit.csv` | `audit_check_scope.py` | which checks in `tests/` recompute from artefacts and which compare with typed values |
+| `results-invariant/race_only_signals.csv` | `measure_race_only_signals.py` | quantities a race can observe, against its regret |
 
 ## Run records
 
-Every stage writes `results/environment_stage<N>.txt` before it runs, with:
-the commit and whether the working tree was clean; the upstream state; Python, numpy, networkx,
-scipy, matplotlib and pyyaml versions; the machine name, CPU, core count and memory; the memory
-limit and time limit (both "none": Python has no heap flag and no run is time-limited); the
-SHA-256 of every dataset file, taken with line endings normalised to LF so that it is the same
-on every system (key `data_lf.<file>`); the stage number and worker count. `python
-scripts/environment.py` prints the same record for the current machine. A result without a
-record is not used.
+Each stage writes `results/environment_stage<N>.txt` with the commit and whether the tree was
+clean, the library versions, the machine, and the SHA-256 of every dataset file (line endings
+normalised to LF). `python scripts/environment.py` prints the record for the current machine.
 
-The history of `main` was rewritten on 2026-09-29, which changed every commit hash. A record
-written before then names an old hash; `COMMIT_MAP.tsv` gives the commit holding the same code
-today, and `python scripts/commit_map.py <hash>` looks one up.
+Stages 2, 4 to 8 and 14 ran with the versions in `requirements.txt`; the other stages ran with
+numpy 2.5.1, networkx 3.6.1, scipy 1.18.0 and matplotlib 3.11.1, all on Python 3.12.10 under
+Windows. Cells run under both sets give identical results (stage 14).
 
-Records written before 2026-10-16 carry the key `data.<file>` instead: the SHA-256 of the raw
-bytes. The converters then wrote CRLF on Windows, so for those records the hash is of the CRLF
-form of the file. To check one against a file built elsewhere, convert its line endings to CRLF
-first; the content is the same.
+Records dated before 29 September 2026 name commits of an earlier history;
+`python scripts/commit_map.py <hash>` gives the matching commit (`COMMIT_MAP.tsv`). Records
+dated before 16 October 2026 hash dataset files in their CRLF form (key `data.<file>`).
 
 ## Parameters
 
-Every default below is read from the source. `src/wfsmbench/config.py` (`Params`) holds the
-parameters of the objective and the searches; the constants after it are fixed by the scripts.
-The discount `rho` is calibrated per dataset (stages 1, 3 and 15) and read by the runners from
-the calibration artefacts; `results/rho_summary.txt` lists the values.
+Defaults are read from `src/wfsmbench/config.py` and from the scripts. The discount rho is
+calibrated per dataset (stages 1, 3 and 15); `results/rho_summary.txt` lists the values.
+
+<details>
+<summary>Parameters and constants</summary>
 
 <!-- generated:parameters -->
 | parameter | default | what it sets |
@@ -543,32 +472,25 @@ the calibration artefacts; `results/rho_summary.txt` lists the values.
 | `TIE` | `scripts/measure_race_only_signals.py` | `0.001` | fitness gap under which two methods count as tied in a race |
 <!-- /generated:parameters -->
 
-## Reproducibility notes
+</details>
 
-- Every stochastic run takes an explicit seed; the worker count does not change any result.
-- The fitness normalisers are anchored on a fixed size (`STUDY_SIZE_REFERENCE`), never on the
-  search bound, so the same pattern scores the same under every bound.
-- Matching uses node and edge labels only; edge weights enter the fitness, never the matching.
-- The size bound K limits both counts: a pattern is admitted only if it has at most K vertices
-  and at most K edges (`max_nodes = max_edges = K` in every run). A K-edge tree has K + 1
-  vertices and is therefore outside the bound; at K = 4 on the first 60 Cuneiform graphs the
-  pool holds 712 patterns, against 2959 under an edge-only bound.
-- The non-dominated front is reported as a set of distinct objective vectors, one pattern
-  per vector (`scripts/run_pareto_size.py`). Patterns that tie on all three objectives are
-  counted once.
-- Tables are generated from the artefacts by `scripts/make_tables.py`, never typed by hand.
-- Run scripts from a file, not an interactive prompt: worker processes re-import the main
-  module.
+## Notes
 
-## Provenance and licences
+- Every stochastic run takes an explicit seed.
+- The fitness normalisers are anchored on a fixed size (`STUDY_SIZE_REFERENCE`), not on the
+  search bound, so a pattern scores the same under every bound.
+- Matching uses node and edge labels; edge weights enter only the fitness.
+- The size bound K limits both the vertex and the edge count, so a K-edge tree is outside it.
+- The Pareto front is reported as distinct objective vectors, one pattern per vector.
+- Run scripts from a file rather than an interactive prompt: worker processes re-import the
+  main module.
 
-| item | origin | licence |
-|---|---|---|
-| code in `src/`, `scripts/`, `tests/`, the two `.bat` drivers | written by the authors | MIT, see [LICENSE](LICENSE) |
-| `src/wfsmbench/baselines/gspan.py` | written by the authors from the published algorithm (Yan and Han, ICDM 2002); departures listed in its docstring | MIT |
-| subgraph matching | VF2 from networkx, used as a dependency, not copied | networkx: BSD-3-Clause |
-| other dependencies | numpy, scipy, matplotlib, pyyaml, pytest, installed from PyPI, not redistributed | their own licences (numpy and scipy BSD-3-Clause, matplotlib PSF-based, pyyaml and pytest MIT) |
-| TUDataset collections | downloaded by `scripts/prepare_datasets.py`, not redistributed | the terms of the TUDataset collection and of each original source; cite Morris et al., *TUDataset: A collection of benchmark datasets for learning with graphs*, ICML 2020 Workshop on Graph Representation Learning and Beyond |
-| `data/pdb_contact.json` | built by the authors from Protein Data Bank entries (`src/wfsmbench/io/protein.py`) | PDB archive data are CC0 1.0; the derived file is distributed under the same dedication |
-| `data/sample/` | small graphs written by the authors for the tests | MIT |
-| `results*/` | measurements produced by this code | MIT |
+## Licence and data
+
+The code, `data/sample/` and the results are released under the MIT licence
+([LICENSE](LICENSE)). `src/wfsmbench/baselines/gspan.py` implements gSpan (Yan and Han, ICDM
+2002); its docstring lists where it departs from the paper. Subgraph matching uses VF2 from
+networkx (BSD-3-Clause). The TUDataset collections are downloaded, not redistributed; cite
+Morris et al., *TUDataset: A collection of benchmark datasets for learning with graphs* (ICML
+2020 workshop). `data/pdb_contact.json` is derived from Protein Data Bank entries (CC0 1.0) and
+is distributed under the same dedication.
