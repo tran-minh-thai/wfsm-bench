@@ -353,6 +353,9 @@ def figure_quantum(path: Path) -> None:
     # a fraction shrinks with the figure, and at the shorter height of 2026-11-20 it put the
     # legend on top of the axis label.
     from matplotlib.transforms import offset_copy
+    # Two rows of four. One row of seven was tried on 2026-11-21 (the author asked for short
+    # entries on one line) and does not fit the column at the journal's type size, even with
+    # tighter spacing: the text then no longer settles inside 9.45-9.55pt on the page.
     ax.legend(frameon=False, fontsize=10, ncol=4, loc="upper center", bbox_to_anchor=(0.5, 0.0),
               bbox_transform=offset_copy(ax.transAxes, fig=fig, y=-44, units="points"))
     style(ax)
@@ -782,7 +785,9 @@ def figure_race_size(path: Path) -> None:
     # Two columns: three were wider than the Springer column (2026-11-20).
     # Compact handles and gaps: at body size in Computer Modern the two columns were wider than
     # the canvas, and the fit kept widening the saved box (2026-11-20).
-    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=2, handlelength=1.6,
+    # Three columns, two rows, with the shorter labels of 2026-11-21 (the author: short entries
+    # on one line rather than broken onto a third row).
+    fig.legend(handles, label_text, frameon=False, fontsize=7.5, ncol=3, handlelength=1.6,
                handletextpad=0.5, columnspacing=1.0,
                loc="lower center", bbox_to_anchor=(0.5, -0.01))
     # No figure title: the journal asks for none inside an illustration; the caption carries it.
@@ -846,7 +851,7 @@ def figure_ball_coverage(path: Path) -> None:
     ax.set_xlabel(text["xlabel"])
     ax.set_ylabel(text["ylabel"])
     # No figure title: the journal asks for none inside an illustration; the caption carries it.
-    ax.legend(frameon=False, fontsize=8, loc="lower right")
+    ax.legend(frameon=False, fontsize=8, loc="lower right", ncol=2)
     ax.grid(axis="y", lw=0.4, color="#DDDDDD", zorder=0)
     for edge in ("top", "right"):
         ax.spines[edge].set_visible(False)
@@ -946,7 +951,8 @@ def figure_enumeration_cost(path: Path) -> None:
         ax.set_ylabel(ylabel, fontsize=9)
         # Wrapped: on one line the right panel's title ran past the canvas in the 372pt column,
         # and the fit kept widening the saved box (2026-11-20).
-        ax.set_title("\n".join(textwrap.wrap(panel, 26)), loc="left", fontsize=9)
+        # Shorter titles on one line (the author, 2026-11-21); the wrap stays as a guard.
+        ax.set_title("\n".join(textwrap.wrap(panel, 40)), loc="left", fontsize=9)
         style(ax)
         # The y grid is what makes a slope comparable between two lines that sit in different
         # decades, and on a log axis the minor lines are the ones that carry the reading.

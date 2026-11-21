@@ -3,7 +3,7 @@
   "vi-tri-tren-mat": {
     "title": "Scalarization tracks the front maximum; the parameter-free selectors stop inside",
     "xlabel": "size bound K (at most K vertices and K edges)",
-    "ylabel": "position on the non-dominated front\n(0 = floor, 1 = maximum)",
+    "ylabel": "position on the front (0 = floor, 1 = maximum)",
     "top_line": "front maximum",
     "bottom_line": "front floor",
     "selectors": {
@@ -21,7 +21,7 @@
     "panel_mean": "mean over cells",
     "panel_worst": "worst cell - estimation term only",
     "full": "all {n} cells",
-    "balanced": "{n} cells with data at every size",
+    "balanced": "{n} cells, every size",
     "floor_full": "transfer term, {n} cells",
     "floor_balanced": "transfer term, {n} cells",
     "gap": "estimation term",
@@ -53,7 +53,7 @@
     "xlabel": "size bound K  (at most K vertices and K edges)",
     "ylabel_pool": "pool size |P(K)|, patterns  (log scale)",
     "ylabel_per": "seconds per pattern  (log scale)",
-    "panel_pool": "factor one: patterns to be evaluated",
-    "panel_per": "factor two: cost of evaluating one pattern"
+    "panel_pool": "factor one: pool size",
+    "panel_per": "factor two: cost per pattern"
   }
 }
