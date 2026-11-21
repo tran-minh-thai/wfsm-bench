@@ -146,10 +146,18 @@ def table_ranks() -> str:
             rows.append([f"`{name}`"] + cells + [f"**{order[0]}**"])
         out.append(f"**Objective: `{mode}`**\n\n"
                    + grid(["collection"] + METHODS + ["winner"], rows))
+    # CORRECTED 2026-11-21. The block and the critical difference were typed here, and the
+    # text kept the 80-block analysis (1.007) after the logs moved to one block per seed.
+    # Both are now read from the logs the table reads.
+    stated = {float(v) for name in COLLECTIONS if (STATS_DIR / f"{STATS_LOG[name]}_statistics.log").exists()
+              for v in re.findall(r"Nemenyi CD = ([0-9.]+)",
+                                  (STATS_DIR / f"{STATS_LOG[name]}_statistics.log").read_text(encoding="utf-8"))}
+    if len(stated) != 1:
+        raise SystemExit(f"[fail] the statistics logs state {sorted(stated)} as the critical difference")
     return ("### Method ranking does not transfer between collections\n\n"
-            "Mean rank over budget-by-seed blocks, one being best. Nemenyi critical\n"
-            "difference is 1.007, so methods within that of each other are not\n"
-            "distinguishable.\n\n" + "\n\n".join(out))
+            "Mean rank over seed blocks, each averaged over the four budgets; one is best.\n"
+            f"Nemenyi critical difference is {stated.pop():.3f}, so methods within that of each\n"
+            "other are not distinguishable.\n\n" + "\n\n".join(out))
 
 
 def table_basins() -> str:

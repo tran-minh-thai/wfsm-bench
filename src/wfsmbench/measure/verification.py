@@ -20,8 +20,14 @@ import glob
 from pathlib import Path
 
 # The study defaults, from config.py. Repeated on purpose: if the defaults move, the checks
-# must be re-derived rather than quietly follow them.
-ALPHA, BETA, GAMMA, ETA1, ETA2, SIZE_REFERENCE = 1.0, 0.5, 0.1, 0.1, 0.1, 6
+# must be re-derived rather than quietly follow them. tests/test_verification_defaults.py
+# fails the moment the two disagree.
+#
+# CORRECTED 2026-11-21. SIZE_REFERENCE was 6, the unit-test default of Params, while every
+# recorded fitness uses the study anchor STUDY_SIZE_REFERENCE = 7. It scales the per_edge
+# objective read from sum-mode rows, so the growth-dichotomy check ran on a per_edge objective
+# no run had used. Re-run at 7, the counts are unchanged (14 of 14 cells, all Cuneiform).
+ALPHA, BETA, GAMMA, ETA1, ETA2, SIZE_REFERENCE = 1.0, 0.5, 0.1, 0.1, 0.1, 7
 
 
 def read(results: Path, name: str) -> list[dict]:

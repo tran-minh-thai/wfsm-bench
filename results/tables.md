@@ -21,31 +21,31 @@ collections have no value that satisfies that anywhere in (0, 1].
 
 ### Method ranking does not transfer between collections
 
-Mean rank over budget-by-seed blocks, one being best. Nemenyi critical
-difference is 1.007, so methods within that of each other are not
-distinguishable.
+Mean rank over seed blocks, each averaged over the four budgets; one is best.
+Nemenyi critical difference is 2.014, so methods within that of each
+other are not distinguishable.
 
 **Objective: `sum`**
 
 | collection | aco | pso | multiswarm | genetic | clpso | local_search | random | winner |
 |---|---|---|---|---|---|---|---|---|
-| `Cuneiform` | 4.588 | 2.700 | 3.750 | 2.438 | 5.475 | 2.663 | 6.388 | **genetic** |
-| `QM9_bond` | 1.044 | 3.212 | 3.263 | 4.438 | 4.750 | 5.000 | 6.294 | **aco** |
-| `BZR_bond` | 2.319 | 2.600 | 3.038 | 4.213 | 4.931 | 4.425 | 6.475 | **aco** |
-| `COX2_bond` | 3.675 | 2.706 | 2.469 | 4.838 | 4.088 | 3.581 | 6.644 | **multiswarm** |
-| `DHFR_bond` | 1.163 | 3.181 | 3.544 | 3.694 | 4.963 | 5.025 | 6.431 | **aco** |
-| `alchemy_full_bond` | 1.169 | 3.419 | 3.619 | 3.263 | 4.506 | 5.500 | 6.525 | **aco** |
+| `Cuneiform` | 5.000 | 2.300 | 3.650 | 1.975 | 5.800 | 2.375 | 6.900 | **genetic** |
+| `QM9_bond` | 1.000 | 2.875 | 3.150 | 4.375 | 4.850 | 5.275 | 6.475 | **aco** |
+| `BZR_bond` | 2.025 | 2.275 | 2.925 | 4.100 | 5.400 | 4.700 | 6.575 | **aco** |
+| `COX2_bond` | 3.850 | 2.450 | 1.950 | 5.100 | 4.550 | 3.225 | 6.875 | **multiswarm** |
+| `DHFR_bond` | 1.125 | 2.875 | 3.375 | 3.400 | 5.250 | 5.300 | 6.675 | **aco** |
+| `alchemy_full_bond` | 1.000 | 3.100 | 3.525 | 3.125 | 4.850 | 5.650 | 6.750 | **aco** |
 
 **Objective: `discounted`**
 
 | collection | aco | pso | multiswarm | genetic | clpso | local_search | random | winner |
 |---|---|---|---|---|---|---|---|---|
-| `Cuneiform` | 3.544 | 3.681 | 3.706 | 3.594 | 4.950 | 2.206 | 6.319 | **local_search** |
-| `QM9_bond` | 2.275 | 2.831 | 3.050 | 4.600 | 4.081 | 4.844 | 6.319 | **aco** |
-| `BZR_bond` | 3.194 | 3.100 | 3.163 | 5.494 | 3.350 | 4.269 | 5.431 | **pso** |
-| `COX2_bond` | 3.581 | 3.100 | 3.294 | 4.450 | 3.994 | 3.050 | 6.531 | **local_search** |
+| `Cuneiform` | 3.275 | 3.500 | 3.975 | 3.600 | 5.275 | 1.625 | 6.750 | **local_search** |
+| `QM9_bond` | 1.300 | 2.600 | 3.025 | 4.825 | 4.550 | 5.175 | 6.525 | **aco** |
+| `BZR_bond` | 2.900 | 2.600 | 2.800 | 5.725 | 3.275 | 4.700 | 6.000 | **pso** |
+| `COX2_bond` | 3.650 | 2.650 | 3.300 | 4.375 | 4.975 | 2.300 | 6.750 | **local_search** |
 | `DHFR_bond` | - | - | - | - | - | - | - | *no calibrated rho* |
-| `alchemy_full_bond` | 2.281 | 2.788 | 2.987 | 4.006 | 4.056 | 5.206 | 6.675 | **aco** |
+| `alchemy_full_bond` | 1.275 | 2.475 | 3.025 | 4.175 | 4.625 | 5.625 | 6.800 | **aco** |
 
 ### Basin structure, an instance-level quantity
 
@@ -55,17 +55,17 @@ not come first; the converse holds in six of eight.
 
 | collection | objective | optimum basin | largest basin | optimum dominates | ACO rank |
 |---|---|---|---|---|---|
-| `BZR_bond` | discounted | 26.74% | 29.0% | no | 3.194 (3) |
-| `COX2_bond` | discounted | 70.00% | 70.0% | **yes** | 3.581 (4) |
-| `Cuneiform` | discounted | 28.93% | 30.4% | no | 3.544 (2) |
-| `QM9_bond` | discounted | 5.87% | 41.8% | no | 2.275 (1) |
-| `alchemy_full_bond` | discounted | 10.28% | 54.2% | no | 2.281 (1) |
-| `BZR_bond` | sum | 0.56% | 17.0% | no | 2.319 (1) |
-| `COX2_bond` | sum | 16.39% | 16.4% | **yes** | 3.675 (4) |
-| `Cuneiform` | sum | 14.35% | 14.3% | **yes** | 4.588 (5) |
-| `DHFR_bond` | sum | 0.28% | 22.8% | no | 1.163 (1) |
-| `QM9_bond` | sum | 0.16% | 25.3% | no | 1.044 (1) |
-| `alchemy_full_bond` | sum | 0.47% | 51.2% | no | 1.169 (1) |
+| `BZR_bond` | discounted | 26.74% | 29.0% | no | 2.900 (3) |
+| `COX2_bond` | discounted | 70.00% | 70.0% | **yes** | 3.650 (4) |
+| `Cuneiform` | discounted | 28.93% | 30.4% | no | 3.275 (2) |
+| `QM9_bond` | discounted | 5.87% | 41.8% | no | 1.300 (1) |
+| `alchemy_full_bond` | discounted | 10.28% | 54.2% | no | 1.275 (1) |
+| `BZR_bond` | sum | 0.56% | 17.0% | no | 2.025 (1) |
+| `COX2_bond` | sum | 16.39% | 16.4% | **yes** | 3.850 (4) |
+| `Cuneiform` | sum | 14.35% | 14.3% | **yes** | 5.000 (5) |
+| `DHFR_bond` | sum | 0.28% | 22.8% | no | 1.125 (1) |
+| `QM9_bond` | sum | 0.16% | 25.3% | no | 1.000 (1) |
+| `alchemy_full_bond` | sum | 0.47% | 51.2% | no | 1.000 (1) |
 
 ### Forcing the landscape to change moves no method
 
@@ -75,13 +75,13 @@ held where they are. Results are scored on the true objective.
 
 | fitness levels | local optima | aco | pso | multiswarm | genetic | clpso | local_search | random |
 |---|---|---|---|---|---|---|---|---|
-| 0.9967 | 182 | 1.04 | 3.21 | 3.26 | 4.44 | 4.75 | 5.00 | 6.29 |
-| 0.6917 | 183 | 1.04 | 3.18 | 3.25 | 4.60 | 4.68 | 5.01 | 6.24 |
-| 0.4747 | 185 | 1.04 | 3.22 | 3.30 | 4.28 | 4.76 | 5.10 | 6.31 |
-| 0.3100 | 190 | 1.03 | 3.27 | 3.35 | 4.29 | 4.78 | 5.03 | 6.26 |
-| 0.1876 | 193 | 1.03 | 3.24 | 3.47 | 4.26 | 4.80 | 4.90 | 6.30 |
-| 0.0865 | 212 | 1.06 | 3.31 | 3.27 | 4.54 | 4.55 | 5.03 | 6.24 |
-| 0.0473 | 235 | 1.04 | 3.04 | 3.44 | 4.46 | 4.92 | 4.88 | 6.22 |
+| 0.9967 | 182 | 1.00 | 2.88 | 3.15 | 4.38 | 4.85 | 5.28 | 6.47 |
+| 0.6917 | 183 | 1.00 | 2.88 | 3.15 | 4.50 | 4.85 | 5.25 | 6.38 |
+| 0.4747 | 185 | 1.00 | 2.88 | 3.23 | 4.15 | 4.92 | 5.38 | 6.45 |
+| 0.3100 | 190 | 1.00 | 2.98 | 3.23 | 4.15 | 5.00 | 5.17 | 6.47 |
+| 0.1876 | 193 | 1.00 | 2.98 | 3.23 | 4.08 | 5.10 | 5.17 | 6.45 |
+| 0.0865 | 212 | 1.00 | 2.98 | 3.02 | 4.55 | 4.88 | 5.17 | 6.40 |
+| 0.0473 | 235 | 1.00 | 2.62 | 3.52 | 4.30 | 5.17 | 4.92 | 6.45 |
 
 ### Racing the methods beats every fixed rule, and where it does not is measurable
 
@@ -104,5 +104,5 @@ size with the paying half held fixed:
 
 | term | cells over 1% | mean | sd | worst |
 |---|---|---|---|---|
-| estimation: finite race seeds, shrinks as they grow | 0 | 0.01% | 0.03% | 0.24% |
-| transfer: the cheap budget ranks methods differently | 6 | 0.51% | 1.38% | 8.90% |
+| estimation: finite race seeds, shrinks as they grow | 6 | 0.30% | 1.53% | 8.90% |
+| transfer: the cheap budget ranks methods differently | 2 | 0.22% | 0.63% | 4.46% |

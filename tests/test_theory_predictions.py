@@ -303,33 +303,59 @@ def test_v5e_more_race_seeds_reaches_the_transfer_floor_and_stops() -> None:
     mean_floor = sum(floor) / len(floor)
     print(f"\n[race size] n=2 {mean_small:.3f}%  n=10 {mean_large:.3f}%  floor {mean_floor:.3f}%")
     assert mean_large < mean_small, "more race seeds did not help at all"
+    # On the mean only: one race may beat the cheap-budget best in a cell (that cell's
+    # estimation share is then negative), but across cells a ten-seed race cannot do better on
+    # average than knowing the cheap budget on every seed.
     assert mean_large >= mean_floor - 1e-9, (
-        f"mean regret {mean_large:.4f} is below the transfer floor {mean_floor:.4f}; "
-        f"a perfect race cannot be beaten, so the floor is computed wrongly"
+        f"mean regret {mean_large:.4f} is below the mean transfer floor {mean_floor:.4f}"
     )
 
 
-def test_v5f_the_large_losses_are_transfer_not_estimation() -> None:
-    """Which term is responsible, recomputed. This reverses an earlier claim of mine.
+def test_v5f_the_large_losses_are_estimation_not_transfer() -> None:
+    """Which term of the racing bound is responsible for each realized loss.
 
-    The estimation share is regret at ten race seeds minus what a perfect race would lose.
+    REFUTED 2026-11-21. This test used to be test_v5f_the_large_losses_are_transfer_not_
+    estimation, and it asserted that the estimation share (regret at ten race seeds minus the
+    transfer floor) stays below 1% everywhere, so every large loss was transfer. It passed
+    only because the floor was read from the race's own seeds: in a 20-seed cell the race at
+    ten seeds IS that floor, and its estimation share was zero by construction. Three
+    independent reviews found it; the transfer column of selector_regret_allpairs.csv shows
+    the two budgets agreeing in all six cells above 1%.
+
+    Corrected statement, read per race from the disjoint-seed rows: every loss above 1%
+    comes from a race that missed the cheap-budget best while the two budgets agreed, and
+    no loss of a race whose budgets disagreed reaches 1%.
     """
-    rows = sweep_rows()
-    estimation, transfer = [], []
-    for r in rows:
-        if not (r["regret_n10"] and r["transfer_only"]):
-            continue
-        estimation.append(float(r["regret_n10"]) - float(r["transfer_only"]))
-        transfer.append(float(r["transfer_only"]))
-    assert len(estimation) >= 40
-    print(f"\n[transfer and estimation] estimation share: max {max(estimation):.3f}%, "
-          f"{sum(1 for e in estimation if e > 1.0)} cells over 1%; "
-          f"transfer: max {max(transfer):.3f}%, "
-          f"{sum(1 for t in transfer if t > 1.0)} cells over 1%")
-    assert max(estimation) < 1.0, (
-        f"estimation still costs {max(estimation):.3f}% in some cell, so racing on more "
-        f"seeds would help and the claim that the statistical term is exhausted is wrong"
-    )
-    assert max(transfer) > 1.0, (
-        "no cell has a large transfer loss, so there is nothing for the D term to explain"
-    )
+    rows = [r for r in read("selector_regret_allpairs.csv") if r["seed_split"] == "disjoint"]
+    assert len(rows) >= 40
+    large = [r for r in rows if float(r["regret_race"]) > 1.0]
+    transfer_fails = [r for r in rows if r["transfers"] == "0"]
+    both_hold = [r for r in rows if r["transfers"] == "1" and r["estimated_right"] == "1"]
+    print(f"\n[loss terms] {len(rows)} races; {len(large)} lose more than 1%; "
+          f"{len(transfer_fails)} with the budgets disagreeing, worst "
+          f"{max(float(r['regret_race']) for r in transfer_fails):.3f}%; "
+          f"{len(both_hold)} with both terms holding")
+    assert large, "no race loses more than 1%, so there is nothing to attribute"
+    assert all(r["transfers"] == "1" and r["estimated_right"] == "0" for r in large), (
+        "a loss above 1% comes from a race whose budgets disagree")
+    assert all(float(r["regret_race"]) < 1.0 for r in transfer_fails), (
+        "a race whose budgets disagree loses 1% or more")
+    # By definition: the race picks the cheap-budget best and that is the paying-budget best,
+    # so it pays nothing. A failure here means the two columns are not what they say.
+    assert all(float(r["regret_race"]) == 0.0 for r in both_hold)
+
+
+def test_v5g_the_transfer_floor_does_not_reuse_the_race() -> None:
+    """The floor must not equal the race it is meant to bound.
+
+    With the floor read from the race seeds, a 20-seed cell had transfer_only equal to its
+    regret at ten race seeds, so the decomposition could not see estimation there. The floor
+    now reads the cheap budget on every seed of the cell; in some 20-seed cell it must
+    therefore differ from the ten-seed race, or the correction has not reached the artefact.
+    """
+    rows = [r for r in sweep_rows() if r["reach"] == "10"]
+    assert rows, "no 20-seed cell in the sweep"
+    differing = [r for r in rows if r["regret_n10"] != r["transfer_only"]]
+    print(f"\n[floor] {len(differing)} of {len(rows)} twenty-seed cells have a floor that "
+          f"differs from the ten-seed race")
+    assert differing

@@ -1,12 +1,8 @@
 r"""Does racing on more seeds fix the losses the racing bound blames on estimation error?
 
 The racing bound says regret is at most 2*epsilon + D, with epsilon proportional to
-1/sqrt(n_r).
-Splitting the measured losses by cause showed the estimation term doing the damage --
-6 losses averaging 3.97% and peaking at 8.91%, against 19 transfer losses averaging 0.69% --
-and every wrong pick had its cheap-budget gap inside 2*epsilon. So the bound predicts
-more
-race seeds should remove those losses and leave the transfer ones untouched.
+1/sqrt(n_r). The bound predicts that more race seeds shrink the estimation term and leave
+the transfer term untouched. No figure is quoted here; the numbers live in the artefact.
 
 That is a quantitative prediction, and this measures it without any new mining.
 
@@ -33,6 +29,9 @@ import statistics
 import sys
 from collections import defaultdict
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from run_selector import ALL_PAIRS_RUNS  # noqa: E402  the selector table's run files
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "results"
@@ -80,7 +79,16 @@ def sweep_cell(cell, cheap: int, dear: int, draws: int, rng: random.Random):
         return None
 
     # Which method a perfect race would pick, and whether that is the one worth paying for.
-    cheap_truth = {m: mean_on(cell[cheap], m, race_pool) for m in methods}
+    # CORRECTED 2026-11-21. The perfect race was read from the even seeds alone -- the very
+    # seeds the race draws from. In a 20-seed cell the race at its largest size takes all ten
+    # of them, so it WAS the perfect race, its estimation term was zero by construction, and
+    # every loss of that race was booked as transfer. The six largest losses of the study sit
+    # in such cells, and the transfer column of results/selector_regret_allpairs.csv shows the
+    # two budgets agreeing there. The perfect race now knows the cheap budget on every seed
+    # of the cell, as the transfer column of run_selector.py already does, so the floor no
+    # longer depends on the race it is meant to bound. The difference regret - floor can then
+    # be negative: a race may pick a method that pays better than the cheap-budget best.
+    cheap_truth = {m: mean_on(cell[cheap], m, seeds) for m in methods}
     perfect = max(cheap_truth, key=cheap_truth.get)
     transfer_regret = 100.0 * (best - truth[perfect]) / best
 
@@ -99,7 +107,11 @@ def sweep_cell(cell, cheap: int, dear: int, draws: int, rng: random.Random):
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--runs", nargs="+", default=["results/weight_mode_runs_*.csv"])
+    # The run files of the selector table, read from run_selector.py so the two artefacts cover
+    # the same cells. The old default, every weight_mode_runs file, has grown since the sweep
+    # was written: it now reaches 96 cells against the selector table's 61, so a bare rerun no
+    # longer reproduced the tracked artefact (found 2026-11-21).
+    ap.add_argument("--runs", nargs="+", default=list(ALL_PAIRS_RUNS))
     ap.add_argument("--draws", type=int, default=200,
                     help="random race sets per size; the curve is their mean")
     ap.add_argument("--seed", type=int, default=0, help="fixed, so the sweep is reproducible")
@@ -137,7 +149,8 @@ def main(argv: list[str]) -> int:
 
     floor = statistics.mean(r["transfer"] for r in rows)
     print(f"\n  transfer-only regret (a perfect race, no estimation error): {floor:.3f}%")
-    print(f"  this is the floor the curve should approach, and cannot go below")
+    print("  the mean curve should approach it; a single cell may end below it, when the race")
+    print("  picks a method that pays better than the cheap-budget best")
 
     header = "dataset,weight_mode,max_size,min_support,race_budget,pay_budget,reach," \
              + ",".join(f"regret_n{n}" for n in SIZES) + ",transfer_only"
@@ -148,7 +161,7 @@ def main(argv: list[str]) -> int:
                           for n in SIZES)
         lines.append(f"{dataset},{mode},{size},{support},{row['cheap']},{row['dear']},"
                      f"{row['reach']},{values},{row['transfer']:.4f}")
-    args.out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    args.out.write_text("\n".join(lines) + "\n", encoding="utf-8", newline="")
     print(f"\n[done] {args.out.relative_to(ROOT)}")
     return 0
 
