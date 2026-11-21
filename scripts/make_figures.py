@@ -962,11 +962,14 @@ def figure_enumeration_cost(path: Path) -> None:
                           linestyle=dataset_style(name)[2], color=dataset_style(name)[0],
                           label=name)
                for name, _cells in sorted(data.items())]
-    # Two columns with compact handles: three were wider than the canvas at body size (2026-11-20).
-    # Two columns with compact handles: one row of six measures 451pt at 9.5pt against the 372pt
-    # column (2026-11-20), and three columns were wider than the canvas too.
-    figure.legend(handles=handles, frameon=False, fontsize=8, ncol=2, handlelength=1.6,
-                  handletextpad=0.5, columnspacing=1.0,
+    # Three columns, two rows (the author, 2026-11-21), spread over the free width.
+    # CORRECTED 2026-11-21. The note here said three columns were wider than the canvas. Measured,
+    # they are not: at handle 1.6 and gap 1.0 the legend is 340pt on a 572pt canvas and the type
+    # settles. The failure blamed on this figure came from the quantum-sweep legend (one row of
+    # seven), which the same build drew next. Handle and gap are now WIDER, 368pt, so the dash
+    # pattern of each line shows.
+    figure.legend(handles=handles, frameon=False, fontsize=8, ncol=3, handlelength=2.0,
+                  handletextpad=0.6, columnspacing=2.0,
                   loc="lower center", bbox_to_anchor=(0.5, -0.075))
     # One x label for both panels, not one each. The panels share the axis (sharex), so the
     # second copy said nothing the first had not; it was also the copy that overhung the right
