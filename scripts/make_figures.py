@@ -465,6 +465,13 @@ def figure_basins(path: Path) -> None:
         offsets = [(off, 2), (off, -2 - h), (-off - w, 2), (-off - w, -2 - h),
                    (-w / 2, MARK_RADIUS + 2), (-w / 2, -MARK_RADIUS - 2 - h),
                    (off, h + 4), (off, -2 * h - 4), (-off - w, h + 4), (-off - w, -2 * h - 4)]
+        # Directly above or below the mark, slid sideways just enough to stay inside the axes.
+        # Without these a point near the right end had only positions to its left, and there
+        # the neighbouring point up and to the left was nearer the name than its own point.
+        slid = min(max(-w / 2, axes_box.x0 + 2 * px_per_pt - x),
+                   axes_box.x1 - 2 * px_per_pt - w - x)
+        if slid != -w / 2:
+            offsets += [(slid, MARK_RADIUS + 2), (slid, -MARK_RADIUS - 2 - h)]
         return [(dx, dy, (x + dx, y + dy, x + dx + w, y + dy + h)) for dx, dy in offsets]
 
     def hits_marks(index: int, box) -> int:
@@ -473,6 +480,21 @@ def figure_basins(path: Path) -> None:
         return sum(not (box[2] < mx - MARK_RADIUS or box[0] > mx + MARK_RADIUS
                         or box[3] < my - MARK_RADIUS or box[1] > my + MARK_RADIUS)
                    for j, (mx, my) in enumerate(mark_positions) if j != index)
+
+    def distance_to(box, point) -> float:
+        px, py = point
+        dx = max(box[0] - px, 0.0, px - box[2])
+        dy = max(box[1] - py, 0.0, py - box[3])
+        return (dx * dx + dy * dy) ** 0.5
+
+    def ambiguous(index: int, box) -> int:
+        # A name must sit nearer its own mark than any other. Clearing every mark is not
+        # enough: on the 2026-11-20 drawing COX2·disc was placed clear of all marks but up
+        # and left of its point, under COX2·sum's name and closer to COX2·sum's mark, so the
+        # two names read as a pair belonging to one point (the author asked for it fixed).
+        own = distance_to(box, mark_positions[index])
+        return sum(distance_to(box, mark) < own + LABEL_GAP
+                   for j, mark in enumerate(mark_positions) if j != index)
 
     def leaves_axes(box) -> bool:
         # Inside the axes: the leftmost label, placed to the left of its point, was
@@ -486,28 +508,55 @@ def figure_basins(path: Path) -> None:
     freedom = {index: sum(not leaves_axes(box) and not hits_marks(index, box)
                           for _dx, _dy, box in candidate_boxes(index))
                for index in range(len(ordered))}
-    placed_boxes = []
+    candidates = [candidate_boxes(index) for index in range(len(ordered))]
+
+    def overlaps(box, other) -> bool:
+        # Across as well as along: the overlap test that runs on the finished figure wants
+        # a point between any two strings, and a name placed flush under another passed
+        # this test and failed that one.
+        return not (box[2] + LABEL_GAP < other[0] or box[0] - LABEL_GAP > other[2]
+                    or box[3] + px_per_pt < other[1] or box[1] - px_per_pt > other[3])
+
+    def score_of(index: int, box, chosen: dict[int, tuple]) -> int:
+        others = [b for j, b in chosen.items() if j != index] + obstacles
+        return (1000 * leaves_axes(box) + 10 * sum(overlaps(box, o) for o in others)
+                + 10 * ambiguous(index, box) + hits_marks(index, box))
+
+    # First a greedy pass, most constrained name first; then each name is chosen again with
+    # every other name held where it is, until a full pass changes nothing. The greedy pass
+    # alone left COX2·disc with no clear position on 2026-11-20: Cuneiform·disc had already
+    # taken the one spot below-left of it, and Cuneiform·disc had other clear spots. A move
+    # is taken only when it lowers this name's score, and the pairwise terms are symmetric,
+    # so the total falls at every move and the passes end.
+    chosen: dict[int, tuple] = {}
+    choice: dict[int, int] = {}
     for index in sorted(range(len(ordered)), key=lambda i: (freedom[i], i)):
+        best = min(range(len(candidates[index])),
+                   key=lambda k: (score_of(index, candidates[index][k][2], chosen), k))
+        choice[index], chosen[index] = best, candidates[index][best][2]
+    for _pass in range(50):
+        moved = False
+        for index in range(len(ordered)):
+            now = score_of(index, chosen[index], chosen)
+            best = min(range(len(candidates[index])),
+                       key=lambda k: (score_of(index, candidates[index][k][2], chosen), k))
+            if score_of(index, candidates[index][best][2], chosen) < now:
+                choice[index], chosen[index] = best, candidates[index][best][2]
+                moved = True
+        if not moved:
+            break
+    else:
+        raise SystemExit("[fail] basin label placement did not settle in 50 passes")
+    for index in range(len(ordered)):
         basin, rank = ordered[index][0], ordered[index][1]
         label_text = name_of(ordered[index])
-        scored = []
-        for order, (dx, dy, label_box) in enumerate(candidate_boxes(index)):
-            # Across as well as along: the overlap test that runs on the finished figure wants
-            # a point between any two strings, and a name placed flush under another passed
-            # this test and failed that one.
-            hits_label = sum(not (label_box[2] + LABEL_GAP < o[0] or label_box[0] - LABEL_GAP > o[2]
-                                  or label_box[3] + px_per_pt < o[1] or label_box[1] - px_per_pt > o[3])
-                             for o in placed_boxes + obstacles)
-            scored.append((1000 * leaves_axes(label_box) + 10 * hits_label
-                           + hits_marks(index, label_box), order, dx, dy, label_box))
-        # The first clear position in the order above; when none is clear, the one that
-        # collides least, and it is SAID -- a label printed over another is a figure fault
-        # nobody sees until the page is read. Before 2026-09-29 the fallback was a fixed
-        # corner, which on the printed-size drawing put two names across each other.
-        score, _order, dx, dy, label_box = min(scored)
+        dx, dy, label_box = candidates[index][choice[index]]
+        score = score_of(index, label_box, chosen)
+        # When no position is clear, the one that collides least, and it is SAID -- a label
+        # printed over another, or nearer another point than its own, is a figure fault
+        # nobody sees until the page is read.
         if score:
             print(f"[warn] basin label {label_text!r} has no clear position (score {score})")
-        placed_boxes.append(label_box)
         name = ax.annotate(label_text, (basin, rank), fontsize=LABEL_FONTSIZE, color="#444444",
                            xytext=(dx / px_per_pt, dy / px_per_pt),
                            textcoords="offset points", ha="left", va="bottom")
