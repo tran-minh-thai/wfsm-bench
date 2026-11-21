@@ -112,4 +112,21 @@ Cost of the selector in a cell: T_race = M n_r b_r + n_d b_d with M = 7.
 
 ## Deviations
 
-None yet.
+Recorded as they happened; the results they concern are named.
+
+1. **T5 self-test (before the four-dataset run).** The unsound bound used to show that the
+   front comparison catches an unsound bound was first rem = 0. On QM9_bond it cut 49 patterns
+   and happened to lose no front member, so it showed nothing. It was replaced by a bound that
+   cuts every non-leaf pattern, which the comparison catches. The three real bounds and the
+   threshold were not changed.
+2. **T6, Table 7 (layout, after seeing the table).** A b_d / |P(K)| column made the table 372.6pt
+   wide at the smallest column gap, over the 372pt text width; type size is not reduced. The
+   ranges per row went into the table note instead.
+3. **T6, Table 5 (observation, not a change).** Every one of the 181 front cells has contiguous
+   edge levels, so the pre-registered null over edge levels is 0.5 in every cell by
+   construction and carries no information beyond the midpoint. The per-member null still
+   needs the fronts re-enumerated with member counts per level.
+4. **T4 (post hoc, after seeing the results).** Because the one-edge null matches every
+   per_edge cell, the sum-mode cells were also scored against the null "the optimum has the
+   pool's largest edge count". This comparison was not pre-registered and is reported as
+   post hoc.

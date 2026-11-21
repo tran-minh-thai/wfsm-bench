@@ -1,0 +1,41 @@
+[cells] 61 cells in 16 configurations
+[plan] t1a: 5040 runs, budgets [540, 600, 660, 1020, 1080, 1500]
+[plan] t1b: 8820 runs, budgets [120, 180, 240]
+[plan] t2: starting budgets [18, 36, 54], round budgets [18, 36, 54, 72, 108, 144, 216]
+[reproduction] 112 recorded runs repeated, 0 differ
+[t2] round 1: 3150 runs
+  BZR_bond: 280 runs
+  COX2_bond: 280 runs
+  Cuneiform: 1610 runs
+  DHFR_bond: 140 runs
+  QM9_bond: 560 runs
+  alchemy_full_bond: 280 runs
+[t2] round 2: 1600 runs
+  BZR_bond: 160 runs
+  COX2_bond: 160 runs
+  Cuneiform: 640 runs
+  DHFR_bond: 80 runs
+  QM9_bond: 240 runs
+  alchemy_full_bond: 160 runs
+[t2] round 3: 800 runs
+  BZR_bond: 80 runs
+  COX2_bond: 80 runs
+  Cuneiform: 320 runs
+  DHFR_bond: 40 runs
+  QM9_bond: 120 runs
+  alchemy_full_bond: 80 runs
+[t1b]
+  BZR_bond: 280 runs
+  COX2_bond: 280 runs
+  Cuneiform: 6020 runs
+  DHFR_bond: 140 runs
+  QM9_bond: 1820 runs
+  alchemy_full_bond: 280 runs
+[t1a]
+  BZR_bond: 280 runs
+  COX2_bond: 280 runs
+  Cuneiform: 3080 runs
+  DHFR_bond: 140 runs
+  QM9_bond: 980 runs
+  alchemy_full_bond: 280 runs
+[done] results-invariant/revision-2026-11-21/selector_supplement_runs.csv: 19170 rows

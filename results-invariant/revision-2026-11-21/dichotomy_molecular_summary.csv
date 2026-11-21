@@ -1,0 +1,12 @@
+dataset,weight_mode,cells,strict,predicted,intermediate,null_one_edge
+BZR_bond,sum,2,0,2,2,0
+BZR_bond,per_edge,2,2,2,0,2
+COX2_bond,sum,2,1,2,1,0
+COX2_bond,per_edge,2,2,2,0,2
+DHFR_bond,sum,2,1,2,1,0
+DHFR_bond,per_edge,2,2,2,0,2
+QM9_bond,sum,2,0,2,1,0
+QM9_bond,per_edge,2,2,2,0,2
+alchemy_full_bond,sum,2,0,2,2,0
+alchemy_full_bond,per_edge,2,2,2,0,2
+Cuneiform,per_edge,14,,,,14

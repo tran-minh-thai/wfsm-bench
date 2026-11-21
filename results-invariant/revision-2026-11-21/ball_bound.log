@@ -1,0 +1,17 @@
+  Cuneiform          global   evaluations   1171 (of 1171) cut     0 patterns,      0 extensions; front equal True
+  Cuneiform          host     evaluations   1171 (of 1171) cut     0 patterns,      0 extensions; front equal True
+  Cuneiform          ball     evaluations   1153 (of 1171) cut     3 patterns,     27 extensions; front equal True
+  QM9_bond           global   evaluations   1917 (of 2095) cut    54 patterns,   1950 extensions; front equal True
+  QM9_bond           host     evaluations   1799 (of 2095) cut    77 patterns,   2919 extensions; front equal True
+  QM9_bond           ball     evaluations   1799 (of 2095) cut    77 patterns,   2919 extensions; front equal True
+  BZR_bond           global   evaluations    503 (of 505) cut     1 patterns,     20 extensions; front equal True
+  BZR_bond           host     evaluations    491 (of 505) cut    11 patterns,    229 extensions; front equal True
+  BZR_bond           ball     evaluations    483 (of 505) cut    19 patterns,    403 extensions; front equal True
+  alchemy_full_bond  global   evaluations   1554 (of 1554) cut     0 patterns,      0 extensions; front equal True
+  alchemy_full_bond  host     evaluations   1449 (of 1554) cut    15 patterns,    689 extensions; front equal True
+  alchemy_full_bond  ball     evaluations   1420 (of 1554) cut    20 patterns,    912 extensions; front equal True
+  Cuneiform          coverage 1.000 predicted no-tighter 1 cut host 0 ball 3 measured no-tighter 0 correct 0
+  QM9_bond           coverage 0.802 predicted no-tighter 0 cut host 77 ball 77 measured no-tighter 1 correct 0
+  BZR_bond           coverage 0.308 predicted no-tighter 0 cut host 11 ball 19 measured no-tighter 0 correct 1
+  alchemy_full_bond  coverage 0.810 predicted no-tighter 0 cut host 15 ball 20 measured no-tighter 0 correct 1
+[done] ball_bound_pruning.csv, ball_bound_criterion.csv

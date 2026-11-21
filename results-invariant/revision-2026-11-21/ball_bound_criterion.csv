@@ -1,0 +1,5 @@
+dataset,coverage_d3,tau,predicted_no_tighter,cut_host,cut_ball,measured_no_tighter,correct
+Cuneiform,1.000000,0.9,1,0,3,0,0
+QM9_bond,0.802422,0.9,0,77,77,1,0
+BZR_bond,0.307644,0.9,0,11,19,0,1
+alchemy_full_bond,0.810100,0.9,0,15,20,0,1

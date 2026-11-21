@@ -1,0 +1,28 @@
+{
+ "command": [
+  "python",
+  "scripts/run_selector_supplement.py"
+ ],
+ "commit": "bfbba1b3da1f42f0d9cc997e1fe1894358a4b52e",
+ "tree": "clean",
+ "script_sha256": "74bfd8fee1473b6a83623404d6c93f83d4982728f360bf06f2d7bf9470d01647",
+ "runner_sha256": "72500e020df332320636289c78d6eec37984fb6fb6f7e0cb59581d0382a4d1d6",
+ "python": "3.14.6",
+ "numpy": "2.5.1",
+ "networkx": "3.6.1",
+ "scipy": "1.18.0",
+ "platform": "macOS-27.2.1-arm64-arm-64bit-Mach-O",
+ "machine": "arm64",
+ "data_sha256": {
+  "BZR_MD.json": "aa44b62d83050ff48b4ee77a2fc26642378a4f70c552a9fa6b64ce2e23515013",
+  "BZR_bond.json": "2354353348e49cc2210b464b37a24ce8ab47cbc2211e69a0cb6fb5359aa7a5c3",
+  "COX2_bond.json": "fa992bad0ee710f2c8921fedce0243aabaefece72061951139803dec551a7fb5",
+  "Cuneiform.json": "4f9d96cd3d7dce47c144fdf60e21e76a758e0beb8437effcad205c44386b7a42",
+  "DHFR_bond.json": "9d9bd187db9ca75cfe42baabca8275d17207f2889fb51c81dcfb466c2c9433ca",
+  "QM9_bond.json": "4b0de7a67f3d98e208bf16d74e4f146f1f1199ef3438c1c3219f76dc6d5f2497",
+  "alchemy_full_bond.json": "6e5632f296cef54138de8275dddf0b11155e302b0cff523513dee4cb7a4e2f73",
+  "pdb_contact.json": "7aad43be45496bb6cc4845e0cf707b21f5e943f69cff61bb3734a82950d3832a"
+ },
+ "reproduced_runs": 112,
+ "rows": 19170
+}
